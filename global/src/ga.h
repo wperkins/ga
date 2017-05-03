@@ -14,6 +14,7 @@ extern "C" {
 #endif
 
 typedef Integer ga_nbhdl_t;
+#include "gaproperty.h"
 
 extern void          GA_Abs_value(int g_a); 
 extern void          GA_Abs_value_patch(int g_a, int *lo, int *hi);

@@ -1319,6 +1319,9 @@ void ngai_get_common(Integer g_a,
                       buf[]: Local buffer that array patch will be copied into
                       ld[]:  Array of physical ndim-1 dimensions of local buffer */
 
+  if(prop_check_cache(g_a, lo, hi, buf, ld, field_off, field_size, nbhandle))
+      return;
+  
   Integer  p, np, handle=GA_OFFSET + g_a;
   Integer  idx, elems, size, p_handle;
   int proc, ndim, loop, cond;

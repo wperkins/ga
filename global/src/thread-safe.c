@@ -5,15 +5,24 @@
 #include <stdio.h>
 
 pthread_mutex_t ga_threadsafe_lock;
+__thread int locked = 0;
 
 void GA_Internal_Threadsafe_Lock()
 {
-     pthread_mutex_lock(&ga_threadsafe_lock);
+    if(!locked)
+    {
+        pthread_mutex_lock(&ga_threadsafe_lock);
+        locked++;
+    }
+    else
+        locked++;
 }
 
 void GA_Internal_Threadsafe_Unlock()
 {
-     pthread_mutex_unlock(&ga_threadsafe_lock);
+     locked--;
+     if(locked == 0)
+        pthread_mutex_unlock(&ga_threadsafe_lock);
 }
 
 #endif

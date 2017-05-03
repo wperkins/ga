@@ -81,6 +81,11 @@ typedef struct {
        C_Integer rstrctd_id;        /* rank of processor in restricted list */
        C_Integer *rank_rstrctd;     /* ranks of processors with data        */
 
+       // Here doing the property types for GA
+       int prop;
+       int prop_cached;
+       char * prop_cache;
+
 #ifdef ENABLE_CHECKPOINT
        int record_id;               /* record id for writing ga to disk     */
 #endif

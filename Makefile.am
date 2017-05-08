@@ -393,6 +393,7 @@ libga_la_SOURCES += global/src/elem_alg.c
 libga_la_SOURCES += global/src/fapi.c
 libga_la_SOURCES += global/src/ga_ckpt.h
 libga_la_SOURCES += global/src/gaconfig.h
+libga_la_SOURCES += global/src/gaproperty.h
 libga_la_SOURCES += global/src/ga_diag_seqc.c
 libga_la_SOURCES += global/src/ga_malloc.c
 libga_la_SOURCES += global/src/ga_profile.h
@@ -413,6 +414,7 @@ libga_la_SOURCES += global/src/matrix.c
 libga_la_SOURCES += global/src/nbutil.c
 libga_la_SOURCES += global/src/onesided.c
 libga_la_SOURCES += global/src/peigstubs.c
+libga_la_SOURCES += global/src/property.c
 libga_la_SOURCES += global/src/scalapack.fh
 libga_la_SOURCES += global/src/sclstubs.c
 libga_la_SOURCES += global/src/select.c
@@ -441,6 +443,7 @@ endif
 
 include_HEADERS += global/src/gacommon.h
 include_HEADERS += global/src/ga.h
+include_HEADERS += global/src/gaproperty.h
 include_HEADERS += global/src/global.fh
 include_HEADERS += global/src/ga-papi.h
 if MSG_COMMS_MPI

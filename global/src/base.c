@@ -158,6 +158,8 @@ int  GA_stack_size=0;
 /* Function prototypes */
 int gai_getmem(char* name, char **ptr_arr, C_Long bytes, int type, long *id,
                int grp_id);
+extern void sai_init_sparse_arrays();
+extern void sai_terminate_sparse_arrays();
 #ifdef ENABLE_CHECKPOINT
 static int ga_group_is_for_ft=0;
 int ga_spare_procs;
@@ -539,6 +541,7 @@ int bytes;
                  
     }
 #endif
+    sai_init_sparse_arrays();
     GA_Internal_Threadsafe_Unlock();
 }
 
@@ -3390,6 +3393,7 @@ Integer i, handle;
         return;
     }
 
+    sai_terminate_sparse_arrays();
 #ifdef PROFILE_OLD 
     ga_profile_terminate();
 #endif

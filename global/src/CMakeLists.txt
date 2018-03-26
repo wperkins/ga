@@ -45,17 +45,6 @@ if (ENABLE_FORTRAN)
   )
 endif()
 
-if (ENABLE_SCALAPACK)
-  set (GA_FORTRAN_INTERFACE_H_FILES
-       ${GA_FORTRAN_INTERFACE_H_FILES} scalapack.fh)
-  set (GA_FORTRAN_INTERFACE_F_FILES
-       ${GA_FORTRAN_INTERFACE_F_FILES} scalapack.F)
-  if (HAVE_LAPACK OR ENABLE_EISPACK)
-    set (GA_FORTRAN_INTERFACE_F_FILES
-         ${GA_FORTRAN_INTERFACE_F_FILES} ga_diag_seq.F)
-  endif()
-endif()
-
 set(target_libraries
     ma
     elio
@@ -68,12 +57,18 @@ set(WAPI_FILES
   ga-wapidefs.h
 )
 
-include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR}
-                    ${PROJECT_SOURCE_DIR}/gaf2c
-                    ${PROJECT_SOURCE_DIR}/ma
-                    ${PROJECT_SOURCE_DIR}/comex/src-armci
+#include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR}
+                    #${PROJECT_SOURCE_DIR}/gaf2c
+                    #${PROJECT_SOURCE_DIR}/ma
+                    #${PROJECT_SOURCE_DIR}/comex/src-armci
+include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR}
+                    ${CMAKE_BINARY_DIR}/gaf2c
+                    ${CMAKE_BINARY_DIR}/ma
+                    ${CMAKE_BINARY_DIR}/comex/src-armci
+                    ${CMAKE_CURRENT_BINARY_DIR}/comex/src-armci
                     ${PROJECT_SOURCE_DIR}/tcgmsg
-                    ${PROJECT_SOURCE_DIR}/LinAlg/lapack+blas
+                    #${PROJECT_SOURCE_DIR}/LinAlg/lapack+blas
+                    ${CMAKE_BINARY_DIR}/LinAlg/lapack+blas
 )
 
 set(GA_FILES
@@ -111,15 +106,24 @@ set(GA_FILES
 
 add_custom_command(
   OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/ga-wapi.h
-  COMMAND ${CMAKE_COMMAND} -D INPUT:PATH="${CMAKE_CURRENT_SOURCE_DIR}/ga-papi.h" -D OUTPUT:PATH="${CMAKE_CURRENT_SOURCE_DIR}/ga-wapi.h" -P ${PROJECT_SOURCE_DIR}/tools/ga_papi_to_wapi.cmake
+  COMMAND ${CMAKE_COMMAND} -D INPUT:PATH="${CMAKE_CURRENT_SOURCE_DIR}/ga-papi.h" 
+     #-D OUTPUT:PATH="${CMAKE_CURRENT_SOURCE_DIR}/ga-wapi.h" 
+     -D OUTPUT:PATH="${CMAKE_CURRENT_BINARY_DIR}/ga-wapi.h" 
+     -P ${PROJECT_SOURCE_DIR}/tools/ga_papi_to_wapi.cmake
   DEPENDS ga-papi.h
 )
 
 add_custom_command(
   OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/ga-wapidefs.h
-  COMMAND ${CMAKE_COMMAND} -D INPUT:PATH="${CMAKE_CURRENT_SOURCE_DIR}/ga-papi.h" -D OUTPUT:PATH="${CMAKE_CURRENT_SOURCE_DIR}/ga-wapidefs.h" -P ${PROJECT_SOURCE_DIR}/tools/ga_papi_to_wapidefs.cmake
+  COMMAND ${CMAKE_COMMAND} -D INPUT:PATH="${CMAKE_CURRENT_SOURCE_DIR}/ga-papi.h" 
+     #-D OUTPUT:PATH="${CMAKE_CURRENT_SOURCE_DIR}/ga-wapidefs.h" 
+     -D OUTPUT:PATH="${CMAKE_CURRENT_BINARY_DIR}/ga-wapidefs.h" 
+     -P ${PROJECT_SOURCE_DIR}/tools/ga_papi_to_wapidefs.cmake
   DEPENDS ga-papi.h
 )
+
+CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/gacommon.h
+                ${CMAKE_CURRENT_BINARY_DIR}/gacommon.h)
 
 add_library(ga_src OBJECT
   ${CMAKE_CURRENT_SOURCE_DIR}/ga-wapi.h

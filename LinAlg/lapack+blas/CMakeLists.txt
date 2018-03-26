@@ -32,7 +32,8 @@
 # file: CMakeLists.txt
 # -------------------------------------------------------------
 
-include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR})
+#include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR})
+#include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
 
 # -------------------------------------------------------------
 # LinAlg header installation
@@ -41,6 +42,9 @@ include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR})
 set(LINALG_HEADERS
   xgemm.h
 )
+
+CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/galinalg.h
+                ${CMAKE_CURRENT_BINARY_DIR}/galinalg.h)
 
 # -------------------------------------------------------------
 # LINALG library installation

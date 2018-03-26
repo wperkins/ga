@@ -33,6 +33,7 @@
 # -------------------------------------------------------------
 
 include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR}
+                           ${CMAKE_CURRENT_BINARY_DIR}
                            ${PROJECT_SOURCE_DIR}/comex/src-armci
 )
 

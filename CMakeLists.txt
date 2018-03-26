@@ -34,6 +34,7 @@
 
 cmake_minimum_required (VERSION 2.8.8)
 project (GlobalArrays)
+#project (GlobalArrays C CXX Fortran)
 
 #set (GlobalArrays_VERSION_MAJOR 5)
 #set (GlobalArrays_VERSION_MINOR 6)
@@ -44,9 +45,8 @@ project (GlobalArrays)
 
 # where to look for special .cmake files
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake-modules")
-message(status " CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
-include(GlobalArrays RESULT_VARIABLE result)
-message(status " RESULT_VARIABLE: ${result}")
+message(status "CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
+include(GlobalArrays)
 
 option (ENABLE_FORTRAN "Build Fortran interface" OFF)
 option (ENABLE_F77 "Build Fortran interface" OFF)
@@ -89,7 +89,7 @@ option (MPI3 "use MPI RMA protocols for communication" OFF)
 option (MPI_MT "use MPI multi-threading protocols for communication" OFF)
 option (MPI_PT "use MPI progress thread protocols for communication" OFF)
 option (ENABLE_CXX "Build C++ interface" OFF)
-if (GA_RUNTIME STREQUAL MPI_PROGRESS_RANK)
+if (GA_RUNTIME STREQUAL MPI_PROGRESS)
   set (MPI_TS OFF)
   set (MPI_PR ON)
 elseif (GA_RUNTIME STREQUAL MPI_RMA)
@@ -106,18 +106,9 @@ option (MSG_COMMS_MPI "Using MPI runtime for communication" ON)
 option (NDEBUG "Debug option used by developers" OFF)
 option (ENABLE_ARMCI_MEM_OPTION "User option for managing memory" ON)
 
-set (USE_I8 OFF)
-if (CMAKE_SIZEOF_VOID_P EQUAL 8)
-  set(USE_I8 ON)
-endif()
-option (ENABLE_I8 "Use 8 byte Fortran integers" ${USE_I8})
-message(status " void size ${CMAKE_SIZEOF_VOID_P} USE_I8 ${USE_I8} ENABLE_I8 ${ENABLE_I8}")
+option (ENABLE_I8 "Use 8 byte Fortran integers" OFF)
 option (F2C_HIDDEN_STRING_LENGTH_AFTER_ARGS "Fortran/C interface property" ON)
 option (ENABLE_BLAS "Include external BLAS and LAPACK" ON)
-option (ENABLE_SCALAPACK "Use ScaLAPACK libraries" OFF)
-option (ENABLE_EISPACK "Use EISPACK instead of LAPACK libraries" OFF)
-option (SCALAPACK_ROOT "Root directory for ScaLAPACK libraries" OFF)
-
 
 INCLUDE( CheckCSourceCompiles )
 # Check for restrict keyword
@@ -186,7 +177,8 @@ if (ENABLE_FORTRAN)
   FortranCInterface_HEADER(${CMAKE_SOURCE_DIR}/f2c_cmake.h MACRO_NAMESPACE F77_FUNC_)
 else()
   CONFIGURE_FILE( ${CMAKE_SOURCE_DIR}/cmake/f2c_dummy.h.in
-                ${CMAKE_SOURCE_DIR}/f2c_cmake.h )
+                #${CMAKE_SOURCE_DIR}/f2c_cmake.h )
+                ${CMAKE_CURRENT_BINARY_DIR}/f2c_cmake.h )
 endif()
 
 # check size of different variables
@@ -243,23 +235,6 @@ if (LAPACK_FOUND)
 endif()
 else()
   set(HAVE_BLAS 0)
-endif()
-
-# add definitions to compilers commands here since they are needed by
-# both global/src and global/testing directories
-option(SCALAPACK_I8 "Separately signal that ScalaPACK library has 8 byte ints"
-      OFF)
-if (ENABLE_SCALAPACK)
-  add_definitions(-DHAVE_SCALAPACK)
-  if (SCALAPACK_I8)
-    add_definitions(-DSCALAPACK_I8)
-  endif()
-endif()
-if (ENABLE_EISPACK)
-  add_definitions(-DENABLE_EISPACK)
-endif()
-if (ENABLE_FORTRAN)
-  add_definitions(-DENABLE_F77)
 endif()
 
 message(STATUS "BLAS_LIBRARIES: ${BLAS_LIBRARIES}")
@@ -344,8 +319,6 @@ if (ENABLE_FORTRAN)
      set (F77_GETARG_DECLS "intrinsic GETARG")
      set (F77_IARGC IARGC)
      set (F77_FLUSH flush)
-     set (FORTRAN_I8_FLAG -fdefault-integer-8)
-     set (FORTRAN_I4_FLAG "")
      set (HAVE_F77_FLUSH 1)
   elseif (CMAKE_Fortran_COMPILER MATCHES "ifort.*")
      message(STATUS "Using Intel Fortran compiler settings")
@@ -355,8 +328,6 @@ if (ENABLE_FORTRAN)
      set (F77_GETARG_DECLS "")
      set (F77_IARGC IARGC)
      set (F77_FLUSH flush)
-     set (FORTRAN_I8_FLAG -i8)
-     set (FORTRAN_I4_FLAG -i4)
      set (HAVE_F77_FLUSH 1)
   elseif (CMAKE_Fortran_COMPILER MATCHES "pgf90.*")
      message(STATUS "Using PGI Fortran compiler settings")
@@ -366,8 +337,6 @@ if (ENABLE_FORTRAN)
      set (F77_GETARG_DECLS "")
      set (F77_IARGC IARGC)
      set (F77_FLUSH flush)
-     set (FORTRAN_I8_FLAG -i8)
-     set (FORTRAN_I4_FLAG -i4)
      set (HAVE_F77_FLUSH 1)
   endif()
 else()
@@ -376,8 +345,6 @@ else()
    set (F77_GETARG_ARGS "i,s")
    set (F77_GETARG_DECLS "external GETARG")
    set (F77_IARGC IARGC)
-   set (FORTRAN_I8_FLAG -i8)
-   set (FORTRAN_I4_FLAG -i4)
 endif() 
 
 # Hardwire these settings. No way to check for Fortran integer size in CMake
@@ -391,8 +358,6 @@ set (F2C_DOUBLE_PRECISION_C_TYPE double)
 if (ENABLE_I8)
   set (CM_SIZEOF_F77_INTEGER 8)
   set (F2C_INTEGER_C_TYPE long)
-  set (CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${FORTRAN_I8_FLAG}")
-  message(status " Fortran flag ${CMAKE_Fortran_FLAGS} i8 ${FORTRAN_I8_FLAG}")
 endif()
 set (C_POINTER_AS_INTEGER int)
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -410,23 +375,31 @@ set (CM_BLAS_SIZE ${CM_SIZEOF_F77_INTEGER})
 # Create include files from templates
 # -------------------------------------------------------------
 CONFIGURE_FILE( ${CMAKE_SOURCE_DIR}/cmake/config.h.in
-                ${CMAKE_SOURCE_DIR}/config.h )
+                #${CMAKE_SOURCE_DIR}/config.h )
+                ${CMAKE_CURRENT_BINARY_DIR}/config.h )
 CONFIGURE_FILE( ${CMAKE_SOURCE_DIR}/cmake/farg.h.in
-                ${CMAKE_SOURCE_DIR}/gaf2c/farg.h )
+                #${CMAKE_SOURCE_DIR}/gaf2c/farg.h )
+                ${CMAKE_CURRENT_BINARY_DIR}/gaf2c/farg.h )
 CONFIGURE_FILE( ${CMAKE_SOURCE_DIR}/cmake/typesf2c.h.in
-                ${CMAKE_SOURCE_DIR}/gaf2c/typesf2c.h )
+                #${CMAKE_SOURCE_DIR}/gaf2c/typesf2c.h )
+                ${CMAKE_CURRENT_BINARY_DIR}/gaf2c/typesf2c.h )
 CONFIGURE_FILE( ${CMAKE_SOURCE_DIR}/cmake/matypes.h.in
-                ${CMAKE_SOURCE_DIR}/ma/matypes.h )
+                #${CMAKE_SOURCE_DIR}/ma/matypes.h )
+                ${CMAKE_CURRENT_BINARY_DIR}/ma/matypes.h )
 CONFIGURE_FILE( ${CMAKE_SOURCE_DIR}/cmake/mafdecls.fh.in
-                ${CMAKE_SOURCE_DIR}/ma/mafdecls.fh )
+                #${CMAKE_SOURCE_DIR}/ma/mafdecls.fh )
+                ${CMAKE_CURRENT_BINARY_DIR}/ma/mafdecls.fh )
 CONFIGURE_FILE( ${CMAKE_SOURCE_DIR}/cmake/global.fh.in
-                ${CMAKE_SOURCE_DIR}/global/src/global.fh )
+                #${CMAKE_SOURCE_DIR}/global/src/global.fh )
+                ${CMAKE_CURRENT_BINARY_DIR}/global/src/global.fh )
 
 if (ENABLE_FORTRAN)
 message(STATUS "CMAKE_COMMAND:${CMAKE_COMMAND}")
   add_custom_command(
     OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/config.fh
-    COMMAND ${CMAKE_COMMAND} -D INPUT:PATH="${CMAKE_CURRENT_SOURCE_DIR}/config.h" -D OUTPUT:PATH="${CMAKE_CURRENT_SOURCE_DIR}/config.fh" -P ${PROJECT_SOURCE_DIR}/tools/config_fh_from_h.cmake DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/config.h
+    COMMAND ${CMAKE_COMMAND} -D INPUT:PATH="${CMAKE_CURRENT_SOURCE_DIR}/config.h" 
+       -D OUTPUT:PATH="${CMAKE_CURRENT_BINARY_DIR}/config.fh" 
+       -P ${PROJECT_SOURCE_DIR}/tools/config_fh_from_h.cmake DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/config.h
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/config.h
   )
   add_custom_target(
@@ -448,7 +421,8 @@ include_directories(AFTER ${MPI_INCLUDE_PATH})
 
 message(STATUS "MPI_CXX_LIBRARIES: ${MPI_CXX_LIBRARIES}")
 
-include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR})
+#include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
 if (ENABLE_CRAY_BUILD)
   if (NOT ${MPI_LIBRARY} OR NOT ${MPI_EXTRA_LIBRARY})
     set(MPI_LIBRARY "")

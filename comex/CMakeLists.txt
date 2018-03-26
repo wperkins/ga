@@ -399,7 +399,17 @@ CHECK_FUNCTION_EXISTS(pthread_setaffinity_np
 
 # generate config.h header file
 CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/cmake/config.h.in
-                ${CMAKE_CURRENT_SOURCE_DIR}/config.h )
+                #${CMAKE_CURRENT_SOURCE_DIR}/config.h )
+                ${CMAKE_CURRENT_BINARY_DIR}/config.h )
+
+CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/src-armci/armci.h
+                ${CMAKE_CURRENT_BINARY_DIR}/src-armci/armci.h)
+
+CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/src-armci/message.h
+                ${CMAKE_CURRENT_BINARY_DIR}/src-armci/message.h)
+
+CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/src-armci/parmci.h
+                ${CMAKE_CURRENT_BINARY_DIR}/src-armci/parmci.h)
 
 # -------------------------------------------------------------
 # ARMCI and COMEX header installation

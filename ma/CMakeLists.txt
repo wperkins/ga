@@ -33,7 +33,8 @@
 # -------------------------------------------------------------
 
 include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR}
-                    ${PROJECT_SOURCE_DIR}/gaf2c
+                    ${CMAKE_CURRENT_BINARY_DIR}
+                    ${CMAKE_BINARY_DIR}/gaf2c
 )
 
 if (NOT MSVC)
@@ -67,6 +68,12 @@ install (FILES
   ${MA_HEADERS}
   DESTINATION include
 )
+
+  CONFIGURE_FILE( ${CMAKE_SOURCE_DIR}/ma/macommon.h
+                ${CMAKE_CURRENT_BINARY_DIR}/macommon.h )
+
+  CONFIGURE_FILE( ${CMAKE_SOURCE_DIR}/ma/macdecls.h
+                ${CMAKE_CURRENT_BINARY_DIR}/macdecls.h)
 
 # -------------------------------------------------------------
 # MA library installation

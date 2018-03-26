@@ -37,8 +37,10 @@ include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR}
                            ${CMAKE_CURRENT_SOURCE_DIR}/eaf
                            ${CMAKE_CURRENT_SOURCE_DIR}/elio
                            ${CMAKE_CURRENT_SOURCE_DIR}/sf
-                           ${PROJECT_SOURCE_DIR}/gaf2c
-                           ${PROJECT_SOURCE_DIR}/ma
+                           #${PROJECT_SOURCE_DIR}/gaf2c
+                           ${CMAKE_BINARY_DIR}/gaf2c
+                           #${PROJECT_SOURCE_DIR}/ma
+                           ${CMAKE_BINARY_DIR}/ma
                            ${PROJECT_SOURCE_DIR}/global/src)
 
 # -------------------------------------------------------------

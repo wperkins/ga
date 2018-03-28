@@ -174,7 +174,8 @@ option (F2C_HIDDEN_STRING_LENGTH_AFTER_ARGS "Set F77 macros" ON)
 
 if (ENABLE_FORTRAN)
   include( FortranCInterface )
-  FortranCInterface_HEADER(${CMAKE_SOURCE_DIR}/f2c_cmake.h MACRO_NAMESPACE F77_FUNC_)
+  #FortranCInterface_HEADER(${CMAKE_SOURCE_DIR}/f2c_cmake.h MACRO_NAMESPACE F77_FUNC_)
+  FortranCInterface_HEADER(${CMAKE_CURRENT_BINARY_DIR}/f2c_cmake.h MACRO_NAMESPACE F77_FUNC_)
 else()
   CONFIGURE_FILE( ${CMAKE_SOURCE_DIR}/cmake/f2c_dummy.h.in
                 #${CMAKE_SOURCE_DIR}/f2c_cmake.h )
@@ -396,15 +397,20 @@ CONFIGURE_FILE( ${CMAKE_SOURCE_DIR}/cmake/global.fh.in
 if (ENABLE_FORTRAN)
 message(STATUS "CMAKE_COMMAND:${CMAKE_COMMAND}")
   add_custom_command(
-    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/config.fh
-    COMMAND ${CMAKE_COMMAND} -D INPUT:PATH="${CMAKE_CURRENT_SOURCE_DIR}/config.h" 
+    #OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/config.fh
+    OUTPUT ${CMAKE_BINARY_DIR}/config.fh
+    #COMMAND ${CMAKE_COMMAND} -D INPUT:PATH="${CMAKE_CURRENT_SOURCE_DIR}/config.h" 
+    COMMAND ${CMAKE_COMMAND} -D INPUT:PATH="${CMAKE_BINARY_DIR}/config.h" 
        -D OUTPUT:PATH="${CMAKE_CURRENT_BINARY_DIR}/config.fh" 
-       -P ${PROJECT_SOURCE_DIR}/tools/config_fh_from_h.cmake DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/config.h
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/config.h
+       #-P ${PROJECT_SOURCE_DIR}/tools/config_fh_from_h.cmake DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/config.h
+       -P ${PROJECT_SOURCE_DIR}/tools/config_fh_from_h.cmake DEPENDS ${CMAKE_BINARY_DIR}/config.h
+    #DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/config.h
+    DEPENDS ${CMAKE_BINARY_DIR}/config.h
   )
   add_custom_target(
     GenerateConfigFH ALL
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/config.fh
+    #DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/config.fh
+    DEPENDS ${CMAKE_BINARY_DIR}/config.fh
   )
 endif()
 

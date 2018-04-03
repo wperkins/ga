@@ -42,6 +42,7 @@ if (ENABLE_FORTRAN)
   )
   set (GA_FORTRAN_INTERFACE_F_FILES
     complex.F
+    ga_diag_seq.F
   )
 endif()
 
@@ -93,6 +94,7 @@ set(GA_FILES
   global.periodic.c
   global.util.c
   hsort.scat.c
+  iterator.c
   matmul.c
   matrix.c
   nbutil.c
@@ -124,6 +126,27 @@ add_custom_command(
 
 CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/gacommon.h
                 ${CMAKE_CURRENT_BINARY_DIR}/gacommon.h)
+
+CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/global.h
+                ${CMAKE_CURRENT_BINARY_DIR}/global.h)
+
+CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/ga.h
+                ${CMAKE_CURRENT_BINARY_DIR}/ga.h)
+
+CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/ga_iterator.h
+                ${CMAKE_CURRENT_BINARY_DIR}/ga_iterator.h)
+
+CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/ga-papi.h
+                ${CMAKE_CURRENT_BINARY_DIR}/ga-papi.h)
+
+CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/ga-mpi.h
+                ${CMAKE_CURRENT_BINARY_DIR}/ga-mpi.h)
+
+CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/globalp.h
+                ${CMAKE_CURRENT_BINARY_DIR}/globalp.h)
+
+CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/gaconfig.h
+                ${CMAKE_CURRENT_BINARY_DIR}/gaconfig.h)
 
 add_library(ga_src OBJECT
   ${CMAKE_CURRENT_SOURCE_DIR}/ga-wapi.h

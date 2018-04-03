@@ -99,10 +99,14 @@ endif()
 # Build MA tests
 # -------------------------------------------------------------
 
+enable_language(Fortran)
 add_executable(testf.x testf.F)
 add_executable(test-coalesce.x test-coalesce.c)
 add_executable(test-inquire.x test-inquire.c)
 #add_executable(testc.x testc.c)
+#set_target_properties(testf.x PROPERTIES LINKER_LANGUAGE
+#ifort) # this works
+
 target_link_libraries(testf.x ga ${ctargetlibs})
 target_link_libraries(test-coalesce.x ga ${ctargetlibs})
 target_link_libraries(test-inquire.x ga ${ctargetlibs})

@@ -32,12 +32,19 @@
 # file: CMakeLists.txt
 # -------------------------------------------------------------
 
-include_directories(BEFORE ${PROJECT_SOURCE_DIR}/global/src
-  ${PROJECT_SOURCE_DIR}/ma ${PROJECT_SOURCE_DIR}/gaf2c
-  ${PROJECT_SOURCE_DIR}/comex/src-armci
-  ${PROJECT_SOURCE_DIR}/tcgmsg
-  ${PROJECT_SOURCE_DIR}/LinAlg/lapack+blas
-  ${PROJECT_SOURCE_DIR}/global/testing)
+#include_directories(BEFORE ${PROJECT_SOURCE_DIR}/global/src
+#  ${PROJECT_SOURCE_DIR}/ma ${PROJECT_SOURCE_DIR}/gaf2c
+#  ${PROJECT_SOURCE_DIR}/comex/src-armci
+#  ${PROJECT_SOURCE_DIR}/tcgmsg
+#  ${PROJECT_SOURCE_DIR}/LinAlg/lapack+blas
+#  ${PROJECT_SOURCE_DIR}/global/testing)
+
+include_directories(BEFORE ${CMAKE_BINARY_DIR}/global/src
+  ${CMAKE_BINARY_DIR}/ma ${CMAKE_BINARY_DIR}/gaf2c
+  ${CMAKE_BINARY_DIR}/comex/src-armci
+  ${CMAKE_BINARY_DIR}/tcgmsg
+  ${CMAKE_BINARY_DIR}/LinAlg/lapack+blas
+  ${CMAKE_BINARY_DIR}/global/testing)
 
 if (NOT MSVC)
 set(ctargetlibs ${MPI_C_LIBRARIES} m)

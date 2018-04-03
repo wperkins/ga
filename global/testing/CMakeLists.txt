@@ -42,7 +42,8 @@
 include_directories(BEFORE ${CMAKE_BINARY_DIR}/global/src
   ${CMAKE_BINARY_DIR}/ma ${CMAKE_BINARY_DIR}/gaf2c
   ${CMAKE_BINARY_DIR}/comex/src-armci
-  ${CMAKE_BINARY_DIR}/tcgmsg
+  #${CMAKE_BINARY_DIR}/tcgmsg
+  ${PROJECT_SOURCE_DIR}/tcgmsg
   ${CMAKE_BINARY_DIR}/LinAlg/lapack+blas
   ${CMAKE_BINARY_DIR}/global/testing)
 

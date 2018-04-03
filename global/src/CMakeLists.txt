@@ -124,6 +124,22 @@ add_custom_command(
   DEPENDS ga-papi.h
 )
 
+if (ENABLE_FORTRAN)
+message(STATUS "CMAKE_COMMAND:${CMAKE_COMMAND}")
+  add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/ga-mpi.fh
+    COMMAND ${CMAKE_COMMAND} -DINPUT:PATH="${CMAKE_CURRENT_BINARY_DIR}/ga-mpi.h"
+       -D OUTPUT:PATH="${CMAKE_CURRENT_BINARY_DIR}/ga-mpi.fh"
+       -P ${PROJECT_SOURCE_DIR}/tools/config_fh_from_h.cmake
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/ga-mpi.h
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/ga-mpi.h
+  )
+  add_custom_target(
+    GenerateGA-mpiFH ALL
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/ga-mpi.fh
+  )
+endif()
+
 CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/gacommon.h
                 ${CMAKE_CURRENT_BINARY_DIR}/gacommon.h)
 

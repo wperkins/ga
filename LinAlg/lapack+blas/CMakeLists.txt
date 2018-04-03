@@ -49,6 +49,9 @@ CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/galinalg.h
 CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/galinalg.fh
                 ${CMAKE_CURRENT_BINARY_DIR}/galinalg.fh)
 
+CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/xgemm.h
+                ${CMAKE_CURRENT_BINARY_DIR}/xgemm.h)
+
 # -------------------------------------------------------------
 # LINALG library installation
 # -------------------------------------------------------------

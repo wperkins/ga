@@ -45,12 +45,37 @@ include_directories(BEFORE ${CMAKE_BINARY_DIR}/global/src
   #${CMAKE_BINARY_DIR}/tcgmsg
   ${PROJECT_SOURCE_DIR}/tcgmsg
   ${CMAKE_BINARY_DIR}/LinAlg/lapack+blas
+  ${CMAKE_BINARY_DIR} 
   ${CMAKE_BINARY_DIR}/global/testing)
 
 if (NOT MSVC)
 set(ctargetlibs ${MPI_C_LIBRARIES} m)
 else()
 set(ctargetlibs ${MPI_C_LIBRARIES})
+endif()
+
+
+# -------------------------------------------------------------
+# Create include files from templates
+# -------------------------------------------------------------
+CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/mp3.h
+                #${CMAKE_BINARY_DIR}/global/testing/mp3.h)
+                ${CMAKE_CURRENT_BINARY_DIR}/mp3.h)
+
+if (ENABLE_FORTRAN)
+message(STATUS "CMAKE_COMMAND:${CMAKE_COMMAND}")
+  add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/mp3.fh
+    COMMAND ${CMAKE_COMMAND} -DINPUT:PATH="${CMAKE_CURRENT_BINARY_DIR}/mp3.h"
+       -D OUTPUT:PATH="${CMAKE_CURRENT_BINARY_DIR}/mp3.fh"
+       -P ${PROJECT_SOURCE_DIR}/tools/config_fh_from_h.cmake
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/mp3.h
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/mp3.h
+  )
+  add_custom_target(
+    Generatempi3FH ALL
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/mp3.fh
+  )
 endif()
 
 # -------------------------------------------------------------
@@ -76,9 +101,11 @@ if (NOT MSVC)
 endif (NOT MSVC)
 add_executable (normc.x normc.c util.c)
 ga_add_parallel_test(normc normc.x)
-add_executable (ntestc.x ntestc.c util.c)
+#add_executable (ntestc.x ntestc.c util.c)
+add_executable (ntestc.x ntestc.c)
 ga_add_parallel_test(ntestc ntestc.x)
-add_executable (ntestfc.x ntestfc.c util.c)
+#add_executable (ntestfc.x ntestfc.c util.c)
+add_executable (ntestfc.x ntestfc.c)
 ga_add_parallel_test(ntestfc ntestfc.x)
 add_executable (packc.x packc.c util.c)
 ga_add_parallel_test(packc packc.x)

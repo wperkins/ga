@@ -4,6 +4,8 @@ libcomex_la_SOURCES += src-mpi-pr/groups.c
 libcomex_la_SOURCES += src-mpi-pr/groups.h
 libcomex_la_SOURCES += src-mpi-pr/reg_cache.c
 libcomex_la_SOURCES += src-mpi-pr/reg_cache.h
+libcomex_la_SOURCES += src-mpi-pr/mempool.c
+libcomex_la_SOURCES += src-mpi-pr/mempool.h
 
 AM_CPPFLAGS += -I$(top_srcdir)/src-mpi-pr
 

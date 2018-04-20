@@ -1,6 +1,7 @@
 #ifndef COMEX_IMPL_H_
 #define COMEX_IMPL_H_
 
+#include <stdio.h>
 #include <semaphore.h>
 
 #include <mpi.h>

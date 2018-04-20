@@ -246,8 +246,13 @@ STATIC void nb_recv_iov(void *buf, int count, int source, nb_t *nb, comex_giov_t
 STATIC void nb_recv(void *buf, int count, int source, nb_t *nb);
 STATIC int nb_get_handle_index();
 STATIC nb_t* nb_wait_for_handle();
+STATIC void nb_finish_send1(nb_t *nb);
+STATIC void nb_finish_recv1(nb_t *nb);
 STATIC void nb_wait_for_send1(nb_t *nb);
 STATIC void nb_wait_for_recv1(nb_t *nb);
+STATIC int  nb_test_for_send1(nb_t *nb);
+STATIC int  nb_test_for_recv1(nb_t *nb);
+STATIC void nb_test_all(nb_t *nb);
 STATIC void nb_wait_for_all(nb_t *nb);
 STATIC void nb_wait_all();
 STATIC void nb_put(void *src, void *dst, int bytes, int proc, nb_t *nb);
@@ -1427,6 +1432,8 @@ int comex_test(comex_request_t* hdl, int *status)
         fprintf(stderr, "{%d} comex_test Error: invalid handle\n",
                 g_state.rank);
     }
+
+    nb_test_all(nb);
 
     if (NULL == nb->send_head && NULL == nb->recv_head) {
         COMEX_ASSERT(0 == nb->send_size);
@@ -4454,8 +4461,73 @@ STATIC nb_t* nb_wait_for_handle()
 }
 
 
+STATIC void nb_finish_send1(nb_t *nb)
+{
+    message_t *message_to_free = NULL;
+
+#if DEBUG
+    fprintf(stderr, "[%d] nb_finish_send1(nb=%p)\n", g_state.rank, nb);
+#endif
+
+    COMEX_ASSERT(NULL != nb);
+    COMEX_ASSERT(NULL != nb->send_head);
+
+    if (1 == nb->send_head->need_free) {
+        free(nb->send_head->message);
+    }
+    if (2 == nb->send_head->need_free) {
+        pool_release(header_pool, nb->send_head->message);
+    }
+
+    if (MPI_DATATYPE_NULL != nb->send_head->datatype) {
+        int retval = MPI_Type_free(&nb->send_head->datatype);
+        CHECK_MPI_RETVAL(retval);
+    }
+
+    message_to_free = nb->send_head;
+    nb->send_head = nb->send_head->next;
+    pool_release(message_pool, message_to_free);
+
+    COMEX_ASSERT(nb->send_size > 0);
+    nb->send_size -= 1;
+    nb_count_send_processed += 1;
+    nb_count_event_processed += 1;
+
+    if (NULL == nb->send_head) {
+        nb->send_tail = NULL;
+    }
+}
+
+
+STATIC int nb_test_for_send1(nb_t *nb)
+{
+    MPI_Status status;
+    int retval = 0;
+    int flag = 0;
+
+#if DEBUG
+    fprintf(stderr, "[%d] nb_test_for_send1(nb=%p)\n", g_state.rank, nb);
+#endif
+
+    COMEX_ASSERT(NULL != nb);
+    COMEX_ASSERT(NULL != nb->send_head);
+
+    retval = MPI_Test(&(nb->send_head->request), &flag, &status);
+    CHECK_MPI_RETVAL(retval);
+
+    if (flag) {
+        nb_finish_send1(nb);
+    }
+
+    return flag;
+}
+
+
 STATIC void nb_wait_for_send1(nb_t *nb)
 {
+    MPI_Status status;
+    int retval = 0;
+
 #if DEBUG
     fprintf(stderr, "[%d] nb_wait_for_send1(nb=%p)\n", g_state.rank, nb);
 #endif
@@ -4463,44 +4535,105 @@ STATIC void nb_wait_for_send1(nb_t *nb)
     COMEX_ASSERT(NULL != nb);
     COMEX_ASSERT(NULL != nb->send_head);
 
-    {
-        MPI_Status status;
-        int retval = 0;
-        message_t *message_to_free = NULL;
+    retval = MPI_Wait(&(nb->send_head->request), &status);
+    CHECK_MPI_RETVAL(retval);
 
-        retval = MPI_Wait(&(nb->send_head->request), &status);
+    nb_finish_send1(nb);
+}
+
+
+STATIC void nb_finish_recv1(nb_t *nb)
+{
+    message_t *message_to_free = NULL;
+
+#if DEBUG
+    fprintf(stderr, "[%d] nb_finish_recv1(nb=%p)\n", g_state.rank, nb);
+#endif
+
+    COMEX_ASSERT(NULL != nb);
+    COMEX_ASSERT(NULL != nb->recv_head);
+
+    if (NULL != nb->recv_head->stride) {
+        stride_t *stride = nb->recv_head->stride;
+        COMEX_ASSERT(nb->recv_head->message);
+        COMEX_ASSERT(stride);
+        COMEX_ASSERT(stride->ptr);
+        COMEX_ASSERT(stride->stride);
+        COMEX_ASSERT(stride->count);
+        COMEX_ASSERT(stride->stride_levels);
+        unpack(nb->recv_head->message, stride->ptr,
+                stride->stride, stride->count, stride->stride_levels);
+        free(stride);
+    }
+
+    if (NULL != nb->recv_head->iov) {
+        int i = 0;
+        char *message = nb->recv_head->message;
+        int off = 0;
+        comex_giov_t *iov = nb->recv_head->iov;
+        for (i=0; i<iov->count; ++i) {
+            (void)memcpy(iov->dst[i], &message[off], iov->bytes);
+            off += iov->bytes;
+        }
+        free(iov->src);
+        free(iov->dst);
+        free(iov);
+    }
+
+    if (1 == nb->recv_head->need_free) {
+        free(nb->recv_head->message);
+    }
+    if (2 == nb->recv_head->need_free) {
+        pool_release(header_pool, nb->recv_head->message);
+    }
+
+    if (MPI_DATATYPE_NULL != nb->recv_head->datatype) {
+        int retval = MPI_Type_free(&nb->recv_head->datatype);
         CHECK_MPI_RETVAL(retval);
+    }
 
-        if (1 == nb->send_head->need_free) {
-            free(nb->send_head->message);
-        }
-        if (2 == nb->send_head->need_free) {
-            pool_release(header_pool, nb->send_head->message);
-        }
+    message_to_free = nb->recv_head;
+    nb->recv_head = nb->recv_head->next;
+    pool_release(message_pool, message_to_free);
 
-        if (MPI_DATATYPE_NULL != nb->send_head->datatype) {
-            retval = MPI_Type_free(&nb->send_head->datatype);
-            CHECK_MPI_RETVAL(retval);
-        }
+    COMEX_ASSERT(nb->recv_size > 0);
+    nb->recv_size -= 1;
+    nb_count_recv_processed += 1;
+    nb_count_event_processed += 1;
 
-        message_to_free = nb->send_head;
-        nb->send_head = nb->send_head->next;
-        pool_release(message_pool, message_to_free);
+    if (NULL == nb->recv_head) {
+        nb->recv_tail = NULL;
+    }
+}
 
-        COMEX_ASSERT(nb->send_size > 0);
-        nb->send_size -= 1;
-        nb_count_send_processed += 1;
-        nb_count_event_processed += 1;
 
-        if (NULL == nb->send_head) {
-            nb->send_tail = NULL;
-        }
+STATIC int nb_test_for_recv1(nb_t *nb)
+{
+    MPI_Status status;
+    int retval = 0;
+    int flag = 0;
+
+#if DEBUG
+    fprintf(stderr, "[%d] nb_test_for_recv1(nb=%p)\n", g_state.rank, nb);
+#endif
+
+    COMEX_ASSERT(NULL != nb);
+    COMEX_ASSERT(NULL != nb->recv_head);
+
+    retval = MPI_Test(&(nb->recv_head->request), &flag, &status);
+    CHECK_MPI_RETVAL(retval);
+
+    if (flag) {
+        nb_finish_recv1(nb);
     }
 }
 
 
 STATIC void nb_wait_for_recv1(nb_t *nb)
 {
+    MPI_Status status;
+    int retval = 0;
+
 #if DEBUG
     fprintf(stderr, "[%d] nb_wait_for_recv1(nb=%p)\n", g_state.rank, nb);
 #endif
@@ -4508,64 +4641,35 @@ STATIC void nb_wait_for_recv1(nb_t *nb)
     COMEX_ASSERT(NULL != nb);
     COMEX_ASSERT(NULL != nb->recv_head);
 
-    {
-        MPI_Status status;
-        int retval = 0;
-        message_t *message_to_free = NULL;
+    retval = MPI_Wait(&(nb->recv_head->request), &status);
+    CHECK_MPI_RETVAL(retval);
 
-        retval = MPI_Wait(&(nb->recv_head->request), &status);
-        CHECK_MPI_RETVAL(retval);
+    nb_finish_recv1(nb);
+}
 
-        if (NULL != nb->recv_head->stride) {
-            stride_t *stride = nb->recv_head->stride;
-            COMEX_ASSERT(nb->recv_head->message);
-            COMEX_ASSERT(stride);
-            COMEX_ASSERT(stride->ptr);
-            COMEX_ASSERT(stride->stride);
-            COMEX_ASSERT(stride->count);
-            COMEX_ASSERT(stride->stride_levels);
-            unpack(nb->recv_head->message, stride->ptr,
-                    stride->stride, stride->count, stride->stride_levels);
-            free(stride);
+
+STATIC void nb_test_all(nb_t *nb)
+{
+    int send_again = 1;
+    int recv_again = 1;
+
+#if DEBUG
+    fprintf(stderr, "[%d] nb_test_all(nb=%p)\n", g_state.rank, nb);
+#endif
+
+    COMEX_ASSERT(NULL != nb);
+
+    /* fair processing of requests */
+    while (send_again || recv_again) {
+        if (NULL == nb->send_head) {
+            send_again = 0;
+        } else {
+            send_again = nb_test_for_send1(nb);
         }
-
-        if (NULL != nb->recv_head->iov) {
-            int i = 0;
-            char *message = nb->recv_head->message;
-            int off = 0;
-            comex_giov_t *iov = nb->recv_head->iov;
-            for (i=0; i<iov->count; ++i) {
-                (void)memcpy(iov->dst[i], &message[off], iov->bytes);
-                off += iov->bytes;
-            }
-            free(iov->src);
-            free(iov->dst);
-            free(iov);
-        }
-
-        if (1 == nb->recv_head->need_free) {
-            free(nb->recv_head->message);
-        }
-        if (2 == nb->recv_head->need_free) {
-            pool_release(header_pool, nb->recv_head->message);
-        }
-
-        if (MPI_DATATYPE_NULL != nb->recv_head->datatype) {
-            retval = MPI_Type_free(&nb->recv_head->datatype);
-            CHECK_MPI_RETVAL(retval);
-        }
-
-        message_to_free = nb->recv_head;
-        nb->recv_head = nb->recv_head->next;
-        pool_release(message_pool, message_to_free);
-
-        COMEX_ASSERT(nb->recv_size > 0);
-        nb->recv_size -= 1;
-        nb_count_recv_processed += 1;
-        nb_count_event_processed += 1;
-
         if (NULL == nb->recv_head) {
-            nb->recv_tail = NULL;
+            recv_again = 0;
+        } else {
+            recv_again = nb_test_for_recv1(nb);
         }
     }
 }

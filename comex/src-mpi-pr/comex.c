@@ -143,6 +143,7 @@ static int initialized = 0;         /* for comex_initialized(), 0=false */
 static char *fence_array = NULL;
 
 static nb_t *nb_state = NULL;       /* keep track of all nonblocking operations */
+static nb_t *nb_shared = NULL;      /* single nb_t for non-user calls */
 static int nb_max_outstanding = COMEX_MAX_NB_OUTSTANDING;
 static int nb_index = 0;
 static int nb_count_event = 0;
@@ -514,6 +515,16 @@ int comex_init()
     nb_count_recv = 0;
     nb_count_recv_processed = 0;
 
+    nb_shared = (nb_t*)malloc(sizeof(nb_t));
+    COMEX_ASSERT(nb_shared);
+    nb_shared->in_use = 0;
+    nb_shared->send_size = 0;
+    nb_shared->send_head = NULL;
+    nb_shared->send_tail = NULL;
+    nb_shared->recv_size = 0;
+    nb_shared->recv_head = NULL;
+    nb_shared->recv_tail = NULL;
+
     /* static header buffer size must be large enough to hold the biggest
      * message that might possibly be sent using a header type message. */
     static_header_buffer_size += sizeof(header_t);
@@ -667,6 +678,9 @@ int comex_finalize()
 
     pool_destroy(message_pool);
     pool_destroy(header_pool);
+
+    free(nb_state);
+    free(nb_shared);
 
     MPI_Barrier(g_state.comm);
 
@@ -3479,8 +3493,6 @@ STATIC void _fetch_and_add_handler(header_t *header, char *payload, int proc)
 {
     reg_entry_t *reg_entry = NULL;
     void *mapped_offset = NULL;
-    int *value_int = NULL;
-    long *value_long = NULL;
 
 #if DEBUG
     fprintf(stderr, "[%d] _fetch_and_add_handler proc=%d\n", g_state.rank, proc);
@@ -3502,18 +3514,14 @@ STATIC void _fetch_and_add_handler(header_t *header, char *payload, int proc)
     mapped_offset = _get_offset_memory(reg_entry, header->remote_address);
     
     if (sizeof(int) == header->length) {
-        value_int = malloc(sizeof(int));
-        *value_int = *((int*)mapped_offset); /* "fetch" */
+        int value_int = *((int*)mapped_offset); /* "fetch" */
         *((int*)mapped_offset) += *((int*)payload); /* "add" */
-        server_send(value_int, sizeof(int), proc);
-        free(value_int);
+        server_send(&value_int, sizeof(int), proc);
     }
     else if (sizeof(long) == header->length) {
-        value_long = malloc(sizeof(long));
-        *value_long = *((long*)mapped_offset); /* "fetch" */
+        long value_long = *((long*)mapped_offset); /* "fetch" */
         *((long*)mapped_offset) += *((long*)payload); /* "add" */
-        server_send(value_long, sizeof(long), proc);
-        free(value_long);
+        server_send(&value_long, sizeof(long), proc);
     }
     else {
         COMEX_ASSERT(0);
@@ -3525,8 +3533,6 @@ STATIC void _swap_handler(header_t *header, char *payload, int proc)
 {
     reg_entry_t *reg_entry = NULL;
     void *mapped_offset = NULL;
-    int *value_int = NULL;
-    long *value_long = NULL;
 
 #if DEBUG
     fprintf(stderr, "[%d] _swap_handler rem=%p loc=%p rank=%d len=%d\n",
@@ -3545,18 +3551,14 @@ STATIC void _swap_handler(header_t *header, char *payload, int proc)
     mapped_offset = _get_offset_memory(reg_entry, header->remote_address);
     
     if (sizeof(int) == header->length) {
-        value_int = malloc(sizeof(int));
-        *value_int = *((int*)mapped_offset); /* "fetch" */
+        int value_int = *((int*)mapped_offset); /* "fetch" */
         *((int*)mapped_offset) = *((int*)payload); /* "swap" */
-        server_send(value_int, sizeof(int), proc);
-        free(value_int);
+        server_send(&value_int, sizeof(int), proc);
     }
     else if (sizeof(long) == header->length) {
-        value_long = malloc(sizeof(long));
-        *value_long = *((long*)mapped_offset); /* "fetch" */
+        long value_long = *((long*)mapped_offset); /* "fetch" */
         *((long*)mapped_offset) = *((long*)payload); /* "swap" */
-        server_send(value_long, sizeof(long), proc);
-        free(value_long);
+        server_send(&value_long, sizeof(long), proc);
     }
     else {
         COMEX_ASSERT(0);

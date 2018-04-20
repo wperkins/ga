@@ -1088,11 +1088,15 @@ STATIC int _packed_size(int *src_stride, int *count, int stride_levels)
     /* number of n-element of the first dimension */
     n1dim = 1;
     for(i=1; i<=stride_levels; i++) {
-        n1dim *= count[i];
+        int result = n1dim * count[i];
+        /* overflow check */
+        COMEX_ASSERT(n1dim == result / count[i]);
+        n1dim = result;
     }
 
     /* allocate packed buffer now that we know the size */
     size = n1dim * count[0];
+    COMEX_ASSERT(n1dim == size / count[0]);
 
     return size;
 }
@@ -1107,6 +1111,7 @@ STATIC char* pack(
     int src_bvalue[7], src_bunit[7];
     int packed_index = 0;
     char *packed_buffer = NULL;
+    int packed_size = 0;
 
     COMEX_ASSERT(stride_levels >= 0);
     COMEX_ASSERT(stride_levels < COMEX_MAX_STRIDE_LEVEL);
@@ -1124,11 +1129,16 @@ STATIC char* pack(
     /* number of n-element of the first dimension */
     n1dim = 1;
     for(i=1; i<=stride_levels; i++) {
-        n1dim *= count[i];
+        int result = n1dim * count[i];
+        /* overflow check */
+        COMEX_ASSERT(n1dim == result / count[i]);
+        n1dim = result;
     }
 
     /* allocate packed buffer now that we know the size */
-    packed_buffer = malloc(n1dim * count[0]);
+    packed_size = n1dim * count[0];
+    COMEX_ASSERT(n1dim == packed_size / count[0]);
+    packed_buffer = malloc(packed_size);
     COMEX_ASSERT(packed_buffer);
 
     /* calculate the destination indices */
@@ -1187,7 +1197,10 @@ STATIC void unpack(char *packed_buffer,
     /* number of n-element of the first dimension */
     n1dim = 1;
     for(i=1; i<=stride_levels; i++) {
-        n1dim *= count[i];
+        int result = n1dim * count[i];
+        /* overflow check */
+        COMEX_ASSERT(n1dim == result / count[i]);
+        n1dim = result;
     }
 
     /* calculate the destination indices */
@@ -3278,7 +3291,10 @@ STATIC void _acc_packed_handler(header_t *header, char *payload, int proc)
         /* number of n-element of the first dimension */
         n1dim = 1;
         for(i=1; i<=stride_levels; i++) {
-            n1dim *= count[i];
+            int result = n1dim * count[i];
+            /* overflow check */
+            COMEX_ASSERT(n1dim == result / count[i]);
+            n1dim = result;
         }
 
         /* calculate the destination indices */
@@ -4915,7 +4931,10 @@ STATIC void nb_puts(
     /* number of n-element of the first dimension */
     n1dim = 1;
     for(i=1; i<=stride_levels; i++) {
-        n1dim *= count[i];
+        int result = n1dim * count[i];
+        /* overflow check */
+        COMEX_ASSERT(n1dim == result / count[i]);
+        n1dim = result;
     }
 
     /* calculate the destination indices */
@@ -5184,7 +5203,10 @@ STATIC void nb_gets(
     /* number of n-element of the first dimension */
     n1dim = 1;
     for(i=1; i<=stride_levels; i++) {
-        n1dim *= count[i];
+        int result = n1dim * count[i];
+        /* overflow check */
+        COMEX_ASSERT(n1dim == result / count[i]);
+        n1dim = result;
     }
 
     /* calculate the destination indices */
@@ -5450,7 +5472,10 @@ STATIC void nb_accs(
     /* number of n-element of the first dimension */
     n1dim = 1;
     for(i=1; i<=stride_levels; i++) {
-        n1dim *= count[i];
+        int result = n1dim * count[i];
+        /* overflow check */
+        COMEX_ASSERT(n1dim == result / count[i]);
+        n1dim = result;
     }
 
     /* calculate the destination indices */

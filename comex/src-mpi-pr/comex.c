@@ -733,7 +733,7 @@ int comex_put(
     int world_proc = -1;
     comex_igroup_t *igroup = NULL;
 
-    nb = nb_wait_for_handle();
+    nb = nb_shared;
 
     CHECK_GROUP(group,proc);
     igroup = comex_get_igroup_from_group(group);
@@ -754,7 +754,7 @@ int comex_get(
     int world_proc = -1;
     comex_igroup_t *igroup = NULL;
 
-    nb = nb_wait_for_handle();
+    nb = nb_shared;
 
     CHECK_GROUP(group,proc);
     igroup = comex_get_igroup_from_group(group);
@@ -776,7 +776,7 @@ int comex_acc(
     int world_proc = -1;
     comex_igroup_t *igroup = NULL;
 
-    nb = nb_wait_for_handle();
+    nb = nb_shared;
 
     CHECK_GROUP(group,proc);
     igroup = comex_get_igroup_from_group(group);
@@ -799,7 +799,7 @@ int comex_puts(
     int world_proc = -1;
     comex_igroup_t *igroup = NULL;
 
-    nb = nb_wait_for_handle();
+    nb = nb_shared;
 
     CHECK_GROUP(group,proc);
     igroup = comex_get_igroup_from_group(group);
@@ -822,7 +822,7 @@ int comex_gets(
     int world_proc = -1;
     comex_igroup_t *igroup = NULL;
 
-    nb = nb_wait_for_handle();
+    nb = nb_shared;
 
     CHECK_GROUP(group,proc);
     igroup = comex_get_igroup_from_group(group);
@@ -846,7 +846,7 @@ int comex_accs(
     int world_proc = -1;
     comex_igroup_t *igroup = NULL;
 
-    nb = nb_wait_for_handle();
+    nb = nb_shared;
 
     CHECK_GROUP(group,proc);
     igroup = comex_get_igroup_from_group(group);
@@ -868,7 +868,7 @@ int comex_putv(
     int world_proc = -1;
     comex_igroup_t *igroup = NULL;
 
-    nb = nb_wait_for_handle();
+    nb = nb_shared;
 
     CHECK_GROUP(group,proc);
     igroup = comex_get_igroup_from_group(group);
@@ -889,7 +889,7 @@ int comex_getv(
     int world_proc = -1;
     comex_igroup_t *igroup = NULL;
 
-    nb = nb_wait_for_handle();
+    nb = nb_shared;
 
     CHECK_GROUP(group,proc);
     igroup = comex_get_igroup_from_group(group);
@@ -911,7 +911,7 @@ int comex_accv(
     int world_proc = -1;
     comex_igroup_t *igroup = NULL;
 
-    nb = nb_wait_for_handle();
+    nb = nb_shared;
 
     CHECK_GROUP(group,proc);
     igroup = comex_get_igroup_from_group(group);
@@ -962,7 +962,7 @@ int comex_fence_all(comex_group_t group)
 #endif
 
     /* optimize by only sending to procs which we have outstanding messages */
-    nb = nb_wait_for_handle();
+    nb = nb_shared;
     for (p=0; p<g_state.size; ++p) {
         if (fence_array[p]) {
             int p_master = g_state.master[p];
@@ -1023,7 +1023,7 @@ STATIC void _fence_master(int master_rank)
         header_t *header = NULL;
         nb_t *nb = NULL;
 
-        nb = nb_wait_for_handle();
+        nb = nb_shared;
 
         /* prepost recv for acknowledgment */
         nb_recv(NULL, 0, master_rank, nb);
@@ -1791,7 +1791,7 @@ int comex_rmw(
         default: COMEX_ASSERT(0);
     }
 
-    nb = nb_wait_for_handle();
+    nb = nb_shared;
     nb_recv(ploc, length, master_rank, nb); /* prepost recv */
     nb_send_pooled(message, sizeof(header_t)+length, master_rank, nb);
     nb_wait_for_all(nb);
@@ -1837,7 +1837,7 @@ int comex_create_mutexes(int num)
         header->local_address = NULL;
         header->rank = 0;
         header->length = num;
-        nb = nb_wait_for_handle();
+        nb = nb_shared;
         nb_recv(NULL, 0, my_master, nb); /* prepost ack */
         nb_send_pooled(header, sizeof(header_t), my_master, nb);
         nb_wait_for_all(nb);
@@ -1878,7 +1878,7 @@ int comex_destroy_mutexes()
         header->local_address = NULL;
         header->rank = 0;
         header->length = num_mutexes[g_state.rank];
-        nb = nb_wait_for_handle();
+        nb = nb_shared;
         nb_recv(NULL, 0, my_master, nb); /* prepost ack */
         nb_send_pooled(header, sizeof(header_t), my_master, nb);
         nb_wait_for_all(nb);
@@ -1919,7 +1919,7 @@ int comex_lock(int mutex, int proc)
     header->rank = world_rank;
     header->length = mutex;
 
-    nb = nb_wait_for_handle();
+    nb = nb_shared;
     nb_recv(&ack, sizeof(int), master_rank, nb); /* prepost ack */
     nb_send_pooled(header, sizeof(header_t), master_rank, nb);
     nb_wait_for_all(nb);
@@ -1956,7 +1956,7 @@ int comex_unlock(int mutex, int proc)
     header->rank = world_rank;
     header->length = mutex;
 
-    nb = nb_wait_for_handle();
+    nb = nb_shared;
     nb_send_pooled(header, sizeof(header_t), master_rank, nb);
     nb_wait_for_all(nb);
 
@@ -2126,7 +2126,7 @@ int comex_malloc(void *ptrs[], size_t size, comex_group_t group)
         header->rank = 0;
         header->length = reg_entries_local_count;
         (void)memcpy(message+sizeof(header_t), reg_entries_local, reg_entries_local_size);
-        nb = nb_wait_for_handle();
+        nb = nb_shared;
         nb_recv(NULL, 0, my_master, nb); /* prepost ack */
         nb_send_pooled(message, message_size, my_master, nb);
         nb_wait_for_all(nb);
@@ -2456,7 +2456,7 @@ int comex_free(void *ptr, comex_group_t group)
         header->rank = 0;
         header->length = reg_entries_local_count;
         (void)memcpy(message+sizeof(header_t), rank_ptrs, rank_ptrs_local_size);
-        nb = nb_wait_for_handle();
+        nb = nb_shared;
         nb_recv(NULL, 0, my_master, nb); /* prepost ack */
         nb_send_pooled(message, message_size, my_master, nb);
         nb_wait_for_all(nb);
@@ -4701,6 +4701,13 @@ STATIC void nb_wait_all()
 
     COMEX_ASSERT(nb_count_event-nb_count_event_processed >= 0);
 
+    nb_wait_for_all(nb_shared);
+    COMEX_ASSERT(nb_shared->send_size == 0);
+    COMEX_ASSERT(nb_shared->send_head == NULL);
+    COMEX_ASSERT(nb_shared->send_tail == NULL);
+    COMEX_ASSERT(nb_shared->recv_size == 0);
+    COMEX_ASSERT(nb_shared->recv_head == NULL);
+    COMEX_ASSERT(nb_shared->recv_tail == NULL);
     for (i=0; i<nb_max_outstanding; ++i) {
         nb_wait_for_all(&nb_state[i]);
         COMEX_ASSERT(nb_state[i].send_size == 0);

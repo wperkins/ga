@@ -152,7 +152,7 @@ void pnga_pgroup_sync(Integer grp_id)
 
 void pnga_sync()
 {
-  GA_Internal_Threadsafe_Lock();
+  GA_Internal_Threadsafe_Write_Lock();
 #ifdef CHECK_MA
   Integer status;
 #endif
@@ -372,7 +372,7 @@ Integer pnga_nbtest(Integer *nbhandle)
 
 void pnga_nbwait(Integer *nbhandle) 
 {
-  GA_Internal_Threadsafe_Lock();
+  GA_Internal_Threadsafe_Read_Lock();
   nga_wait_internal((Integer *)nbhandle);
   GA_Internal_Threadsafe_Unlock();
 } 
@@ -691,7 +691,7 @@ void ngai_put_common(Integer g_a,
 
 void pnga_nbput(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld, Integer *nbhandle)
 {
-  GA_Internal_Threadsafe_Lock();
+  GA_Internal_Threadsafe_Write_Lock();
   ngai_put_common(g_a,lo,hi,buf,ld,0,-1,nbhandle); 
   GA_Internal_Threadsafe_Unlock();
 }
@@ -872,7 +872,7 @@ void pnga_nbwait_notify(Integer *nbhandle)
 void pnga_put(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld)
 {
 
-  GA_Internal_Threadsafe_Lock();
+  GA_Internal_Threadsafe_Write_Lock();
   ngai_put_common(g_a,lo,hi,buf,ld,0,-1,NULL); 
   GA_Internal_Threadsafe_Unlock();
 }
@@ -1060,7 +1060,7 @@ void ngai_get_common(Integer g_a,
 void pnga_get(Integer g_a, Integer *lo, Integer *hi,
               void *buf, Integer *ld)
 {
-  GA_Internal_Threadsafe_Lock();
+  GA_Internal_Threadsafe_Read_Lock();
   ngai_get_common(g_a,lo,hi,buf,ld,0,-1,(Integer *)NULL);
   GA_Internal_Threadsafe_Unlock();
 }
@@ -1072,7 +1072,7 @@ void pnga_get(Integer g_a, Integer *lo, Integer *hi,
 void pnga_nbget(Integer g_a, Integer *lo, Integer *hi,
                void *buf, Integer *ld, Integer *nbhandle)
 {
-  GA_Internal_Threadsafe_Lock();
+  GA_Internal_Threadsafe_Read_Lock();
   ngai_get_common(g_a,lo,hi,buf,ld,0,-1,nbhandle);
   GA_Internal_Threadsafe_Unlock();
 }
@@ -1125,7 +1125,7 @@ void ngai_acc_common(Integer g_a,
   Integer *rank_rstrctd;
   _iterator_hdl it_hdl;
 
-  GA_Internal_Threadsafe_Lock();
+  GA_Internal_Threadsafe_Write_Lock();
 
   ga_check_handleM(g_a, "ngai_acc_common");
 
@@ -3654,7 +3654,7 @@ void pnga_gather2d(Integer g_a, void *v, Integer *i, Integer *j,
 
 Integer pnga_read_inc(Integer g_a, Integer* subscript, Integer inc)
 {
-GA_Internal_Threadsafe_Lock();
+GA_Internal_Threadsafe_Write_Lock();
 char *ptr;
 Integer ldp[MAXDIM], proc, handle=GA_OFFSET+g_a, p_handle, ndim;
 int optype,ivalue;

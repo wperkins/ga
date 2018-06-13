@@ -8,16 +8,30 @@
 #include <pthread.h>
 #include <stdio.h>
 
-pthread_mutex_t ga_threadsafe_lock;
+// FIXME - initialize within function called by GA initializer, allowing it to be re-initialized as neede
+pthread_rwlock_t ga_readwrite_lock = PTHREAD_RWLOCK_INITIALIZER;
+//pthread_rwlock_init(&ga_readwrite_lock, NULL);
+
+// FIXME - Every read/write lock must eventually be destroyed with pthread_rwlock_destroy(). Always use pthread_rwlock_destroy() before freeing or reusing read/write lock storage.
 
 void GA_Internal_Threadsafe_Lock()
 {
-     pthread_mutex_lock(&ga_threadsafe_lock);
+    GA_Internal_Threadsafe_Write_Lock();
+}
+
+void GA_Internal_Threadsafe_Read_Lock()
+{
+    pthread_rwlock_rdlock(&ga_readwrite_lock);
+}
+
+void GA_Internal_Threadsafe_Write_Lock()
+{
+    pthread_rwlock_wrlock(&ga_readwrite_lock);
 }
 
 void GA_Internal_Threadsafe_Unlock()
 {
-     pthread_mutex_unlock(&ga_threadsafe_lock);
+    pthread_rwlock_unlock(&ga_readwrite_lock);
 }
 
 #endif

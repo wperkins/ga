@@ -306,7 +306,7 @@ extern int _ga_initialize_f;
 
 void pnga_initialize()
 {
-    GA_Internal_Threadsafe_Lock();
+    GA_Internal_Threadsafe_Write_Lock();
 Integer  i, j,nproc, nnode, zero;
 int bytes;
 
@@ -2550,7 +2550,7 @@ logical pnga_create(Integer type,
                    Integer *chunk,
                    Integer *g_a)
 {
-  GA_Internal_Threadsafe_Lock();
+  GA_Internal_Threadsafe_Write_Lock();
   Integer p_handle = pnga_pgroup_get_default();
   logical result = pnga_create_config(type, ndim, dims, array_name, chunk, p_handle, g_a);
   GA_Internal_Threadsafe_Unlock();
@@ -3249,7 +3249,7 @@ int local_sync_begin,local_sync_end;
 
 void pnga_terminate() 
 {
-    //GA_Internal_Threadsafe_Lock();
+    //GA_Internal_Threadsafe_Write_Lock();
 Integer i, handle;
 
     _ga_sync_begin = 1; _ga_sync_end=1; /*remove any previous masking*/

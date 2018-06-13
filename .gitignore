@@ -1,3 +1,26 @@
+# autotools generated folders & files
+.deps
+.dirstamp
+config.fh
+config.h
+config.log
+config.status
+libtool
+stamp-h1
+Makefile
+armci/Makefile
+comex/Makefile
+gaf2c/farg.h
+gaf2c/typesf2c.h
+global/src/ga-wapi.h
+global/src/ga-wapidefs.h
+global/src/global.fh
+global/trace/adjust.x
+global/trace/collisions.x
+ma/mafdecls.fh
+ma/matypes.h
+tools/ga-config
+
 # Compiled Object files
 *.slo
 *.lo
@@ -52,3 +75,20 @@ config.h.in~
 autotools
 bld*
 build-aux
+
+# test build artifacts
+*.x
+global/testing/nga-onesided.F
+global/testing/nga-patch.F
+global/testing/nga-periodic.F
+global/testing/nga-scatter.F
+global/testing/nga-util.F
+global/testing/ngatest.F
+comex/testing/perf_contig
+comex/testing/perf
+comex/testing/perf_amo
+comex/testing/perf_strided
+comex/testing/shift
+comex/testing/test
+comex/tools/armci-config
+comex/tools/comex-config

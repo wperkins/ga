@@ -10,6 +10,8 @@ extern "C" {
 #endif
 
 extern void GA_Internal_Threadsafe_Lock();
+extern void GA_Internal_Threadsafe_Read_Lock();
+extern void GA_Internal_Threadsafe_Write_Lock();
 extern void GA_Internal_Threadsafe_Unlock();
 
 #ifdef __cplusplus
@@ -19,6 +21,8 @@ extern void GA_Internal_Threadsafe_Unlock();
 #else
 
 #define GA_Internal_Threadsafe_Lock()
+#define GA_Internal_Threadsafe_Read_Lock()
+#define GA_Internal_Threadsafe_Write_Lock()
 #define GA_Internal_Threadsafe_Unlock()
 
 #endif

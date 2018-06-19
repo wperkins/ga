@@ -32,7 +32,7 @@
 # file: CMakeLists.txt
 # -------------------------------------------------------------
 
-cmake_minimum_required (VERSION 2.8.8)
+cmake_minimum_required (VERSION 3.8.2)
 project (GlobalArrays)
 #project (GlobalArrays C CXX Fortran)
 

@@ -165,8 +165,8 @@ CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/gaconfig.h
                 ${CMAKE_CURRENT_BINARY_DIR}/gaconfig.h)
 
 add_library(ga_src OBJECT
-  ${CMAKE_CURRENT_SOURCE_DIR}/ga-wapi.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/ga-wapidefs.h
+#${CMAKE_CURRENT_SOURCE_DIR}/ga-wapi.h
+#${CMAKE_CURRENT_SOURCE_DIR}/ga-wapidefs.h
   ${GA_FILES}
 )
 

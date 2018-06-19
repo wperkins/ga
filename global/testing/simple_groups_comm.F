@@ -4,7 +4,7 @@
       program main
       implicit none
 #include "global.fh"
-#include "ga-mpi.fh"
+!#include "ga-mpi.fh"
 #include "mafdecls.fh"
       integer me 
       integer g_a

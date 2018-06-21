@@ -107,7 +107,7 @@ add_executable(test-inquire.x test-inquire.c)
 #set_target_properties(testf.x PROPERTIES LINKER_LANGUAGE
 #ifort) # this works
 
-target_link_libraries(testf.x ga ${ctargetlibs})
-target_link_libraries(test-coalesce.x ga ${ctargetlibs})
-target_link_libraries(test-inquire.x ga ${ctargetlibs})
+target_link_libraries(testf.x ga ${ctargetlibs} "-lrt -pthread")
+target_link_libraries(test-coalesce.x ga ${ctargetlibs} "-lrt -pthread")
+target_link_libraries(test-inquire.x ga ${ctargetlibs} "-lrt -pthread")
 #target_link_libraries(testc.x ga ${ctargetlibs})

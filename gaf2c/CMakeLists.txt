@@ -41,12 +41,13 @@ include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR}
 # GAF2C header installation
 # -------------------------------------------------------------
 
-set(GAF2C_HEADERS
+set(GAF2C_HEADERS # not required for install
   typesf2c.h
 )
 
 install (FILES
-  ${GAF2C_HEADERS}
+  #${GAF2C_HEADERS}
+  ${CMAKE_CURRENT_BINARY_DIR}/typesf2c.h
   DESTINATION include
 )
 

@@ -56,16 +56,18 @@ set(MA_HEADERS
 #  error.h
   macdecls.h
   macommon.h
-  matypes.h
+  # Note: File "matypes.h" is included separately
 #  memcpy.h
   scope.h
   string-util.h
   table.h
-  ${FORTRAN_HEADERS}
+  #${FORTRAN_HEADERS}
 )
 
 install (FILES
   ${MA_HEADERS}
+  ${CMAKE_CURRENT_BINARY_DIR}/matypes.h
+  ${CMAKE_CURRENT_BINARY_DIR}/mafdecls.fh
   DESTINATION include
 )
 

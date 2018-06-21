@@ -38,7 +38,7 @@ if (ENABLE_FORTRAN)
   )
   set(GA_FORTRAN_INTERFACE_H_FILES
     cnames.h
-    global.fh
+    # Note: File "global.fh" will be included separately
   )
   set (GA_FORTRAN_INTERFACE_F_FILES
     complex.F
@@ -193,11 +193,9 @@ install(FILES
 #  globalp.h
 #  matmul.h
   ${GA_FORTRAN_INTERFACE_H_FILES}
+  ${CMAKE_CURRENT_BINARY_DIR}/ga-wapi.h
+  ${CMAKE_CURRENT_BINARY_DIR}/global.fh
   DESTINATION include
 )
 
-install(FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/ga-wapi.h
-  DESTINATION include
-)
 

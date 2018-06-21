@@ -107,7 +107,7 @@ set(GA_FILES
 )
 
 add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/ga-wapi.h
+  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/ga-wapi.h
   COMMAND ${CMAKE_COMMAND} -D INPUT:PATH="${CMAKE_CURRENT_SOURCE_DIR}/ga-papi.h" 
      #-D OUTPUT:PATH="${CMAKE_CURRENT_SOURCE_DIR}/ga-wapi.h" 
      -D OUTPUT:PATH="${CMAKE_CURRENT_BINARY_DIR}/ga-wapi.h" 
@@ -116,7 +116,7 @@ add_custom_command(
 )
 
 add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/ga-wapidefs.h
+  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/ga-wapidefs.h
   COMMAND ${CMAKE_COMMAND} -D INPUT:PATH="${CMAKE_CURRENT_SOURCE_DIR}/ga-papi.h" 
      #-D OUTPUT:PATH="${CMAKE_CURRENT_SOURCE_DIR}/ga-wapidefs.h" 
      -D OUTPUT:PATH="${CMAKE_CURRENT_BINARY_DIR}/ga-wapidefs.h" 
@@ -165,8 +165,8 @@ CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/gaconfig.h
                 ${CMAKE_CURRENT_BINARY_DIR}/gaconfig.h)
 
 add_library(ga_src OBJECT
-${CMAKE_CURRENT_SOURCE_DIR}/ga-wapi.h
-${CMAKE_CURRENT_SOURCE_DIR}/ga-wapidefs.h
+${CMAKE_CURRENT_BINARY_DIR}/ga-wapi.h
+${CMAKE_CURRENT_BINARY_DIR}/ga-wapidefs.h
   ${GA_FILES}
 )
 
@@ -197,7 +197,7 @@ install(FILES
 )
 
 install(FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/ga-wapi.h
+  ${CMAKE_CURRENT_BINARY_DIR}/ga-wapi.h
   DESTINATION include
 )
 

@@ -32,6 +32,14 @@
 # file: CMakeLists.txt
 # -------------------------------------------------------------
 
+if (ENABLE_GPU_MEM)
+  set(CUDA_INTERFACE_FILES
+   cuda_mem_api.cu
+  )
+endif()
+set_source_files_properties(${CUDA_INTERFACE_FILES} PROPERTIES
+CUDA_SOURCE_PROPERTY_FORMAT OBJ)
+
 if (ENABLE_FORTRAN)
   set(GA_FORTRAN_INTERFACE_C_FILES
     fapi.c
@@ -164,11 +172,12 @@ CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/globalp.h
 CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/gaconfig.h
                 ${CMAKE_CURRENT_BINARY_DIR}/gaconfig.h)
 
-add_library(ga_src OBJECT
-${CMAKE_CURRENT_BINARY_DIR}/ga-wapi.h
-${CMAKE_CURRENT_BINARY_DIR}/ga-wapidefs.h
-  ${GA_FILES}
-)
+  add_library(ga_src OBJECT
+  ${CMAKE_CURRENT_BINARY_DIR}/ga-wapi.h
+  ${CMAKE_CURRENT_BINARY_DIR}/ga-wapidefs.h
+    ${GA_FILES}
+    ${CUDA_INTERFACE_FILES}
+  )
 
 if(ENABLE_FORTRAN)
   ADD_DEPENDENCIES(ga_src GenerateConfigFH)

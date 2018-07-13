@@ -33,8 +33,8 @@
 # -------------------------------------------------------------
 
 cmake_minimum_required (VERSION 3.8.2)
-project (GlobalArrays)
-#project (GlobalArrays C CXX Fortran)
+#project (GlobalArrays)
+project (GlobalArrays C CXX Fortran CUDA)
 
 #set (GlobalArrays_VERSION_MAJOR 5)
 #set (GlobalArrays_VERSION_MINOR 6)
@@ -47,6 +47,13 @@ project (GlobalArrays)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake-modules")
 message(status "CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
 include(GlobalArrays)
+
+option(ENABLE_GPU_MEM "Use GPU memory hierarchy" ON)
+if (ENABLE_GPU_MEM)
+  find_package(CUDA REQUIRED)
+  set(CUDA_SEPARABLE_COMPILATION ON)
+  set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} -gencode arch=compute_30,code=sm_30)
+endif()
 
 option (ENABLE_FORTRAN "Build Fortran interface" OFF)
 option (ENABLE_F77 "Build Fortran interface" OFF)
@@ -474,7 +481,6 @@ add_library(ga
   $<TARGET_OBJECTS:ga_src>
   $<TARGET_OBJECTS:linalg>
 )
-
 # -------------------------------------------------------------
 # Global Arrays library installation
 # -------------------------------------------------------------

@@ -148,7 +148,6 @@ static int ga_group_is_for_ft=0;
 int ga_spare_procs;
 #endif
 
-
 /*************************************************************************/
 
 /*\ This macro computes index (place in ordered set) for the element
@@ -2445,6 +2444,10 @@ logical pnga_allocate(Integer g_a)
     pnga_destroy(g_a);
     status = FALSE;
   }
+  int *d_a;
+  int my_size = 10;
+  gpu_mem_alloc(d_a, my_size);
+
   return status;
 }
 

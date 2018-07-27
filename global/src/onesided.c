@@ -162,7 +162,7 @@ void pnga_pgroup_sync(Integer grp_id)
 
 void pnga_sync()
 {
-  GA_Internal_Threadsafe_Lock();
+  GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
 #ifdef CHECK_MA
   Integer status;
 #endif
@@ -190,7 +190,7 @@ void pnga_sync()
 #ifdef CHECK_MA
   status = MA_verify_allocator_stuff();
 #endif
-  GA_Internal_Threadsafe_Unlock();
+  GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
 }
 
 
@@ -433,9 +433,9 @@ Integer pnga_nbtest(Integer *nbhandle)
 
 void pnga_nbwait(Integer *nbhandle) 
 {
-  GA_Internal_Threadsafe_Lock();
+  GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
   nga_wait_internal((Integer *)nbhandle);
-  GA_Internal_Threadsafe_Unlock();
+  GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
 } 
 
 static void ngai_puts(char *loc_base_ptr, char *pbuf, int *stride_loc, char *prem, int *stride_rem,
@@ -755,9 +755,9 @@ void ngai_put_common(Integer g_a,
 
 void pnga_nbput(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld, Integer *nbhandle)
 {
-  GA_Internal_Threadsafe_Lock();
+  GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
   ngai_put_common(g_a,lo,hi,buf,ld,0,-1,nbhandle); 
-  GA_Internal_Threadsafe_Unlock();
+  GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
 }
 
 /**
@@ -936,9 +936,9 @@ void pnga_nbwait_notify(Integer *nbhandle)
 void pnga_put(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld)
 {
 
-  GA_Internal_Threadsafe_Lock();
+  GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
   ngai_put_common(g_a,lo,hi,buf,ld,0,-1,NULL); 
-  GA_Internal_Threadsafe_Unlock();
+  GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
 }
 
 /**
@@ -1129,9 +1129,9 @@ void ngai_get_common(Integer g_a,
 void pnga_get(Integer g_a, Integer *lo, Integer *hi,
               void *buf, Integer *ld)
 {
-  GA_Internal_Threadsafe_Lock();
+  GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
   ngai_get_common(g_a,lo,hi,buf,ld,0,-1,(Integer *)NULL);
-  GA_Internal_Threadsafe_Unlock();
+  GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
 }
 
 #if HAVE_SYS_WEAK_ALIAS_PRAGMA
@@ -1141,9 +1141,9 @@ void pnga_get(Integer g_a, Integer *lo, Integer *hi,
 void pnga_nbget(Integer g_a, Integer *lo, Integer *hi,
                void *buf, Integer *ld, Integer *nbhandle)
 {
-  GA_Internal_Threadsafe_Lock();
+  GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
   ngai_get_common(g_a,lo,hi,buf,ld,0,-1,nbhandle);
-  GA_Internal_Threadsafe_Unlock();
+  GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
 }
 
 /**
@@ -1194,7 +1194,7 @@ void ngai_acc_common(Integer g_a,
   Integer *rank_rstrctd;
   _iterator_hdl it_hdl;
 
-  GA_Internal_Threadsafe_Lock();
+  GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
 
 
   GA_PUSH_NAME("ngai_acc_common");
@@ -1301,7 +1301,7 @@ void ngai_acc_common(Integer g_a,
 #ifdef PROFILE_OLD
   ga_profile_stop();
 #endif
-  GA_Internal_Threadsafe_Unlock();
+  GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
 }
 
 /**
@@ -3792,7 +3792,7 @@ void pnga_gather2d(Integer g_a, void *v, Integer *i, Integer *j,
 
 Integer pnga_read_inc(Integer g_a, Integer* subscript, Integer inc)
 {
-GA_Internal_Threadsafe_Lock();
+GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
 char *ptr;
 Integer ldp[MAXDIM], proc, handle=GA_OFFSET+g_a, p_handle, ndim;
 int optype,ivalue;
@@ -3878,7 +3878,7 @@ void *pval;
 
    GA_POP_NAME;
 
-   GA_Internal_Threadsafe_Unlock();
+   GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
    if(GA[handle].type==C_INT)
        return (Integer) ivalue;
    else

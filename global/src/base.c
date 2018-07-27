@@ -354,13 +354,13 @@ extern int _ga_initialize_f;
 
 void pnga_initialize()
 {
-    GA_Internal_Threadsafe_Lock();
+    GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
 Integer  i, j,nproc, nnode, zero;
 int bytes;
 
     if(GAinitialized)
     {
-        GA_Internal_Threadsafe_Unlock();
+        GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
         return;
     }
 
@@ -539,7 +539,7 @@ int bytes;
                  
     }
 #endif
-    GA_Internal_Threadsafe_Unlock();
+    GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
 }
 
 
@@ -2661,10 +2661,10 @@ logical pnga_create(Integer type,
                    Integer *chunk,
                    Integer *g_a)
 {
-  GA_Internal_Threadsafe_Lock();
+  GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
   Integer p_handle = pnga_pgroup_get_default();
   logical result = pnga_create_config(type, ndim, dims, array_name, chunk, p_handle, g_a);
-  GA_Internal_Threadsafe_Unlock();
+  GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
   return result;
 }
 
@@ -3380,13 +3380,13 @@ int local_sync_begin,local_sync_end;
 
 void pnga_terminate() 
 {
-    //GA_Internal_Threadsafe_Lock();
+    //GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
 Integer i, handle;
 
     _ga_sync_begin = 1; _ga_sync_end=1; /*remove any previous masking*/
     if(!GAinitialized)
     {
-        //GA_Internal_Threadsafe_Unlock();
+        //GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
         return;
     }
 
@@ -3424,7 +3424,7 @@ Integer i, handle;
     ARMCI_Finalize();
     ARMCIinitialized = 0;
     GAinitialized = 0;
-    //GA_Internal_Threadsafe_Unlock();
+    //GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
     if (0 != GA_stack_size) {
         pnga_error("0 != GA_stack_size", GA_stack_size);
     }

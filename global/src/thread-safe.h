@@ -3,14 +3,16 @@
 
 #define THREAD_SAFE 1
 
+#define THREAD_LOCK_DEFAULT 1
+
 #if defined(PTHREADS) && defined(THREAD_SAFE)
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern void GA_Internal_Threadsafe_Lock();
-extern void GA_Internal_Threadsafe_Unlock();
+extern void GA_Internal_Threadsafe_Lock(int lockFlag);
+extern void GA_Internal_Threadsafe_Unlock(int lockFlag);
 
 #ifdef __cplusplus
 }
@@ -18,8 +20,8 @@ extern void GA_Internal_Threadsafe_Unlock();
 
 #else
 
-#define GA_Internal_Threadsafe_Lock()
-#define GA_Internal_Threadsafe_Unlock()
+#define GA_Internal_Threadsafe_Lock(int lockFlag)
+#define GA_Internal_Threadsafe_Unlock(int lockFlag)
 
 #endif
 

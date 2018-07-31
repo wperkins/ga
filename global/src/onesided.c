@@ -621,25 +621,27 @@ void ngai_put_common(Integer g_a,
   int *stride_rem=&_stride_rem[1], *stride_loc=&_stride_loc[1], *count=&_count[1];
   _iterator_hdl it_hdl;
 
+  GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
   GA_PUSH_NAME("ngai_put_common");
-
   ga_check_handleM(g_a, "ngai_put_common");
-
-  size = GA[handle].elemsize;
-  ndim = GA[handle].ndim;
-  p_handle = GA[handle].p_handle;
-  n_rstrctd = (Integer)GA[handle].num_rstrctd;
-  rank_rstrctd = GA[handle].rank_rstrctd;
+  size = (GA[handle].elemsize);
+  ndim = (GA[handle].ndim);
+  p_handle = (GA[handle].p_handle);
+  n_rstrctd = (Integer)(GA[handle].num_rstrctd);
+  rank_rstrctd = (GA[handle].rank_rstrctd);
 
   /*initial  stride portion for field-wise operations*/
   _stride_rem[0] = size;
   _stride_loc[0] = field_size;
   _count[0] = field_size;
 
-
+  /* Iterators must be protected and executed as a unit 
+     TODO: Need to make this implementation better */
+  //GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
   gai_iterator_init(g_a, lo, hi, &it_hdl);
 
 #ifndef NO_GA_STATS
+  /* TODO: Need to be locked after iterators are thread safe */
   gam_CountElems(ndim, lo, hi, &elems);
   GAbytes.puttot += (double)size*elems;
   GAstat.numput++;
@@ -652,6 +654,7 @@ void ngai_put_common(Integer g_a,
 #endif
 
 #ifdef PROFILE_OLD
+  /* TODO: Need to be locked after iterators are thread safe */
   ga_profile_start((int)handle, (long)size*elems, ndim, lo, hi, 
       ENABLE_PROFILE_PUT);
 #endif
@@ -704,6 +707,7 @@ void ngai_put_common(Integer g_a,
         /*casting what ganb_get_armci_handle function returns to armci_hdl is 
           very crucial here as on 64 bit platforms, pointer is 64 bits where 
           as temporary is only 32 bits*/ 
+        /* TODO: Need to be locked after iterators are thread safe */
 #if defined(__crayx1) || defined(DISABLE_NBOPT)
         /* ARMCI_PutS(pbuf,stride_loc,prem,stride_rem,count,ndim-1,proc); */
         ngai_puts(buf, pbuf,stride_loc,prem,stride_rem,count,ndim-1,proc, field_off, field_size, size);
@@ -739,10 +743,16 @@ void ngai_put_common(Integer g_a,
   if(!nbhandle) nga_wait_internal(&ga_nbhandle);  
 #endif
 
+  gai_iterator_destroy(&it_hdl);
   GA_POP_NAME;
+  GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
 #ifdef PROFILE_OLD
+  GA_PROF_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
   ga_profile_stop();
+  GA_PROF_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
 #endif
+
+
 }
 
 
@@ -755,9 +765,9 @@ void ngai_put_common(Integer g_a,
 
 void pnga_nbput(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld, Integer *nbhandle)
 {
-  GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
+  //GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
   ngai_put_common(g_a,lo,hi,buf,ld,0,-1,nbhandle); 
-  GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
+  //GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
 }
 
 /**
@@ -936,9 +946,9 @@ void pnga_nbwait_notify(Integer *nbhandle)
 void pnga_put(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld)
 {
 
-  GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
+  //GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
   ngai_put_common(g_a,lo,hi,buf,ld,0,-1,NULL); 
-  GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
+  //GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
 }
 
 /**

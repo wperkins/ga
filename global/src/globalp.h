@@ -123,8 +123,21 @@ extern int _ga_sync_end;
 extern int *_ga_argc;
 extern char ***_ga_argv;
 
+/* Joseph: Added atomic increment */
+
+#include "thread-safe.h"
+
+#if defined(THREAD_SAFE)
+
+#define  GA_PUSH_NAME(name) (GA_name_stack[atomic_pinc(GA_stack_size)] = (name)) 
+#define  GA_POP_NAME        (atomic_add(GA_stack_size, -1))
+
+#else
+
 #define  GA_PUSH_NAME(name) (GA_name_stack[GA_stack_size++] = (name)) 
 #define  GA_POP_NAME        (GA_stack_size--)
+
+#endif
 
 /* periodic operations */
 #define PERIODIC_GET 1

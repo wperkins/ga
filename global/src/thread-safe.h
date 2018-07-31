@@ -12,7 +12,7 @@ enum GA_LOCK_TYPES {NO_LOCK = 0, FAT_LOCK, TOT_LOCK};
 /* Multithreaded state */
 
 extern uint64_t max_threads;
-extern int64_t *tids; /* map of system ids to numerical ids */
+extern int32_t *tids; /* map of system ids to numerical ids */
 
 #if defined (THREAD_SAFE)
    #define GET_SWID() (pthread_self())

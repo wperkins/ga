@@ -13,7 +13,7 @@ pthread_mutex_t ga_stat_threadsafe_lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t ga_prof_threadsafe_lock = PTHREAD_MUTEX_INITIALIZER;
 
 uint64_t max_threads;
-int64_t *tids; /* map of system ids to numerical ids */
+int32_t *tids; /* map of system ids to numerical ids */
 
 
 int64_t get_tid(){
@@ -26,11 +26,16 @@ int64_t get_tid(){
 }
 
 #include <sys/sysinfo.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 int set_thread_config(){
    int i;
+   struct rlimit rlim;
    if(tids != NULL) return -2;
-   int64_t mthread = get_nprocs();
+   //int64_t mthread = get_nprocs();
+   getrlimit(RLIMIT_NPROC, &rlim);
+   int64_t mthread = rlim.rlim_max;
    atomic_store(max_threads, mthread);
    tids = (int64_t *)malloc(max_threads * sizeof(*tids));
    if(tids == NULL) return -1;

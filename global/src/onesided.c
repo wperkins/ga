@@ -381,7 +381,10 @@ static void ngai_puts(char *loc_base_ptr, char *pbuf, int *stride_loc, char *pre
 		      int *count, int nstrides, int proc, int field_off, 
 		      int field_size, int type_size) {
   if(field_size<0 || field_size == type_size) {
+    /* Joseph: New lock */
+    GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
     ARMCI_PutS(pbuf,stride_loc,prem,stride_rem,count,nstrides,proc);
+    GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
   }
   else {
     int i;
@@ -398,8 +401,10 @@ static void ngai_puts(char *loc_base_ptr, char *pbuf, int *stride_loc, char *pre
     pbuf = loc_base_ptr + (pbuf - loc_base_ptr)/type_size*field_size;
     prem += field_off;
 
-    count[1] /= type_size; 
+    count[1] /= type_size;
+    GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
     ARMCI_PutS(pbuf,stride_loc,prem,stride_rem,count,nstrides,proc);
+    GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
     count[1] *= type_size; /*restore*/
     for(i=1; i<nstrides; i++) {
       stride_loc[i] /= field_size;
@@ -413,7 +418,10 @@ static void ngai_nbputs(char *loc_base_ptr, char *pbuf,int *stride_loc, char *pr
 		      int *count, int nstrides, int proc, int field_off, 
 			int field_size, int type_size, armci_hdl_t *nbhandle) {
   if(field_size<0 || field_size == type_size) {
+    /* Joseph: Lock here  */
+    GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
     ARMCI_NbPutS(pbuf,stride_loc,prem,stride_rem,count,nstrides,proc,nbhandle);
+    GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
   }
   else {
     int i;
@@ -431,7 +439,9 @@ static void ngai_nbputs(char *loc_base_ptr, char *pbuf,int *stride_loc, char *pr
     prem += field_off;
 
     count[1] /= type_size; 
+    GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
     ARMCI_NbPutS(pbuf,stride_loc,prem,stride_rem,count,nstrides,proc, nbhandle);
+    GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
     count[1] *= type_size; /*restore*/
     for(i=1; i<nstrides; i++) {
       stride_loc[i] /= field_size;
@@ -444,7 +454,9 @@ static void ngai_nbgets(char *loc_base_ptr, char *prem,int *stride_rem, char *pb
 			int *count, int nstrides, int proc, int field_off, 
 			int field_size, int type_size, armci_hdl_t *nbhandle) {
   if(field_size<0 || field_size == type_size) {
+    //GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
     ARMCI_NbGetS(prem,stride_rem,pbuf,stride_loc,count,nstrides,proc,nbhandle);
+    //GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
   }
   else {
     int i;
@@ -482,7 +494,9 @@ static void ngai_nbgets(char *loc_base_ptr, char *prem,int *stride_rem, char *pb
 /*       } */
 /*       printf("]\n"); */
 /*     } */
+    //GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
     ARMCI_NbGetS(prem,stride_rem,pbuf,stride_loc,count,nstrides,proc,nbhandle);
+    //GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
     count[1] *= type_size; /*restore*/
     for(i=1; i<nstrides; i++) {
       stride_loc[i] /= field_size;
@@ -496,10 +510,13 @@ static void ngai_gets(char *loc_base_ptr, char *prem,int *stride_rem, char *pbuf
 		      int field_size, int type_size) {
 #if 1
   armci_hdl_t nbhandle;
+  /* Joseph: Lock the internal function */
+  //GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
   ARMCI_INIT_HANDLE(&nbhandle);
   ngai_nbgets(loc_base_ptr, prem, stride_rem, pbuf, stride_loc, count, nstrides, proc, 
 	      field_off, field_size, type_size, &nbhandle);
   ARMCI_Wait(&nbhandle);
+  //GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
 #else
   if(field_size<0 || field_size == type_size) {
     ARMCI_GetS(prem,stride_rem,pbuf,stride_loc,count,nstrides,proc);
@@ -561,30 +578,28 @@ void ngai_put_common(Integer g_a,
   _iterator_hdl it_hdl;
 
  
-
+  /* Joseph: Change to atomic loads */
   ga_check_handleM(g_a, "ngai_put_common");
-  size = (GA[handle].elemsize);
-  ndim = (GA[handle].ndim);
-  p_handle = (GA[handle].p_handle);
-  n_rstrctd = (Integer)(GA[handle].num_rstrctd);
-  rank_rstrctd = (GA[handle].rank_rstrctd);
+  size = atomic_load(GA[handle].elemsize);
+  ndim = atomic_load(GA[handle].ndim);
+  p_handle = atomic_load(GA[handle].p_handle);
+  n_rstrctd = (Integer)atomic_load(GA[handle].num_rstrctd);
+  rank_rstrctd = atomic_load(GA[handle].rank_rstrctd);
 
   /*initial  stride portion for field-wise operations*/
   _stride_rem[0] = size;
   _stride_loc[0] = field_size;
   _count[0] = field_size;
 
-  //GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
   gai_iterator_init(g_a, lo, hi, &it_hdl);
-  GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
-
 
 #ifndef NO_GA_STATS
-  /* TODO: Need to be locked after iterators are thread safe */
+  GA_STAT_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
   gam_CountElems(ndim, lo, hi, &elems);
   GAbytes.puttot += (double)size*elems;
   GAstat.numput++;
   GAstat.numput_procs += np;
+  GA_STAT_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
 #endif
 
   if(nbhandle)ga_init_nbhandle(nbhandle);
@@ -593,9 +608,10 @@ void ngai_put_common(Integer g_a,
 #endif
 
 #ifdef PROFILE_OLD
-  /* TODO: Need to be locked after iterators are thread safe */
+  GA_PROF_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT); 
   ga_profile_start((int)handle, (long)size*elems, ndim, lo, hi, 
       ENABLE_PROFILE_PUT);
+  GA_PROF_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT); 
 #endif
 
 #if !defined(__crayx1) && !defined(DISABLE_NBOPT)
@@ -686,9 +702,7 @@ void ngai_put_common(Integer g_a,
 
   gai_iterator_destroy(&it_hdl);
 
-  GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
 }
-
 
 /**
  * (Non-blocking) Put an N-dimensional patch of data into a Global Array
@@ -946,12 +960,12 @@ void ngai_get_common(Integer g_a,
   int *stride_rem=&_stride_rem[1], *stride_loc=&_stride_loc[1], *count=&_count[1];
 
   ga_check_handleM(g_a, "ngai_get_common");
-
-  size = GA[handle].elemsize;
-  ndim = GA[handle].ndim;
-  p_handle = (Integer)GA[handle].p_handle;
-  n_rstrctd = (Integer)GA[handle].num_rstrctd;
-  rank_rstrctd = GA[handle].rank_rstrctd;
+  /* Joseph: Get the atomic loads for the global variables */
+  size = atomic_load(GA[handle].elemsize);
+  ndim = atomic_load(GA[handle].ndim);
+  p_handle = (Integer)atomic_load(GA[handle].p_handle);
+  n_rstrctd = (Integer)atomic_load(GA[handle].num_rstrctd);
+  rank_rstrctd = atomic_load(GA[handle].rank_rstrctd);
 
   /*initial  stride portion for field-wise operations*/
   _stride_rem[0] = size;
@@ -962,10 +976,12 @@ void ngai_get_common(Integer g_a,
 
   /* get total size of patch */
 #ifndef NO_GA_STATS
+  GA_STAT_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
   gam_CountElems(ndim, lo, hi, &elems);
   GAbytes.gettot += (double)size*elems;
   GAstat.numget++;
   GAstat.numget_procs += np;
+  GA_STAT_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
 #endif
 
   if(nbhandle)ga_init_nbhandle(nbhandle);
@@ -974,8 +990,10 @@ void ngai_get_common(Integer g_a,
 #endif
 
 #ifdef PROFILE_OLD
+  GA_PROF_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
   ga_profile_start((int)handle, (long)size*elems, ndim, lo, hi,
       ENABLE_PROFILE_GET);
+  GA_PROF_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
 #endif
 
 #if !defined(__crayx1) && !defined(DISABLE_NBOPT)
@@ -1015,34 +1033,47 @@ void ngai_get_common(Integer g_a,
         gam_setstride(ndim, size, ld, ldrem, stride_rem, stride_loc);
 
 #ifndef NO_GA_STATS	    
+        GA_STAT_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
         if(proc == GAme){
           gam_CountElems(ndim, plo, phi, &elems);
           GAbytes.getloc += (double)size*elems;
         }
+        GA_STAT_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
 #endif
 #if defined(__crayx1) || defined(DISABLE_NBOPT)
         /*           ARMCI_GetS(prem,stride_rem,pbuf,stride_loc,count,ndim-1,proc); */
+        GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
         ngai_gets(buf,prem,stride_rem,pbuf,stride_loc,count,ndim-1,proc, field_off, field_size, size);
+        GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
 #else
+        //GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT); 
         if(nbhandle)  {
           /*             ARMCI_NbGetS(prem, stride_rem, pbuf, stride_loc, count, ndim -1, */
           /*                 proc,(armci_hdl_t*)get_armci_nbhandle(nbhandle)); */
+          GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT); 
           ngai_nbgets(buf,prem, stride_rem, pbuf, stride_loc, count, ndim -1,
               proc,field_off, field_size, size,
               (armci_hdl_t*)get_armci_nbhandle(nbhandle));
+          GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT); 
         } else {
           if((loop==0 && counter==(int)np-1) || loop==1) {
-            /*               ARMCI_GetS(prem,stride_rem,pbuf,stride_loc,count,ndim-1,proc); */
+            /*               ARMCI_GLetS(prem,stride_rem,pbuf,stride_loc,count,ndim-1,proc); */
+            GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT); 
             ngai_gets(buf,prem,stride_rem,pbuf,stride_loc,count,ndim-1,proc, field_off, field_size, size);
+            GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT); 
           } else {
-            ++counter;
+            //++counter;
+            atomic_inc(counter);
             /*               ARMCI_NbGetS(prem,stride_rem,pbuf,stride_loc,count,ndim-1, */
             /*                   proc,(armci_hdl_t*)get_armci_nbhandle(&ga_nbhandle)); */
+            GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT); 
             ngai_nbgets(buf,prem, stride_rem, pbuf, stride_loc, count, ndim -1,
                 proc,field_off, field_size, size,
                 (armci_hdl_t*)get_armci_nbhandle(nbhandle));
+            GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT); 
           }
         }
+        //GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
       } /* end if(cond) */
     }
 #endif
@@ -1068,9 +1099,9 @@ void ngai_get_common(Integer g_a,
 void pnga_get(Integer g_a, Integer *lo, Integer *hi,
               void *buf, Integer *ld)
 {
-  GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
+  //GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
   ngai_get_common(g_a,lo,hi,buf,ld,0,-1,(Integer *)NULL);
-  GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
+  //GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
 }
 
 #if HAVE_SYS_WEAK_ALIAS_PRAGMA
@@ -1080,9 +1111,9 @@ void pnga_get(Integer g_a, Integer *lo, Integer *hi,
 void pnga_nbget(Integer g_a, Integer *lo, Integer *hi,
                void *buf, Integer *ld, Integer *nbhandle)
 {
-  GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
+  //GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
   ngai_get_common(g_a,lo,hi,buf,ld,0,-1,nbhandle);
-  GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
+  //GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
 }
 
 /**

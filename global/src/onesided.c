@@ -3337,6 +3337,7 @@ void gai_gatscat_new(int op, Integer g_a, void* v, void *subscript,
 
 void pnga_gather(Integer g_a, void* v, void *subscript, Integer c_flag, Integer nv)
 {
+  GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
 
   if (nv < 1) return;
   ga_check_handleM(g_a, "nga_gather");
@@ -3349,6 +3350,7 @@ void pnga_gather(Integer g_a, void* v, void *subscript, Integer c_flag, Integer 
   gai_gatscat(GATHER,g_a,v,subscript,nv,&GAbytes.gattot,&GAbytes.gatloc, NULL);
 #endif
 
+  GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
 }
 
 /**
@@ -3361,6 +3363,7 @@ void pnga_gather(Integer g_a, void* v, void *subscript, Integer c_flag, Integer 
 
 void pnga_scatter(Integer g_a, void* v, void *subscript, Integer c_flag, Integer nv)
 {
+  GA_Internal_Threadsafe_Lock(THREAD_LOCK_DEFAULT);
 
   if (nv < 1) return;
   ga_check_handleM(g_a, "nga_scatter");
@@ -3372,6 +3375,8 @@ void pnga_scatter(Integer g_a, void* v, void *subscript, Integer c_flag, Integer
 #else
   gai_gatscat(SCATTER,g_a,v,subscript,nv,&GAbytes.scatot,&GAbytes.scaloc, NULL);
 #endif
+
+  GA_Internal_Threadsafe_Unlock(THREAD_LOCK_DEFAULT);
 
 }
 
@@ -3387,6 +3392,9 @@ void pnga_scatter_acc(Integer g_a, void* v, void *subscript, Integer c_flag,
                       Integer nv, void *alpha)
 {
 
+  GA_Internal_Threadsafe_Lock(1);
+
+
   if (nv < 1) return;
   ga_check_handleM(g_a, "nga_scatter_acc");
   
@@ -3399,6 +3407,8 @@ void pnga_scatter_acc(Integer g_a, void* v, void *subscript, Integer c_flag,
   gai_gatscat(SCATTER_ACC, g_a, v, subscript, nv, &GAbytes.scatot,
               &GAbytes.scaloc, alpha);
 #endif
+
+  GA_Internal_Threadsafe_Unlock(1);
 
 }
 

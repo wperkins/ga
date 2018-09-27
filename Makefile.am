@@ -439,6 +439,7 @@ AM_CPPFLAGS += -I$(top_srcdir)/global/testing
 check_PROGRAMS += global/testing/big
 check_PROGRAMS += global/testing/elempatch
 check_PROGRAMS += global/testing/gatscat
+check_PROGRAMS += global/testing/gatscat_thread
 check_PROGRAMS += global/testing/getmem
 check_PROGRAMS += global/testing/mtest
 check_PROGRAMS += global/testing/mulmatpatchc
@@ -627,6 +628,7 @@ endif
 #GLOBAL_PARALLEL_TESTS += global/testing/big$(EXEEXT) # needs lots of memory
 GLOBAL_PARALLEL_TESTS += global/testing/elempatch$(EXEEXT)
 #GLOBAL_PARALLEL_TESTS += global/testing/gatscat$(EXEEXT) # broken
+GLOBAL_PARALLEL_TESTS += global/testing/gatscat_thread$(EXEEXT)
 GLOBAL_PARALLEL_TESTS += global/testing/getmem$(EXEEXT)
 GLOBAL_PARALLEL_TESTS += global/testing/mtest$(EXEEXT)
 GLOBAL_PARALLEL_TESTS += global/testing/mulmatpatchc$(EXEEXT)
@@ -876,6 +878,7 @@ global_testing_ga_lu_SOURCES               = global/testing/ga_lu.c
 global_testing_ga_mpi_SOURCES              = global/testing/ga-mpi.c
 global_testing_ga_shift_SOURCES            = global/testing/ga_shift.F $(gtsrcf)
 global_testing_gatscat_SOURCES             = global/testing/gatscat.c
+global_testing_gatscat_thread_SOURCES      = global/testing/gatscat_thread.c
 global_testing_getmem_SOURCES              = global/testing/getmem.c
 global_testing_ghosts_SOURCES              = global/testing/ghosts.F $(gtsrcf)
 global_testing_ipc_clean_SOURCES           = global/testing/ipc.clean.c
@@ -1031,18 +1034,21 @@ global_testing_testabstract_ops_CFLAGS    = $(AM_CFLAGS) $(OPENMP_CFLAGS)
 global_testing_thread_perf_contig_CFLAGS  = $(AM_CFLAGS) $(OPENMP_CFLAGS)
 global_testing_thread_perf_strided_CFLAGS = $(AM_CFLAGS) $(OPENMP_CFLAGS)
 global_testing_threadsafec_CFLAGS         = $(AM_CFLAGS) $(OPENMP_CFLAGS)
+global_testing_gatscat_thread_CFLAGS      = $(AM_CFLAGS) $(OPENMP_CFLAGS)
 global_testing_read_only_CFLAGS           = $(AM_CFLAGS) $(OPENMP_CFLAGS)
 
 global_testing_testabstract_ops_CPPFLAGS    = $(AM_CPPFLAGS) $(OPENMP_CFLAGS)
 global_testing_thread_perf_contig_CPPFLAGS  = $(AM_CPPFLAGS) $(OPENMP_CFLAGS)
 global_testing_thread_perf_strided_CPPFLAGS = $(AM_CPPFLAGS) $(OPENMP_CFLAGS)
 global_testing_threadsafec_CPPFLAGS         = $(AM_CPPFLAGS) $(OPENMP_CFLAGS)
+global_testing_gatscat_thread_CPPFLAGS      = $(AM_CPPFLAGS) $(OPENMP_CFLAGS)
 global_testing_read_only_CPPFLAGS           = $(AM_CPPFLAGS) $(OPENMP_CFLAGS)
 
 global_testing_testabstract_ops_LDFLAGS   = $(AM_LDFLAGS) $(OPENMP_CFLAGS)
 global_testing_thread_perf_contig_LDFLAGS = $(AM_LDFLAGS) $(OPENMP_CFLAGS)
 global_testing_thread_perf_strided_LDFLAGS= $(AM_LDFLAGS) $(OPENMP_CFLAGS)
 global_testing_threadsafec_LDFLAGS        = $(AM_LDFLAGS) $(OPENMP_CFLAGS)
+global_testing_gatscat_thread_LDFLAGS     = $(AM_LDFLAGS) $(OPENMP_CFLAGS)
 global_testing_read_only_LDFLAGS          = $(AM_LDFLAGS) $(OPENMP_CFLAGS)
 
 if F77_INTEL_NO_INLINE
@@ -1757,7 +1763,6 @@ PARALLEL_TESTS =
 PARALLEL_TESTS += $(MA_PARALLEL_TESTS)
 PARALLEL_TESTS += $(GLOBAL_PARALLEL_TESTS)
 PARALLEL_TESTS += $(CXX_PARALLEL_TESTS)
-PARALLEL_TESTS += $(GLOBAL_THREADED_TESTS)
 
 PARALLEL_TESTS_XFAIL =
 PARALLEL_TESTS_XFAIL += $(MA_PARALLEL_TESTS_XFAIL)
@@ -1800,7 +1805,7 @@ check-travis: $(all-am) $(check_LTLIBRARIES) $(TRAVIS_TESTS) $(MAYBE_PFILES)
 	$(MAKE) $(AM_MAKEFLAGS) TESTS="$(TRAVIS_TESTS)" check-TESTS
 
 .PHONY: check-threaded
-check-threaded: $(all-am) $(check_LTLIBRARIES) $(GLOBAL_THREADED_TESTS) $(MAYBE_PFILES)
+check-travis: $(all-am) $(check_LTLIBRARIES) $(GLOBAL_THREADED_TESTS) $(MAYBE_PFILES)
 	$(MAKE) $(AM_MAKEFLAGS) TESTS="$(GLOBAL_THREADED_TESTS)" check-TESTS
 
 .PHONY: check-ga

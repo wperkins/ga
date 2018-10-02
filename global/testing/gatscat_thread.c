@@ -396,9 +396,9 @@ while (ithread <= thread_count) {
   GA_Dgop(&timebuf_total,one,"+");
 
   if (me == 0 && ithread == 1) printf("\nTest type   msg size (bytes)   avg time (us)    avg b/w (MB/sec) N threads\n");
-  if (me == 0) printf("Scatter              %7d    %12.6f        %12.6f       %3d\n", size, 1.0e6*(timescat_total/(double)size), (((double)(sizeof(int)*size))/timebuf_total)/1.0e6, ithread);
-  if (me == 0) printf("Gather               %7d    %12.6f        %12.6f       %3d\n", size, 1.0e6*(timegat_total/(double)size), (((double)(sizeof(int)*size))/timebuf_total)/1.0e6, ithread);
-  if (me == 0) printf("Accumulate           %7d    %12.6f        %12.6f       %3d\n", size, 1.0e6*(timeacc_total/(double)size), (((double)(sizeof(int)*size))/timebuf_total)/1.0e6, ithread);
+  if (me == 0) printf("Scatter              %7d    %12.6f        %12.6f       %3d\n", size, 1.0e6*(timescat_total/(double)size), (((double)(sizeof(int)*size))/timescat_total)/1.0e6, ithread);
+  if (me == 0) printf("Gather               %7d    %12.6f        %12.6f       %3d\n", size, 1.0e6*(timegat_total/(double)size), (((double)(sizeof(int)*size))/timegat_total)/1.0e6, ithread);
+  if (me == 0) printf("Accumulate           %7d    %12.6f        %12.6f       %3d\n", size, 1.0e6*(timeacc_total/(double)size), (((double)(sizeof(int)*size))/timeacc_total)/1.0e6, ithread);
   if (me == 0) printf("Acc (fixed)          %7d    %12.6f        %12.6f       %3d\n", size, 1.0e6*(timebuf_total/(double)size), (((double)(sizeof(int)*size))/timebuf_total)/1.0e6, ithread);
 
   //if (me == 0) printf("\n-%d thread complete-\n", ithread);

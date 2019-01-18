@@ -4,7 +4,7 @@
 # description: implements a primative CMake build that can be used to build
 #              GA on Windows-based systems. Only MPI-based runtimes are
 #              supported.
-# 
+#
 # DISCLAIMER
 #
 # This material was prepared as an account of work sponsored by an
@@ -41,11 +41,12 @@
 
 include_directories(BEFORE ${CMAKE_BINARY_DIR}/global/src
   ${CMAKE_BINARY_DIR}/ma ${CMAKE_BINARY_DIR}/gaf2c
+  ${CMAKE_SOURCE_DIR}/comex/src-common
   ${CMAKE_BINARY_DIR}/comex/src-armci
   #${CMAKE_BINARY_DIR}/tcgmsg
   ${PROJECT_SOURCE_DIR}/tcgmsg
   ${CMAKE_BINARY_DIR}/LinAlg/lapack+blas
-  ${CMAKE_BINARY_DIR} 
+  ${CMAKE_BINARY_DIR}
   ${CMAKE_BINARY_DIR}/global/testing)
 
 if (NOT MSVC)
@@ -53,7 +54,6 @@ set(ctargetlibs ${MPI_C_LIBRARIES} m)
 else()
 set(ctargetlibs ${MPI_C_LIBRARIES})
 endif()
-
 
 # -------------------------------------------------------------
 # Create include files from templates
@@ -229,60 +229,60 @@ target_link_libraries(getmem.x ga ${ctargetlibs} "-lrt -pthread")
 target_link_libraries(lock.x ga ${ctargetlibs} "-lrt -pthread")
 target_link_libraries(mtest.x ga ${ctargetlibs} "-lrt -pthread")
 if (NOT MSVC)
-   target_link_libraries(mulmatpatchc.x ga ${ctargetlibs} 
+   target_link_libraries(mulmatpatchc.x ga ${ctargetlibs}
      "-lrt -pthread")
 endif (NOT MSVC)
 target_link_libraries(normc.x ga ${ctargetlibs} "-lrt -pthread")
 target_link_libraries(ntestc.x ga ${ctargetlibs} "-lrt -pthread")
 target_link_libraries(ntestfc.x ga ${ctargetlibs} "-lrt -pthread")
 target_link_libraries(packc.x ga ${ctargetlibs} "-lrt -pthread")
-target_link_libraries(patch_enumc.x ga ${ctargetlibs} 
+target_link_libraries(patch_enumc.x ga ${ctargetlibs}
   "-lrt -pthread")
 target_link_libraries(perf2.x ga ${ctargetlibs} "-lrt -pthread")
 target_link_libraries(print.x ga ${ctargetlibs} "-lrt -pthread")
 target_link_libraries(scan_addc.x ga ${ctargetlibs} "-lrt -pthread")
-target_link_libraries(scan_copyc.x ga ${ctargetlibs} 
+target_link_libraries(scan_copyc.x ga ${ctargetlibs}
   "-lrt -pthread")
-target_link_libraries(simple_groups_commc.x ga ${ctargetlibs} 
+target_link_libraries(simple_groups_commc.x ga ${ctargetlibs}
   "-lrt -pthread")
 #target_link_libraries(sprsmatvec.x ga ${ctargetlibs})
 target_link_libraries(testc.x ga ${ctargetlibs} "-lrt -pthread")
-target_link_libraries(testmatmultc.x ga ${ctargetlibs} 
+target_link_libraries(testmatmultc.x ga ${ctargetlibs}
   "-lrt -pthread")
 target_link_libraries(testmult.x ga ${ctargetlibs} "-lrt -pthread")
-target_link_libraries(testmultrect.x ga ${ctargetlibs} 
+target_link_libraries(testmultrect.x ga ${ctargetlibs}
   "-lrt -pthread")
-# target_link_libraries(testmult.x ga ${ctargetlibs}) # repeated 
+# target_link_libraries(testmult.x ga ${ctargetlibs}) # repeated
 target_link_libraries(unpackc.x ga ${ctargetlibs} "-lrt -pthread")
 if (ENABLE_FORTRAN)
-  target_link_libraries(bin.x ga ${MPI_Fortran_LIBRARIES} 
+  target_link_libraries(bin.x ga ${MPI_Fortran_LIBRARIES}
      "-lrt -pthread")
 #  target_link_libraries(blktest.x ga ${MPI_Fortran_LIBRARIES})
-  target_link_libraries(d2test.x ga ${MPI_Fortran_LIBRARIES} 
+  target_link_libraries(d2test.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
   target_link_libraries(g2test.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
   target_link_libraries(g3test.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
-  target_link_libraries(ga_shift.x ga ${MPI_Fortran_LIBRARIES} 
+  target_link_libraries(ga_shift.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
-  target_link_libraries(ghosts.x ga ${MPI_Fortran_LIBRARIES} 
+  target_link_libraries(ghosts.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
-  target_link_libraries(jacobi.x ga ${MPI_Fortran_LIBRARIES} 
+  target_link_libraries(jacobi.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
 #  target_link_libraries(merge.x ga ${MPI_Fortran_LIBRARIES})
-  target_link_libraries(mir_perf1.x ga ${MPI_Fortran_LIBRARIES} 
+  target_link_libraries(mir_perf1.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
-  target_link_libraries(mir_perf2.x ga ${MPI_Fortran_LIBRARIES} 
+  target_link_libraries(mir_perf2.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
   target_link_libraries(mmatrix.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
 #  target_link_libraries(mulmatpatch.x ga ${MPI_Fortran_LIBRARIES})
   target_link_libraries(nb2test.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
-  target_link_libraries(nbtest.x ga ${MPI_Fortran_LIBRARIES} 
+  target_link_libraries(nbtest.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
-  target_link_libraries(ndim.x ga ${MPI_Fortran_LIBRARIES} 
+  target_link_libraries(ndim.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
 #  target_link_libraries(nga-onesided.x ga ${MPI_Fortran_LIBRARIES})
 #  target_link_libraries(nga-patch.x ga ${MPI_Fortran_LIBRARIES})
@@ -291,40 +291,40 @@ if (ENABLE_FORTRAN)
 #  target_link_libraries(nga_test.x ga ${MPI_Fortran_LIBRARIES})
 #  target_link_libraries(ngatest.x ga ${MPI_Fortran_LIBRARIES})
 #  target_link_libraries(nga-util.x ga ${MPI_Fortran_LIBRARIES})
-  target_link_libraries(patch2.x ga ${MPI_Fortran_LIBRARIES} 
+  target_link_libraries(patch2.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
-  target_link_libraries(patch_enumf.x ga ${MPI_Fortran_LIBRARIES} 
+  target_link_libraries(patch_enumf.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
-  target_link_libraries(patch.x ga ${MPI_Fortran_LIBRARIES} 
+  target_link_libraries(patch.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
-  target_link_libraries(perf.x ga ${MPI_Fortran_LIBRARIES} 
+  target_link_libraries(perf.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
-  target_link_libraries(perfmod.x ga ${MPI_Fortran_LIBRARIES} 
+  target_link_libraries(perfmod.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
-  target_link_libraries(perform.x ga ${MPI_Fortran_LIBRARIES} 
+  target_link_libraries(perform.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
-  target_link_libraries(pg2test.x ga ${MPI_Fortran_LIBRARIES} 
+  target_link_libraries(pg2test.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
 #  target_link_libraries(pg2testmatmult.x ga ${MPI_Fortran_LIBRARIES})
-  target_link_libraries(pgtest.x ga ${MPI_Fortran_LIBRARIES} 
+  target_link_libraries(pgtest.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
 #  target_link_libraries(pgtestmatmult.x ga ${MPI_Fortran_LIBRARIES})
-  target_link_libraries(random.x ga ${MPI_Fortran_LIBRARIES} 
+  target_link_libraries(random.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
-  target_link_libraries(scan.x ga ${MPI_Fortran_LIBRARIES} 
+  target_link_libraries(scan.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
   target_link_libraries(simple_groups_comm.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
-  target_link_libraries(simple_groups.x ga ${MPI_Fortran_LIBRARIES} 
+  target_link_libraries(simple_groups.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
-  target_link_libraries(sparse.x ga ${MPI_Fortran_LIBRARIES} 
+  target_link_libraries(sparse.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
   target_link_libraries(sprsmatmult.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
-  target_link_libraries(stride.x ga ${MPI_Fortran_LIBRARIES} 
+  target_link_libraries(stride.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
 #  target_link_libraries(testblas.x ga ${MPI_Fortran_LIBRARIES})
-  target_link_libraries(test.x ga ${MPI_Fortran_LIBRARIES} 
+  target_link_libraries(test.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
 #  target_link_libraries(testmatmult.x ga ${MPI_Fortran_LIBRARIES} ${linalg_lib})
   target_link_libraries(testsolve.x ga ${MPI_Fortran_LIBRARIES}
@@ -333,6 +333,6 @@ if (ENABLE_SCALAPACK)
   target_link_libraries(testspd.x ga ${MPI_Fortran_LIBRARIES})
   target_link_libraries(testeig.x ga ${MPI_Fortran_LIBRARIES})
 endif()
-  target_link_libraries(types-test.x ga ${MPI_Fortran_LIBRARIES} 
+  target_link_libraries(types-test.x ga ${MPI_Fortran_LIBRARIES}
     "-lrt -pthread")
 endif()

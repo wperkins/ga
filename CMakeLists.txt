@@ -4,7 +4,7 @@
 # description: implements a primative CMake build that can be used to build
 #              GA on Windows-based systems. Only MPI-based runtimes are
 #              supported.
-# 
+#
 # DISCLAIMER
 #
 # This material was prepared as an account of work sponsored by an
@@ -48,12 +48,38 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake-modules")
 message(status "CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
 include(GlobalArrays)
 
+if(UNIX AND NOT APPLE)
+  set(LINUX TRUE)
+endif()
+
+find_package(Threads REQUIRED)
+
+if(LINUX)
+  find_package(LibRT REQUIRED)
+  find_package(LibM REQUIRED)
+  if(LIBRT_LIBRARIES)
+    set(GLOBALARRAYS_LIBRARIES ${GLOBALARRAYS_LIBRARIES} ${LIBRT_LIBRARIES})
+  endif()
+  if(LIBM_LIBRARIES)
+    set(GLOBALARRAYS_LIBRARIES ${GLOBALARRAYS_LIBRARIES} ${LIBM_LIBRARIES})
+  endif()
+elseif(APPLE)
+  set(GLOBALARRAYS_LIBRARIES ${GLOBALARRAYS_LIBRARIES})
+endif()
+
 option(ENABLE_GPU_MEM "Use GPU memory hierarchy" ON)
 if (ENABLE_GPU_MEM)
   find_package(CUDA REQUIRED)
-  set(CUDA_SEPARABLE_COMPILATION ON)
-  CUDA_SELECT_NVCC_ARCH_FLAGS(ARCH_FLAGS 3.0 3.2 3.5 3.7 5.0 5.2 5.3 6.0 6.1 6.2 7.0)
-  list(APPEND CUDA_NVCC_FLAGS ${ARCH_FLAGS})
+  if(CUDA_FOUND)
+    message("CUDA library found")
+    add_definitions(-DCUDA_DEVICE)
+    add_definitions(-DUSE_DEVICE_MEM)
+    set(CUDA_SEPARABLE_COMPILATION ON)
+    CUDA_SELECT_NVCC_ARCH_FLAGS(ARCH_FLAGS 3.0 3.2 3.5 3.7 5.0 5.2 5.3 6.0 6.1 6.2 7.0)
+    list(APPEND CUDA_NVCC_FLAGS ${ARCH_FLAGS})
+  else()
+    message(FATAL_ERROR "CUDA Library not found.")
+  endif()
 endif()
 
 option (ENABLE_FORTRAN "Build Fortran interface" OFF)
@@ -88,6 +114,9 @@ enable_testing()
 find_package(MPI)
 
 add_definitions (-DHAVE_CONFIG_H=1)
+
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG -DMY_DEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG -DMY_DEBUG")
 
 # add user configuration options
 option (GA_RUNTIME "MPI runtime used to build GA" 'MPI_2SIDED')
@@ -131,8 +160,8 @@ int main() {
     int s[1];
     int * ${ac_kw} t = s;
     t[0] = 0;
-    return foo(t); 
-}   
+    return foo(t);
+}
 "
     HAVE_RESTRICT )
     IF( HAVE_RESTRICT )
@@ -225,7 +254,7 @@ check_function_exists("bzero" HAVE_BZERO)
 if (MSVC)
   add_definitions(/D NOMINMAX /D _CRT_SECURE_NO_WARNINGS /D _CRT_NONSTDC_NO_WARNINGS)
 endif()
-   
+
 # hardwire various GA configuration parameters. Use convention that parameters
 # are defined and set to 0 if not used
 set (CYGWIN 0)
@@ -279,7 +308,7 @@ endif()
 if (HAVE_LAPACK)
     set(linalg_lib ${linalg_lib} ${LAPACK_LIBRARIES})
 endif()
-    
+
 # check for availability of functions by seeing if small programs compile
 CHECK_C_SOURCE_COMPILES(
 "
@@ -381,7 +410,7 @@ else()
    set (F77_GETARG_ARGS "i,s")
    set (F77_GETARG_DECLS "external GETARG")
    set (F77_IARGC IARGC)
-endif() 
+endif()
 
 # Hardwire these settings. No way to check for Fortran integer size in CMake
 # (that we can find)
@@ -434,9 +463,9 @@ message(STATUS "CMAKE_COMMAND:${CMAKE_COMMAND}")
   add_custom_command(
     #OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/config.fh
     OUTPUT ${CMAKE_BINARY_DIR}/config.fh
-    #COMMAND ${CMAKE_COMMAND} -D INPUT:PATH="${CMAKE_CURRENT_SOURCE_DIR}/config.h" 
-    COMMAND ${CMAKE_COMMAND} -D INPUT:PATH="${CMAKE_BINARY_DIR}/config.h" 
-       -D OUTPUT:PATH="${CMAKE_CURRENT_BINARY_DIR}/config.fh" 
+    #COMMAND ${CMAKE_COMMAND} -D INPUT:PATH="${CMAKE_CURRENT_SOURCE_DIR}/config.h"
+    COMMAND ${CMAKE_COMMAND} -D INPUT:PATH="${CMAKE_BINARY_DIR}/config.h"
+       -D OUTPUT:PATH="${CMAKE_CURRENT_BINARY_DIR}/config.fh"
        #-P ${PROJECT_SOURCE_DIR}/tools/config_fh_from_h.cmake DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/config.h
        -P ${PROJECT_SOURCE_DIR}/tools/config_fh_from_h.cmake DEPENDS ${CMAKE_BINARY_DIR}/config.h
     #DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/config.h
@@ -487,7 +516,11 @@ add_library(ga
 # -------------------------------------------------------------
 
 set (CMAKE_REQUIRED_LIBRARIES lapack blas)
-target_link_libraries(ga ${linalg_lib} ${GA_EXTRA_LIBS})
+if(ENABLE_GPU_MEM)
+  target_link_libraries(ga ${linalg_lib} ${GA_EXTRA_LIBS} ${CUDA_LIBRARIES})
+else()
+  target_link_libraries(ga ${linalg_lib} ${GA_EXTRA_LIBS})
+endif()
 
 install (TARGETS
   ga

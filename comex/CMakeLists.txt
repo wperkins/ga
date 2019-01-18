@@ -4,7 +4,7 @@
 # description: implements a primative CMake build that can be used to build
 #              GA on Windows-based systems. Only MPI-based runtimes are
 #              supported.
-# 
+#
 # DISCLAIMER
 #
 # This material was prepared as an account of work sponsored by an
@@ -398,8 +398,6 @@ CHECK_FUNCTION_EXISTS(sched_setaffinity
 CHECK_FUNCTION_EXISTS(pthread_setaffinity_np
      HAVE_PTHREAD_SETAFFINITY_NP)
 
-
-
 # generate config.h header file
 CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/cmake/config.h.in
                 #${CMAKE_CURRENT_SOURCE_DIR}/config.h )
@@ -424,12 +422,16 @@ set(ARMCI_HEADERS
   src-armci/parmci.h
 )
 
+set(COMEX_COMMON_HEADERS
+  ${CMAKE_CURRENT_SOURCE_DIR}/src-common/comex_util.h
+)
 set(COMEX_DEVICE_HEADERS
   src-common/comex.h
 )
 
 install (FILES
   ${ARMCI_HEADERS}
+  ${COMEX_COMMON_HEADERS}
   ${COMEX_DEVICE_HEADERS}
   DESTINATION include
 )
@@ -447,11 +449,13 @@ set(ARMCI_FILES
 )
 
 add_library(armci_comex OBJECT
+  ${COMEX_COMMON_HEADERS}
   ${ARMCI_FILES}
   ${COMEX_DEVICE}
 )
 
 add_library(armci
+  ${COMEX_COMMON_HEADERS}
   ${ARMCI_FILES}
   ${COMEX_DEVICE}
 )
@@ -464,6 +468,7 @@ install (TARGETS
 )
 
 add_library(comex
+ ${COMEX_COMMON_HEADERS}
  ${COMEX_DEVICE}
 )
 

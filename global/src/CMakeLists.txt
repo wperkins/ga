@@ -1,10 +1,10 @@
-#
+
 # module: CMakeLists.txt
 # author: Bruce Palmer
 # description: implements a primative CMake build that can be used to build
 #              GA on Windows-based systems. Only MPI-based runtimes are
 #              supported.
-# 
+#
 # DISCLAIMER
 #
 # This material was prepared as an account of work sponsored by an
@@ -73,6 +73,7 @@ set(WAPI_FILES
 include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR}
                     ${CMAKE_BINARY_DIR}/gaf2c
                     ${CMAKE_BINARY_DIR}/ma
+                    ${CMAKE_SOURCE_DIR}/comex/src-common
                     ${CMAKE_BINARY_DIR}/comex/src-armci
                     ${CMAKE_CURRENT_BINARY_DIR}/comex/src-armci
                     ${PROJECT_SOURCE_DIR}/tcgmsg
@@ -97,6 +98,7 @@ set(GA_FILES
   ga_solve_seq.c
   ga_symmetr.c
   ga_trace.c
+  ga_util.c
   global.nalg.c
   global.npatch.c
   global.periodic.c
@@ -116,18 +118,18 @@ set(GA_FILES
 
 add_custom_command(
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/ga-wapi.h
-  COMMAND ${CMAKE_COMMAND} -D INPUT:PATH="${CMAKE_CURRENT_SOURCE_DIR}/ga-papi.h" 
-     #-D OUTPUT:PATH="${CMAKE_CURRENT_SOURCE_DIR}/ga-wapi.h" 
-     -D OUTPUT:PATH="${CMAKE_CURRENT_BINARY_DIR}/ga-wapi.h" 
+  COMMAND ${CMAKE_COMMAND} -D INPUT:PATH="${CMAKE_CURRENT_SOURCE_DIR}/ga-papi.h"
+     #-D OUTPUT:PATH="${CMAKE_CURRENT_SOURCE_DIR}/ga-wapi.h"
+     -D OUTPUT:PATH="${CMAKE_CURRENT_BINARY_DIR}/ga-wapi.h"
      -P ${PROJECT_SOURCE_DIR}/tools/ga_papi_to_wapi.cmake
   DEPENDS ga-papi.h
 )
 
 add_custom_command(
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/ga-wapidefs.h
-  COMMAND ${CMAKE_COMMAND} -D INPUT:PATH="${CMAKE_CURRENT_SOURCE_DIR}/ga-papi.h" 
-     #-D OUTPUT:PATH="${CMAKE_CURRENT_SOURCE_DIR}/ga-wapidefs.h" 
-     -D OUTPUT:PATH="${CMAKE_CURRENT_BINARY_DIR}/ga-wapidefs.h" 
+  COMMAND ${CMAKE_COMMAND} -D INPUT:PATH="${CMAKE_CURRENT_SOURCE_DIR}/ga-papi.h"
+     #-D OUTPUT:PATH="${CMAKE_CURRENT_SOURCE_DIR}/ga-wapidefs.h"
+     -D OUTPUT:PATH="${CMAKE_CURRENT_BINARY_DIR}/ga-wapidefs.h"
      -P ${PROJECT_SOURCE_DIR}/tools/ga_papi_to_wapidefs.cmake
   DEPENDS ga-papi.h
 )
@@ -172,12 +174,20 @@ CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/globalp.h
 CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/gaconfig.h
                 ${CMAKE_CURRENT_BINARY_DIR}/gaconfig.h)
 
+if (ENABLE_GPU_MEM)
+
+  CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/ga_util.h
+                ${CMAKE_CURRENT_BINARY_DIR}/ga_util.h)
+endif()
+
   add_library(ga_src OBJECT
-  ${CMAKE_CURRENT_BINARY_DIR}/ga-wapi.h
-  ${CMAKE_CURRENT_BINARY_DIR}/ga-wapidefs.h
+    ${CMAKE_CURRENT_BINARY_DIR}/ga-wapi.h
+    ${CMAKE_CURRENT_BINARY_DIR}/ga-wapidefs.h
     ${GA_FILES}
     ${CUDA_INTERFACE_FILES}
   )
+
+target_include_directories(ga_src PUBLIC ${CUDA_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})
 
 if(ENABLE_FORTRAN)
   ADD_DEPENDENCIES(ga_src GenerateConfigFH)
@@ -186,6 +196,11 @@ endif()
 # -------------------------------------------------------------
 # Global Arrays header installation
 # -------------------------------------------------------------
+set (InstallFiles "")
+if (ENABLE_GPU_MEM)
+list(APPEND InstallFiles "ga_util.h")
+endif()
+
 install(FILES
 #  abstract_ops.h
 #  base.h
@@ -196,6 +211,7 @@ install(FILES
   ga-mpi.h
   ga-papi.h
 #  ga_profile.h
+  ga_util.h
 #  ga-wapidefs.h
   #ga-wapi.h
 #  global.h
@@ -206,5 +222,3 @@ install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/global.fh
   DESTINATION include
 )
-
-

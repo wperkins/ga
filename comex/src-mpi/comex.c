@@ -31,6 +31,11 @@
 /* 3rd party headers */
 #include <mpi.h>
 
+#ifdef USE_DEVICE_MEM
+#include <cuda.h>
+#include <cuda_runtime.h>
+#endif
+
 /* our headers */
 #include "comex.h"
 #include "comex_impl.h"
@@ -43,7 +48,6 @@
 #if DEBUG_TO_FILE
 #   define printf(...) fprintf(my_file, __VA_ARGS__); fflush(my_file);
 #endif
-
 
 /* exported state */
 local_state l_state;
@@ -90,7 +94,6 @@ static void  _unlock_request_handler(header_t *header, int proc);
 static void  _lq_push(int rank, int id, char *notify);
 static int   _lq_progress(void);
 
-
 int _my_isend(void *buf, int count, MPI_Datatype datatype, int dest, int tag,
         MPI_Comm comm, MPI_Request *request)
 {
@@ -129,7 +132,6 @@ int _my_isend(void *buf, int count, MPI_Datatype datatype, int dest, int tag,
     return MPI_Isend(buf, count, datatype, dest, tag, comm, request);
 }
 
-
 static void* _my_memcpy(void *dest, const void *src, size_t n)
 {
 #if DEBUG
@@ -138,7 +140,6 @@ static void* _my_memcpy(void *dest, const void *src, size_t n)
 #endif
     return memcpy(dest, src, n);
 }
-
 
 static void* _my_malloc(size_t size)
 {
@@ -162,7 +163,6 @@ static void* _my_malloc(size_t size)
     return memptr;
 }
 
-
 static void _my_free(void *ptr)
 {
 #if DEBUG
@@ -174,7 +174,6 @@ static void _my_free(void *ptr)
 #if DEBUG
 #   define _my_free(ARG) _my_free(ARG); printf(#ARG)
 #endif
-
 
 static void _mq_push(int dest, char *message, int count)
 {
@@ -200,7 +199,6 @@ static void _mq_push(int dest, char *message, int count)
     assert(l_state.mq_size >= 0);
 }
 
-
 static int _mq_test()
 {
     int flag;
@@ -216,7 +214,6 @@ static int _mq_test()
 
     return flag;
 }
-
 
 static void _mq_pop()
 {
@@ -241,7 +238,6 @@ static void _mq_pop()
     assert(l_state.mq_size >= 0);
 }
 
-
 static void _gq_push(char *notify)
 {
     get_t *item = _my_malloc(sizeof(get_t));
@@ -249,7 +245,6 @@ static void _gq_push(char *notify)
     item->notify_address = notify;
     _gq_push_item(item);
 }
-
 
 static void _gq_push_item(get_t *item)
 {
@@ -263,7 +258,6 @@ static void _gq_push_item(get_t *item)
         l_state.gq_tail = item;
     }
 }
-
 
 /* iterate over get queue and pop completed get requests
  * return true if there are get requests remaining */
@@ -292,7 +286,6 @@ static int _gq_test()
     return NULL != l_state.gq_tail;
 }
 
-
 static void _make_progress_if_needed(void)
 {
 #if DEBUG
@@ -303,7 +296,6 @@ static void _make_progress_if_needed(void)
         comex_make_progress();
     }
 }
-
 
 void comex_make_progress(void)
 {
@@ -430,7 +422,6 @@ void comex_make_progress(void)
     } while (iprobe_flag || get_flag || l_state.mq_size);
 }
 
-
 static void _put_handler(header_t *header, char *payload)
 {
 #if DEBUG
@@ -445,7 +436,6 @@ static void _put_handler(header_t *header, char *payload)
     assert(OP_PUT == header->operation);
     _my_memcpy(header->remote_address, payload, header->length);
 }
-
 
 static void _get_request_handler(header_t *request_header, int proc)
 {
@@ -464,7 +454,7 @@ static void _get_request_handler(header_t *request_header, int proc)
 #endif
 
     assert(OP_GET_REQUEST == request_header->operation);
-    
+
     /* reuse the header, just change the OP */
     /* NOTE: it gets deleted anyway when we return from this handler */
     request_header->operation = OP_GET_RESPONSE;
@@ -476,7 +466,6 @@ static void _get_request_handler(header_t *request_header, int proc)
 
     _mq_push(proc, message, sizeof(header_t) + request_header->length);
 }
-
 
 static void _get_response_handler(header_t *header, char *payload)
 {
@@ -493,7 +482,6 @@ static void _get_response_handler(header_t *header, char *payload)
     _my_memcpy(header->local_address, payload, header->length);
     *((char*)(header->notify_address)) = 0;
 }
-
 
 static void _acc_handler(header_t *header, char *payload)
 {
@@ -529,7 +517,6 @@ static void _acc_handler(header_t *header, char *payload)
             payload+sizeof_scale, payload);
 }
 
-
 static void _fence_request_handler(header_t *header, int proc)
 {
     header_t *response_header = NULL;
@@ -555,7 +542,6 @@ static void _fence_request_handler(header_t *header, int proc)
     _mq_push(proc, (char*)response_header, sizeof(header_t));
 }
 
-
 static void _fence_response_handler(header_t *header, int proc)
 {
 #if DEBUG
@@ -565,7 +551,6 @@ static void _fence_response_handler(header_t *header, int proc)
     assert(header);
     --(*((int*)(header->notify_address)));
 }
-
 
 /* barrier requests are always queued for later */
 static void _barrier_request_handler(header_t *header, int proc)
@@ -592,7 +577,6 @@ static void _barrier_request_handler(header_t *header, int proc)
     }
 }
 
-
 static void _barrier_response_handler(header_t *header, int proc)
 {
 #if DEBUG
@@ -601,7 +585,6 @@ static void _barrier_response_handler(header_t *header, int proc)
 
     ++(*((char*)header->notify_address));
 }
-
 
 int comex_put(void *src, void *dst, int bytes, int proc, comex_group_t group)
 {
@@ -615,7 +598,6 @@ int comex_put(void *src, void *dst, int bytes, int proc, comex_group_t group)
     return COMEX_SUCCESS;
 }
 
-
 int comex_get(void *src, void *dst, int bytes, int proc, comex_group_t group)
 {
     CHECK_GROUP(group,proc);
@@ -627,7 +609,6 @@ int comex_get(void *src, void *dst, int bytes, int proc, comex_group_t group)
     comex_wait_proc(proc, group);
     return COMEX_SUCCESS;
 }
-
 
 static int _put_nbi(void *src, void *dst, int bytes, int proc)
 {
@@ -662,7 +643,6 @@ static int _put_nbi(void *src, void *dst, int bytes, int proc)
 
     return COMEX_SUCCESS;
 }
-
 
 /* TODO: need data type as a parameter before using this function! */
 static int _acc_nbi(void *src, void *dst, int bytes, int proc,
@@ -731,7 +711,6 @@ static int _acc_nbi(void *src, void *dst, int bytes, int proc,
     return COMEX_SUCCESS;
 }
 
-
 static int _get_nbi(void *src, void *dst, int bytes, int proc)
 {
     header_t *header = NULL;
@@ -765,7 +744,6 @@ static int _get_nbi(void *src, void *dst, int bytes, int proc)
 
     return COMEX_SUCCESS;
 }
-
 
 int comex_puts(
         void *src_ptr, int *src_stride_ar,
@@ -831,8 +809,8 @@ int comex_puts(
                 dst_bvalue[j] = 0;
             }
         }
-        
-        _put_nbi((char *)src_ptr + src_idx, 
+
+        _put_nbi((char *)src_ptr + src_idx,
                 (char *)dst_ptr + dst_idx, count[0], proc);
     }
 
@@ -840,7 +818,6 @@ int comex_puts(
 
     return COMEX_SUCCESS;
 }
-
 
 int comex_gets(
         void *src_ptr, int *src_stride_ar,
@@ -896,7 +873,7 @@ int comex_gets(
         }
 
         dst_idx = 0;
-        
+
         for(j=1; j<=stride_levels; j++) {
 	  dst_idx += (long) dst_bvalue[j] * (long) dst_stride_ar[j-1];
             if((i+1) % dst_bunit[j] == 0) {
@@ -906,16 +883,15 @@ int comex_gets(
                 dst_bvalue[j] = 0;
             }
         }
-        
-        _get_nbi((char *)src_ptr + src_idx, 
+
+        _get_nbi((char *)src_ptr + src_idx,
                 (char *)dst_ptr + dst_idx, count[0], proc);
     }
-    
+
     comex_wait_proc(proc, group);
-    
+
     return COMEX_SUCCESS;
 }
-
 
 int comex_acc(
         int datatype, void *scale,
@@ -923,11 +899,10 @@ int comex_acc(
         int proc, comex_group_t group)
 {
 
-    comex_accs(datatype, scale, src_ptr, NULL, dst_ptr, 
+    comex_accs(datatype, scale, src_ptr, NULL, dst_ptr,
             NULL, &bytes, 0, proc, group);
     return COMEX_SUCCESS;
 }
-
 
 int comex_accs(
         int datatype, void *scale,
@@ -994,8 +969,8 @@ int comex_accs(
                 dst_bvalue[j] = 0;
             }
         }
-        
-        _acc_nbi((char *)src_ptr + src_idx, 
+
+        _acc_nbi((char *)src_ptr + src_idx,
                 (char *)dst_ptr + dst_idx, count[0], proc,
                 datatype, scale);
     }
@@ -1004,7 +979,6 @@ int comex_accs(
 
     return COMEX_SUCCESS;
 }
-
 
 static void _send_fence_message(int proc, int *notify)
 {
@@ -1027,7 +1001,6 @@ static void _send_fence_message(int proc, int *notify)
     _mq_push(proc, (char*)header, sizeof(header_t));
     _make_progress_if_needed();
 }
-
 
 int comex_fence_all(comex_group_t group)
 {
@@ -1088,7 +1061,6 @@ int comex_fence_all(comex_group_t group)
     return COMEX_SUCCESS;
 }
 
-
 int comex_fence_proc(int proc, comex_group_t group)
 {
     int *notify = NULL;
@@ -1126,7 +1098,6 @@ int comex_fence_proc(int proc, comex_group_t group)
 
     return COMEX_SUCCESS;
 }
-
 
 int comex_barrier(comex_group_t comex_group)
 {
@@ -1326,14 +1297,12 @@ int comex_barrier(comex_group_t comex_group)
     return COMEX_SUCCESS;
 }
 
-
 void comex_error(char *msg, int code)
 {
     fprintf(stderr, "%s", msg);
     fprintf(stderr,"Received an Error in Communication\n");
     MPI_Abort(l_state.world_comm, code);
 }
-
 
 void *comex_malloc_local(size_t size)
 {
@@ -1343,7 +1312,6 @@ void *comex_malloc_local(size_t size)
 
     return ptr;
 }
-
 
 int comex_free_local(void *ptr)
 {
@@ -1356,12 +1324,11 @@ int comex_free_local(void *ptr)
     return COMEX_SUCCESS;
 }
 
-
 int comex_init()
 {
     int status;
     int init_flag;
-    
+
     if (initialized) {
         return COMEX_SUCCESS;
     }
@@ -1371,11 +1338,11 @@ int comex_init()
     status = MPI_Initialized(&init_flag);
     assert(MPI_SUCCESS == status);
     assert(init_flag);
-    
+
     /* Duplicate the World Communicator */
     status = MPI_Comm_dup(MPI_COMM_WORLD, &(l_state.world_comm));
     assert(MPI_SUCCESS == status);
-    assert(l_state.world_comm); 
+    assert(l_state.world_comm);
 
     /* My Rank */
     status = MPI_Comm_rank(l_state.world_comm, &(l_state.rank));
@@ -1386,7 +1353,7 @@ int comex_init()
     status = MPI_Comm_size(l_state.world_comm, &(l_state.size));
     assert(MPI_SUCCESS == status);
     comex_nproc = l_state.size;
-    
+
     /* groups */
     comex_group_init();
 
@@ -1415,27 +1382,24 @@ int comex_init()
     return COMEX_SUCCESS;
 }
 
-
 int comex_init_args(int *argc, char ***argv)
 {
     int rc;
     int init_flag;
-    
+
     MPI_Initialized(&init_flag);
-    
+
     if(!init_flag)
         MPI_Init(argc, argv);
-    
+
     rc = comex_init();
     return rc;
 }
-
 
 int comex_initialized()
 {
     return initialized;
 }
-
 
 int comex_finalize()
 {
@@ -1460,7 +1424,6 @@ int comex_finalize()
     return COMEX_SUCCESS;
 }
 
-
 int comex_nbput(
         void *src, void *dst, int bytes,
         int proc, comex_group_t group,
@@ -1471,7 +1434,6 @@ int comex_nbput(
     return rc;
 }
 
-
 int comex_nbget(
         void *src, void *dst, int bytes,
         int proc, comex_group_t group,
@@ -1481,7 +1443,6 @@ int comex_nbget(
     rc = comex_get(src, dst, bytes, proc, group);
     return COMEX_SUCCESS;
 }
-
 
 int comex_nbacc(
         int datatype, void *scale,
@@ -1494,20 +1455,17 @@ int comex_nbacc(
     return rc;
 }
 
-
 int comex_wait_proc(int proc, comex_group_t group)
 {
     comex_wait_all(group);
     return COMEX_SUCCESS;
 }
 
-
 int comex_wait(comex_request_t* hdl)
 {
     comex_wait_all(COMEX_GROUP_WORLD);
     return COMEX_SUCCESS;
 }
-
 
 int comex_test(comex_request_t* hdl, int *status)
 {
@@ -1516,42 +1474,38 @@ int comex_test(comex_request_t* hdl, int *status)
     return COMEX_SUCCESS;
 }
 
-
 int comex_wait_all(comex_group_t group)
 {
     comex_make_progress();
     return COMEX_SUCCESS;
 }
 
-
 int comex_nbputs(
         void *src_ptr, int *src_stride_ar,
         void *dst_ptr, int *dst_stride_ar,
-        int *count, int stride_levels, 
+        int *count, int stride_levels,
         int proc, comex_group_t group,
         comex_request_t *hdl)
 {
     int rc;
-    rc = comex_puts(src_ptr, src_stride_ar, dst_ptr, 
+    rc = comex_puts(src_ptr, src_stride_ar, dst_ptr,
             dst_stride_ar, count, stride_levels, proc, group);
     return rc;
 
 }
 
-
 int comex_nbgets(
         void *src_ptr, int *src_stride_ar,
         void *dst_ptr, int *dst_stride_ar,
-        int *count, int stride_levels, 
+        int *count, int stride_levels,
         int proc, comex_group_t group,
-        comex_request_t *hdl) 
+        comex_request_t *hdl)
 {
     int rc;
-    rc = comex_gets(src_ptr, src_stride_ar, dst_ptr, 
+    rc = comex_gets(src_ptr, src_stride_ar, dst_ptr,
             dst_stride_ar, count,stride_levels, proc, group);
     return rc;
 }
-
 
 int comex_nbaccs(
         int datatype, void *scale,
@@ -1567,9 +1521,7 @@ int comex_nbaccs(
     return rc;
 }
 
-
 /* Vector Calls */
-
 
 int comex_putv(
         comex_giov_t *iov, int iov_len,
@@ -1589,7 +1541,6 @@ int comex_putv(
     return COMEX_SUCCESS;
 }
 
-
 int comex_getv(
         comex_giov_t *iov, int iov_len,
         int proc, comex_group_t group)
@@ -1607,7 +1558,6 @@ int comex_getv(
     }
     return COMEX_SUCCESS;
 }
-
 
 int comex_accv(
         int datatype, void *scale,
@@ -1628,7 +1578,6 @@ int comex_accv(
     return COMEX_SUCCESS;
 }
 
-
 int comex_nbputv(
         comex_giov_t *iov, int iov_len,
         int proc, comex_group_t group,
@@ -1638,7 +1587,6 @@ int comex_nbputv(
     rc = comex_putv(iov, iov_len, proc, group);
     return rc;
 }
-
 
 int comex_nbgetv(
         comex_giov_t *iov, int iov_len,
@@ -1650,7 +1598,6 @@ int comex_nbgetv(
     return rc;
 }
 
-
 int comex_nbaccv(
         int datatype, void *scale,
         comex_giov_t *iov, int iov_len,
@@ -1661,7 +1608,6 @@ int comex_nbaccv(
     rc = comex_accv(datatype, scale, iov, iov_len, proc, group);
     return rc;
 }
-
 
 int comex_rmw(
         int comex_op, void *ploc, void *prem, int extra,
@@ -1728,7 +1674,7 @@ int comex_rmw(
     _my_memcpy(message+sizeof(header_t), payload, length);
 
     _mq_push(proc, (char*)message, sizeof(header_t)+length);
-    
+
     while (*notify > 0) {
         comex_make_progress();
 #if DEBUG
@@ -1743,7 +1689,6 @@ int comex_rmw(
 
     return COMEX_SUCCESS;
 }
-
 
 static void _fetch_and_add_request_handler(header_t *request_header, char *payload, int proc)
 {
@@ -1762,7 +1707,7 @@ static void _fetch_and_add_request_handler(header_t *request_header, char *paylo
 #endif
 
     assert(OP_FETCH_AND_ADD_REQUEST == request_header->operation);
-    
+
     /* reuse the header, just change the OP */
     /* NOTE: it gets deleted anyway when we return from this handler */
     request_header->operation = OP_FETCH_AND_ADD_RESPONSE;
@@ -1787,7 +1732,6 @@ static void _fetch_and_add_request_handler(header_t *request_header, char *paylo
     _mq_push(proc, message, sizeof(header_t) + request_header->length);
 }
 
-
 static void  _fetch_and_add_response_handler(header_t *header, char *payload)
 {
 #if DEBUG
@@ -1803,7 +1747,6 @@ static void  _fetch_and_add_response_handler(header_t *header, char *payload)
     _my_memcpy(header->local_address, payload, header->length);
     *((char*)(header->notify_address)) = 0;
 }
-
 
 static void _swap_request_handler(header_t *header, char *payload, int proc)
 {
@@ -1840,7 +1783,6 @@ static void _swap_request_handler(header_t *header, char *payload, int proc)
     _mq_push(proc, message, sizeof(header_t) + header->length);
 }
 
-
 static void  _swap_response_handler(header_t *header, char *payload)
 {
 #if DEBUG
@@ -1857,7 +1799,6 @@ static void  _swap_response_handler(header_t *header, char *payload)
     *((char*)(header->notify_address)) = 0;
 }
 
-
 static void _lock_request_handler(header_t *header, int proc)
 {
 #if DEBUG
@@ -1868,7 +1809,6 @@ static void _lock_request_handler(header_t *header, int proc)
     _lq_push(proc, header->length, header->notify_address);
 }
 
-
 static void _lock_response_handler(header_t *header)
 {
 #if DEBUG
@@ -1878,7 +1818,6 @@ static void _lock_response_handler(header_t *header)
 
     *((char*)header->notify_address) = 0;
 }
-
 
 static void _unlock_request_handler(header_t *header, int proc)
 {
@@ -1893,7 +1832,6 @@ static void _unlock_request_handler(header_t *header, int proc)
     assert(l_state.mutexes[header->length] == proc);
     l_state.mutexes[header->length] = -1;
 }
-
 
 static void _lq_push(int rank, int id, char *notify)
 {
@@ -1926,7 +1864,6 @@ static void _lq_push(int rank, int id, char *notify)
         l_state.lq_tail = lock;
     }
 }
-
 
 static int _lq_progress(void)
 {
@@ -1994,7 +1931,6 @@ static int _lq_progress(void)
     return needs_progress;
 }
 
-
 /* Mutex Operations */
 int comex_create_mutexes(int num)
 {
@@ -2021,7 +1957,6 @@ int comex_create_mutexes(int num)
 
     return COMEX_SUCCESS;
 }
-
 
 int comex_destroy_mutexes()
 {
@@ -2067,7 +2002,6 @@ int comex_destroy_mutexes()
     return COMEX_SUCCESS;
 }
 
-
 int comex_lock(int mutex, int proc)
 {
     header_t *header = NULL;
@@ -2101,7 +2035,6 @@ int comex_lock(int mutex, int proc)
     return COMEX_SUCCESS;
 }
 
-
 int comex_unlock(int mutex, int proc)
 {
 #if DEBUG
@@ -2122,13 +2055,12 @@ int comex_unlock(int mutex, int proc)
     return COMEX_SUCCESS;
 }
 
-
 int comex_malloc(void **ptrs, size_t size, comex_group_t group)
 {
     comex_igroup_t *igroup = NULL;
     MPI_Comm comm = MPI_COMM_NULL;
     int comm_rank = -1;
-    int rc = MPI_SUCCESS; 
+    int rc = MPI_SUCCESS;
 
 #if DEBUG
     printf("[%d] comex_malloc_group(ptrs=%p, size=%ld, ...)\n",
@@ -2138,7 +2070,7 @@ int comex_malloc(void **ptrs, size_t size, comex_group_t group)
     /* preconditions */
     assert(ptrs);
     assert(group >= 0);
-   
+
     igroup = comex_get_igroup_from_group(group);
     comm = igroup->comm;
     assert(comm != MPI_COMM_NULL);
@@ -2146,7 +2078,7 @@ int comex_malloc(void **ptrs, size_t size, comex_group_t group)
 
     /* allocate and register segment */
     ptrs[comm_rank] = comex_malloc_local(sizeof(char)*size);
-  
+
     /* exchange buffer address */
     comex_barrier(group); /* end ARMCI epoch, enter MPI epoch */
     rc = MPI_Allgather(MPI_IN_PLACE, 0, MPI_CHAR, ptrs, SIZEOF_VOIDP, MPI_CHAR, comm);
@@ -2168,7 +2100,6 @@ int comex_malloc(void **ptrs, size_t size, comex_group_t group)
     return COMEX_SUCCESS;
 }
 
-
 int comex_free(void *ptr, comex_group_t group)
 {
     comex_igroup_t *igroup = NULL;
@@ -2189,4 +2120,3 @@ int comex_free(void *ptr, comex_group_t group)
 
     return COMEX_SUCCESS;
 }
-

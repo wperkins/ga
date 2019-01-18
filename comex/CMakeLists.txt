@@ -40,6 +40,11 @@ option (COMEX_NETWORK_MPI_PT "use MPI progress threads protocol for communicatio
 #include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR} src-common)
 include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR}/src-common
                            ${CMAKE_CURRENT_BINARY_DIR}
+
+if(ENABLE_GPU_MEM)
+  include_directories(BEFORE ${CUDA_INCLUDE_DIRS})
+endif()
+
 )
 if (MPI_TS)
   set(COMEX_DEVICE

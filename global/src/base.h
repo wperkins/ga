@@ -2,17 +2,19 @@
 #include "armci.h"
 #include "gaconfig.h"
 #include "typesf2c.h"
+#include "ga_util.h"
 
 extern int _max_global_array;
 extern Integer GAme, GAnproc;
 extern int GA_Default_Proc_Group;
 extern int** GA_Update_Flags;
 extern int* GA_Update_Signal;
-extern short int _ga_irreg_flag; 
+extern short int _ga_irreg_flag;
 extern Integer GA_Debug_flag;
 
 #define FNAM        31              /* length of array names   */
 #define CACHE_SIZE  512             /* size of the cache inside GA DS*/
+#define MAX_DEVICE 32                  /* max number of gpus per node */
 
 #ifdef __crayx1
 #define __CRAYX1_PRAGMA _Pragma
@@ -84,32 +86,39 @@ typedef struct {
 #ifdef ENABLE_CHECKPOINT
        int record_id;               /* record id for writing ga to disk     */
 #endif
+#ifdef USE_DEVICE_MEM
+       Integer dev_count;               /* total gpu count on the host          */
+       int dev_id[MAX_DEVICE];         /* Device(gpu) ids, bound for this type         */
+       // char **dev_ptr;              /* ptr for gpu allocation               */
+       Integer on_device[MAX_DEVICE];            /* flag that device holds/will hold data */
+#endif
 } global_array_t;
 
 enum property_type { NO_PROPERTY,
                      READ_ONLY
 };
 
-extern global_array_t *_ga_main_data_structure; 
-extern proc_list_t *_proc_list_main_data_structure; 
+extern global_array_t *_ga_main_data_structure;
+extern proc_list_t *_proc_list_main_data_structure;
+#ifdef USE_DEVICE_MEM
+extern llist_t *_ga_active_data_block;    /* l-list of active ga data structure */
+#endif
 /*\
  *The following statement had to be moved here because of a problem in the c
- *compiler on SV1. The problem is that when a c file is compiled with a 
+ *compiler on SV1. The problem is that when a c file is compiled with a
  *-htaskprivate option on SV1, all global objects are given task-private status
  *even static variables are supposed to be initialized and given a task-private
- *memory/status. Somehow SV1 fails to do this for global variables that are 
+ *memory/status. Somehow SV1 fails to do this for global variables that are
  *initialized during declaration.
- *So to handle that,we cannot initialize global variables to be able to run 
+ *So to handle that,we cannot initialize global variables to be able to run
  *on SV1.
 \*/
 extern global_array_t *GA;
 extern proc_list_t *PGRP_LIST;
 
-
 #define ERR_STR_LEN 256               /* length of string for error reporting */
 
 /**************************** MACROS ************************************/
-
 
 #define ga_check_handleM(g_a, string) \
 {\

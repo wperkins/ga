@@ -5,6 +5,7 @@
 #include <mpi.h>
 
 #include <stdlib.h>
+#include "comex_util.h"
 
 #if defined(__cplusplus) || defined(c_plusplus)
 extern "c" {
@@ -20,6 +21,10 @@ typedef struct {
 typedef int comex_request_t;
 
 typedef int comex_group_t;
+// #ifdef USE_DEVICE_MEM
+extern int _my_node_id;
+extern int _my_local_rank;
+// #endif
 
 #define COMEX_GROUP_WORLD 0
 #define COMEX_GROUP_NULL -1
@@ -142,9 +147,9 @@ extern int comex_group_comm(comex_group_t group, MPI_Comm *comm);
  * Translates the ranks of processes in one group to those in another group.
  *
  * @param[in] n the number of ranks in the ranks_from and ranks_to arrays
- * @param[in] group_from the group to translate ranks from 
+ * @param[in] group_from the group to translate ranks from
  * @param[in] ranks_from array of zer or more valid ranks in group_from
- * @param[in] group_to the group to translate ranks to 
+ * @param[in] group_to the group to translate ranks to
  * @param[out] ranks_to array of corresponding ranks in group_to
  * @return COMEX_SUCCESS on sucess
  */

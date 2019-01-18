@@ -3,14 +3,13 @@
 #endif
 
 /*************************************************************************\
- Purpose:   File global.nalg.c contains a set of linear algebra routines 
-            that operate on n-dim global arrays in the SPMD mode. 
- 
+ Purpose:   File global.nalg.c contains a set of linear algebra routines
+            that operate on n-dim global arrays in the SPMD mode.
+
  Date: 10.22.98
  Author: Jarek Nieplocha
 \************************************************************************/
 
- 
 #if HAVE_STDIO_H
 #   include <stdio.h>
 #endif
@@ -24,6 +23,10 @@
 #include "ga-papi.h"
 #include "ga-wapi.h"
 #include "base.h"
+#ifdef USE_DEVICE_MEM
+#include <cuda.h>
+#include <cuda_runtime.h>
+#endif
 
 #ifdef MSG_COMMS_MPI
 extern ARMCI_Group* ga_get_armci_group_(int);
@@ -48,7 +51,6 @@ int _i;\
          *pelems *= hi[_i]-lo[_i]+1;\
       }\
 }
-
 
 #if HAVE_SYS_WEAK_ALIAS_PRAGMA
 #   pragma weak wnga_zero = pnga_zero
@@ -126,7 +128,7 @@ void pnga_zero(Integer g_a)
 
       /* release access to the data */
       pnga_release_update(g_a, _lo, _hi);
-    } 
+    }
   } else {
     pnga_access_block_segment_ptr(g_a, me, &ptr, &elems);
 /*     switch (type){ */
@@ -169,7 +171,6 @@ void pnga_zero(Integer g_a)
   if(local_sync_end)pnga_pgroup_sync(p_handle);
 }
 
-
 /*\ COPY ONE GLOBAL ARRAY INTO ANOTHER
 \*/
 #if HAVE_SYS_WEAK_ALIAS_PRAGMA
@@ -185,7 +186,6 @@ Integer blocks[MAXDIM], block_dims[MAXDIM];
 char *ptr_a, *ptr_b;
 int local_sync_begin,local_sync_end,use_put;
 _iterator_hdl hdl;
-
 
    Integer _dims[MAXDIM];
    Integer _ld[MAXDIM-1];
@@ -227,7 +227,7 @@ _iterator_hdl hdl;
    if(type != typeb) pnga_error("types not the same", g_b);
    if(ndim != ndimb) pnga_error("dimensions not the same", ndimb);
 
-   for(i=0; i< ndim; i++)if(_dims[i]!=dimsb[i]) 
+   for(i=0; i< ndim; i++)if(_dims[i]!=dimsb[i])
                           pnga_error("dimensions not the same",i);
 
    if ((pnga_is_mirrored(g_a) && pnga_is_mirrored(g_b)) ||
@@ -353,7 +353,7 @@ _iterator_hdl hdl;
        if (_lo[0]>0) {
          pnga_access_ptr(g_b, _lo, _hi, &ptr_b, _ld);
          pnga_get(g_a, _lo, _hi, ptr_b, _ld);
-       } 
+       }
      } else {
        /* source array is distributed and destination
           array is mirrored */
@@ -378,8 +378,6 @@ _iterator_hdl hdl;
      }
    }
 }
-
-
 
 /*\ internal version of dot product
 \*/
@@ -435,10 +433,10 @@ Integer bndim, bdims[MAXDIM];
 
        pnga_dot_patch(g_a, "n", one_arr, adims, g_b, "n", one_arr, bdims,
                       value);
-       
+
        return;
    }
-   
+
    pnga_pgroup_sync(a_grp);
    pnga_inquire(g_a,  &type, &ndim, _dims);
    if(type != Type) pnga_error("type not correct", g_a);
@@ -455,7 +453,7 @@ Integer bndim, bdims[MAXDIM];
    if(g_a == g_b){
      elemsb = elems;
      ptr_b = ptr_a;
-   }else {  
+   }else {
      pnga_inquire(g_b,  &type, &ndim, _dims);
      if(type != Type) pnga_error("type not correct", g_b);
      pnga_distribution(g_b, me, _lo, _hi);
@@ -469,8 +467,7 @@ Integer bndim, bdims[MAXDIM];
      }
    }
 
-   if(elems!= elemsb)pnga_error("inconsistent number of elements",elems-elemsb); 
-
+   if(elems!= elemsb)pnga_error("inconsistent number of elements",elems-elemsb);
 
       /* compute "local" contribution to the dot product */
       switch (type){
@@ -482,9 +479,9 @@ Integer bndim, bdims[MAXDIM];
         case C_INT:
            ia = (int*)ptr_a;
            ib = (int*)ptr_b;
-           for(i=0;i<elems;i++) 
+           for(i=0;i<elems;i++)
                  isum += ia[i]  * ib[i];
-           *(int*)value = isum; 
+           *(int*)value = isum;
            type = C_INT;
            alen = 1;
            break;
@@ -496,7 +493,7 @@ Integer bndim, bdims[MAXDIM];
                zsum.real += a.real*b.real  - b.imag * a.imag;
                zsum.imag += a.imag*b.real  + b.imag * a.real;
            }
-           *(DoubleComplex*)value = zsum; 
+           *(DoubleComplex*)value = zsum;
            type = C_DCPL;
            alen = 2;
            break;
@@ -508,7 +505,7 @@ Integer bndim, bdims[MAXDIM];
                csum.real += a.real*b.real  - b.imag * a.imag;
                csum.imag += a.imag*b.real  + b.imag * a.real;
            }
-           *(SingleComplex*)value = csum; 
+           *(SingleComplex*)value = csum;
            type = C_SCPL;
            alen = 2;
            break;
@@ -516,9 +513,9 @@ Integer bndim, bdims[MAXDIM];
         case C_DBL:
            da = (double*)ptr_a;
            db = (double*)ptr_b;
-           for(i=0;i<elems;i++) 
+           for(i=0;i<elems;i++)
                  zsum.real += da[i]  * db[i];
-           *(double*)value = zsum.real; 
+           *(double*)value = zsum.real;
            type = C_DBL;
            alen = 1;
            break;
@@ -530,7 +527,7 @@ Integer bndim, bdims[MAXDIM];
            *(float*)value = fsum;
            type = C_FLOAT;
            alen = 1;
-           break;         
+           break;
         case C_LONG:
            la = (long*)ptr_a;
            lb = (long*)ptr_b;
@@ -539,7 +536,7 @@ Integer bndim, bdims[MAXDIM];
            *(long*)value = lsum;
            type = C_LONG;
            alen = 1;
-           break;               
+           break;
         case C_LONGLONG:
            lla = (long long*)ptr_a;
            llb = (long long*)ptr_b;
@@ -548,10 +545,10 @@ Integer bndim, bdims[MAXDIM];
            *(long long*)value = llsum;
            type = C_LONGLONG;
            alen = 1;
-           break;               
+           break;
         default: pnga_error(" wrong data type ",type);
       }
-   
+
       /* release access to the data */
       if(elems>0){
          pnga_release(g_a, _lo, _hi);
@@ -582,10 +579,8 @@ Integer bndim, bdims[MAXDIM];
 #endif
      }
    }
-    
 
 }
-
 
 #if HAVE_SYS_WEAK_ALIAS_PRAGMA
 #   pragma weak wnga_scale = pnga_scale
@@ -649,7 +644,7 @@ void pnga_scale(Integer g_a, void* alpha)
         ca = (DoubleComplex*)ptr;
         scale= *(DoubleComplex*)alpha;
         for(i=0;i<elems;i++){
-          DoubleComplex val = ca[i]; 
+          DoubleComplex val = ca[i];
           ca[i].real = scale.real*val.real  - val.imag * scale.imag;
           ca[i].imag = scale.imag*val.real  + val.imag * scale.real;
         }
@@ -658,7 +653,7 @@ void pnga_scale(Integer g_a, void* alpha)
         cfa = (SingleComplex*)ptr;
         cfscale= *(SingleComplex*)alpha;
         for(i=0;i<elems;i++){
-          SingleComplex val = cfa[i]; 
+          SingleComplex val = cfa[i];
           cfa[i].real = cfscale.real*val.real  - val.imag * cfscale.imag;
           cfa[i].imag = cfscale.imag*val.real  + val.imag * cfscale.real;
         }
@@ -670,7 +665,7 @@ void pnga_scale(Integer g_a, void* alpha)
         case C_FLOAT:
         fa = (float*)ptr;
         for(i=0;i<elems;i++) fa[i]  *= *(float*)alpha;
-        break;       
+        break;
         default: pnga_error(" wrong data type ",type);
       }
 
@@ -703,7 +698,7 @@ void pnga_scale(Integer g_a, void* alpha)
       ca = (DoubleComplex*)ptr;
       scale= *(DoubleComplex*)alpha;
       for(i=0;i<elems;i++){
-        DoubleComplex val = ca[i]; 
+        DoubleComplex val = ca[i];
         ca[i].real = scale.real*val.real  - val.imag * scale.imag;
         ca[i].imag = scale.imag*val.real  + val.imag * scale.real;
       }
@@ -712,7 +707,7 @@ void pnga_scale(Integer g_a, void* alpha)
       cfa = (SingleComplex*)ptr;
       cfscale= *(SingleComplex*)alpha;
       for(i=0;i<elems;i++){
-        SingleComplex val = cfa[i]; 
+        SingleComplex val = cfa[i];
         cfa[i].real = cfscale.real*val.real  - val.imag * cfscale.imag;
         cfa[i].imag = cfscale.imag*val.real  + val.imag * cfscale.real;
       }
@@ -724,15 +719,14 @@ void pnga_scale(Integer g_a, void* alpha)
       case C_FLOAT:
       fa = (float*)ptr;
       for(i=0;i<elems;i++) fa[i]  *= *(float*)alpha;
-      break;       
+      break;
       default: pnga_error(" wrong data type ",type);
     }
     /* release access to the data */
     pnga_release_update_block_segment(g_a, me);
   }
-  if(local_sync_end)pnga_pgroup_sync(grp_id); 
+  if(local_sync_end)pnga_pgroup_sync(grp_id);
 }
-
 
 #if HAVE_SYS_WEAK_ALIAS_PRAGMA
 #   pragma weak wnga_add = pnga_add
@@ -744,7 +738,7 @@ register Integer i;
 void *ptr_a, *ptr_b, *ptr_c;
 Integer a_grp, b_grp, c_grp;
 int local_sync_begin,local_sync_end;
- 
+
  Integer _dims[MAXDIM];
  Integer _ld[MAXDIM-1];
  Integer _lo[MAXDIM];
@@ -752,7 +746,7 @@ int local_sync_begin,local_sync_end;
  Integer andim, adims[MAXDIM];
  Integer bndim, bdims[MAXDIM];
  Integer cndim, cdims[MAXDIM];
- 
+
    local_sync_begin = _ga_sync_begin; local_sync_end = _ga_sync_end;
    _ga_sync_begin = 1; _ga_sync_end=1; /*remove any previous masking*/
 
@@ -777,7 +771,7 @@ int local_sync_begin,local_sync_end;
 
        pnga_add_patch(alpha, g_a, one_arr, adims, beta, g_b, one_arr, bdims,
                       g_c, one_arr, cdims);
-       
+
        return;
    }
 
@@ -792,7 +786,7 @@ int local_sync_begin,local_sync_end;
    if(g_a == g_c){
      ptr_a  = ptr_c;
      elemsa = elems;
-   }else { 
+   }else {
      pnga_inquire(g_a,  &type, &ndim, _dims);
      if(type != typeC) pnga_error("types not consistent", g_a);
      pnga_distribution(g_a, me, _lo, _hi);
@@ -843,9 +837,9 @@ int local_sync_begin,local_sync_end;
                      DoubleComplex x= *(DoubleComplex*)alpha;
                      DoubleComplex y= *(DoubleComplex*)beta;
                      /* c = x*a + y*b */
-                     ac[i].real = x.real*a.real - 
+                     ac[i].real = x.real*a.real -
                               x.imag*a.imag + y.real*b.real - y.imag*b.imag;
-                     ac[i].imag = x.real*a.imag + 
+                     ac[i].imag = x.real*a.imag +
                               x.imag*a.real + y.real*b.imag + y.imag*b.real;
                   }
               break;
@@ -857,9 +851,9 @@ int local_sync_begin,local_sync_end;
                      SingleComplex x= *(SingleComplex*)alpha;
                      SingleComplex y= *(SingleComplex*)beta;
                      /* c = x*a + y*b */
-                     ac[i].real = x.real*a.real - 
+                     ac[i].real = x.real*a.real -
                               x.imag*a.imag + y.real*b.real - y.imag*b.imag;
-                     ac[i].imag = x.real*a.imag + 
+                     ac[i].imag = x.real*a.imag +
                               x.imag*a.real + y.real*b.imag + y.imag*b.real;
                   }
               break;
@@ -868,15 +862,15 @@ int local_sync_begin,local_sync_end;
                   fb = (float*)ptr_b;
                   fc = (float*)ptr_c;
                   for(i=0; i<elems; i++)
-                      fc[i] = *(float*)alpha *fa[i] + *(float*)beta *fb[i]; 
+                      fc[i] = *(float*)alpha *fa[i] + *(float*)beta *fb[i];
               break;
          case C_INT:
                   ia = (int*)ptr_a;
                   ib = (int*)ptr_b;
                   ic = (int*)ptr_c;
-                  for(i=0; i<elems; i++) 
+                  for(i=0; i<elems; i++)
                       ic[i] = *(int*)alpha *ia[i] + *(int*)beta *ib[i];
-              break;    
+              break;
          case C_LONG:
                   la = (long*)ptr_a;
 		  lb = (long*)ptr_b;
@@ -891,7 +885,7 @@ int local_sync_begin,local_sync_end;
                   for(i=0; i<elems; i++)
                       llc[i] = ( *(long long*)alpha *lla[i] +
                                  *(long long*)beta  * llb[i] );
-                
+
        }
 
        /* release access to the data */
@@ -900,49 +894,46 @@ int local_sync_begin,local_sync_end;
        if(g_c != g_b)pnga_release(g_b, _lo, _hi);
    }
 
-
    if(local_sync_end)pnga_pgroup_sync(a_grp);
 }
 
-
-static 
+static
 void snga_local_transpose(Integer type, char *ptra, Integer n, Integer stride, char *ptrb)
 {
 Integer i;
     switch(type){
 
        case C_INT:
-            for(i = 0; i< n; i++, ptrb+= stride) 
+            for(i = 0; i< n; i++, ptrb+= stride)
                *(int*)ptrb= ((int*)ptra)[i];
             break;
        case C_DCPL:
-            for(i = 0; i< n; i++, ptrb+= stride) 
+            for(i = 0; i< n; i++, ptrb+= stride)
                *(DoubleComplex*)ptrb= ((DoubleComplex*)ptra)[i];
             break;
        case C_SCPL:
-            for(i = 0; i< n; i++, ptrb+= stride) 
+            for(i = 0; i< n; i++, ptrb+= stride)
                *(SingleComplex*)ptrb= ((SingleComplex*)ptra)[i];
             break;
        case C_DBL:
-            for(i = 0; i< n; i++, ptrb+= stride) 
+            for(i = 0; i< n; i++, ptrb+= stride)
                *(double*)ptrb= ((double*)ptra)[i];
             break;
        case C_FLOAT:
             for(i = 0; i< n; i++, ptrb+= stride)
                *(float*)ptrb= ((float*)ptra)[i];
-            break;      
+            break;
        case C_LONG:
             for(i = 0; i< n; i++, ptrb+= stride)
                *(long*)ptrb= ((long*)ptra)[i];
-            break;                                 
+            break;
        case C_LONGLONG:
             for(i = 0; i< n; i++, ptrb+= stride)
                *(long long*)ptrb= ((long long*)ptra)[i];
-            break;                                 
+            break;
        default: pnga_error("bad type:",type);
     }
 }
-
 
 #if HAVE_SYS_WEAK_ALIAS_PRAGMA
 #   pragma weak wnga_transpose = pnga_transpose
@@ -951,7 +942,7 @@ void pnga_transpose(Integer g_a, Integer g_b)
 {
 Integer me = pnga_nodeid();
 Integer _ld[MAXDIM-1];
-Integer nproc = pnga_nnodes(); 
+Integer nproc = pnga_nnodes();
 Integer atype, btype, andim, adims[MAXDIM], bndim, bdims[MAXDIM];
 Integer lo[2],hi[2],ld[2];
 int local_sync_begin,local_sync_end;
@@ -959,7 +950,6 @@ Integer num_blocks_a;
 char *ptr_tmp, *ptr_a;
 _iterator_hdl hdl;
 
-    
     local_sync_begin = _ga_sync_begin; local_sync_end = _ga_sync_end;
     _ga_sync_begin = 1; _ga_sync_end=1; /*remove any previous masking*/
     if(local_sync_begin)pnga_sync();
@@ -984,7 +974,7 @@ _iterator_hdl hdl;
       ptr_tmp = (char *) ga_malloc(nelem, atype, "transpose_tmp");
 
       nrow   = hi[0] -lo[0]+1;
-      ncol   = hi[1] -lo[1]+1; 
+      ncol   = hi[1] -lo[1]+1;
       nelem  = nrow*ncol;
       lob[0] = lo[1]; lob[1] = lo[0];
       hib[0] = hi[1]; hib[1] = hi[0];
@@ -1008,7 +998,7 @@ _iterator_hdl hdl;
         int i, size=GAsizeofM(atype);
 
         nrow   = hi[0] -lo[0]+1;
-        ncol   = hi[1] -lo[1]+1; 
+        ncol   = hi[1] -lo[1]+1;
         nelem  = nrow*ncol;
         lob[0] = lo[1]; lob[1] = lo[0];
         hib[0] = hi[1]; hib[1] = hi[0];
@@ -1026,7 +1016,7 @@ _iterator_hdl hdl;
           ptr_a += _ld[0]*size;
         }
 
-        pnga_release(g_a, lo, hi); 
+        pnga_release(g_a, lo, hi);
 
         pnga_put(g_b, lob, hib, ptr_tmp ,&ncol);
 
@@ -1050,7 +1040,7 @@ _iterator_hdl hdl;
           pnga_access_block_ptr(g_a, idx, &ptr_a, _ld);
 
           nrow   = hi[0] -lo[0]+1;
-          ncol   = hi[1] -lo[1]+1; 
+          ncol   = hi[1] -lo[1]+1;
           nelem  = nrow*ncol;
           lob[0] = lo[1]; lob[1] = lo[0];
           hib[0] = hi[1]; hib[1] = hi[0];
@@ -1096,7 +1086,7 @@ _iterator_hdl hdl;
             if (chk) {
               pnga_access_block_grid_ptr(g_a, index, &ptr_a, _ld);
               nrow   = hi[0] -lo[0]+1;
-              ncol   = hi[1] -lo[1]+1; 
+              ncol   = hi[1] -lo[1]+1;
               nelem  = nrow*ncol;
               lob[0] = lo[1]; lob[1] = lo[0];
               hib[0] = hi[1]; hib[1] = hi[0];

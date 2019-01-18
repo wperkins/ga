@@ -1,14 +1,19 @@
 /* ARMCI header file */
 #ifndef _ARMCI_H
-#define _ARMCI_H   
+#define _ARMCI_H
 
 /* for size_t */
 #include <stdlib.h>
+#include "comex_util.h"
 
 #if defined(__cplusplus) || defined(c_plusplus)
 extern "C" {
 #endif
 
+// #ifdef USE_DEVICE_MEM
+extern int _my_node_id;
+extern int _my_local_rank;
+// #endif
 
 extern int armci_sameclusnode(int proc);
 
@@ -33,7 +38,7 @@ extern int ARMCI_Put_flag(void *src, void* dst,int bytes,int *f,int v,int proc);
 #define ARMCI_Put1(_s,_d,_b,_p) memcpy(_d,_s,_b), 0
 
 extern int ARMCI_PutS(          /* strided put */
-                void *src_ptr,        /* pointer to 1st segment at source*/ 
+                void *src_ptr,        /* pointer to 1st segment at source*/
 		int src_stride_arr[], /* array of strides at source */
 		void* dst_ptr,        /* pointer to 1st segment at destination*/
 		int dst_stride_arr[], /* array of strides at destination */
@@ -47,7 +52,7 @@ extern int ARMCI_PutS_flag_dir(       /* put with flag that uses direct put */
                 int src_stride_arr[], /* array of strides at source */
                 void* dst_ptr,        /* pointer to 1st segment at destination*/
                 int dst_stride_arr[], /* array of strides at destination */
-                int count[],          /* number of segments at each stride 
+                int count[],          /* number of segments at each stride
                                          levels: count[0]=bytes*/
                 int stride_levels,    /* number of stride levels */
                 int *flag,            /* pointer to remote flag */
@@ -61,7 +66,7 @@ extern int ARMCI_PutS_flag(
                 int src_stride_arr[], /* array of strides at source */
                 void* dst_ptr,        /* pointer to 1st segment at destination*/
                 int dst_stride_arr[], /* array of strides at destination */
-                int count[],          /* number of segments at each stride 
+                int count[],          /* number of segments at each stride
                                          levels: count[0]=bytes*/
                 int stride_levels,    /* number of stride levels */
                 int *flag,            /* pointer to remote flag */
@@ -75,7 +80,7 @@ extern int ARMCI_Acc(int optype, void *scale, void *src, void* dst, int bytes, i
 extern int ARMCI_AccS(                /* strided accumulate */
                 int  optype,          /* operation */
                 void *scale,          /* scale factor x += scale*y */
-                void *src_ptr,        /* pointer to 1st segment at source*/ 
+                void *src_ptr,        /* pointer to 1st segment at source*/
 		int src_stride_arr[], /* array of strides at source */
 		void* dst_ptr,        /* pointer to 1st segment at destination*/
 		int dst_stride_arr[], /* array of strides at destination */
@@ -84,11 +89,10 @@ extern int ARMCI_AccS(                /* strided accumulate */
                 int proc	      /* remote process(or) ID */
                 );
 
-
 extern int ARMCI_Get(void *src, void* dst, int bytes, int proc);
 
 extern int ARMCI_GetS(          /* strided get */
-                void *src_ptr,        /* pointer to 1st segment at source*/ 
+                void *src_ptr,        /* pointer to 1st segment at source*/
 		int src_stride_arr[], /* array of strides at source */
 		void* dst_ptr,        /* pointer to 1st segment at destination*/
 		int dst_stride_arr[], /* array of strides at destination */
@@ -136,9 +140,8 @@ extern int ARMCI_PutValueDouble(double src,/* value in a register to put     */
 
 extern int ARMCI_GetValueInt(void *src, int proc);
 extern long ARMCI_GetValueLong(void *src, int proc);
-extern float ARMCI_GetValueFloat(void *src, int proc);     
-extern double ARMCI_GetValueDouble(void *src, int proc);     
-
+extern float ARMCI_GetValueFloat(void *src, int proc);
+extern double ARMCI_GetValueDouble(void *src, int proc);
 
 extern int ARMCI_Malloc(void* ptr_arr[], armci_size_t bytes);
 extern int ARMCI_Free(void *ptr);
@@ -192,9 +195,9 @@ extern void ARMCI_Copy(void *src, void *dst, int n);
  * @param _cond   Condition to be evaluated (assert that it is true)
  * @param _plist  Information to be printed using printf, should be
  * within parenthesis (eg., dassert(1,0,("%d:test n=%d\n",me,0));
- * ). This is fed directly to printf.  
+ * ). This is fed directly to printf.
  */
-int dassertp_fail(const char *cond_string, const char *file, 
+int dassertp_fail(const char *cond_string, const char *file,
 		  const char *func, unsigned int line, int code);
   void derr_printf(const char *format, ...);
 #undef dassertp
@@ -217,7 +220,7 @@ int dassertp_fail(const char *cond_string, const char *file,
 #undef dassert1
 #define dassert1(_enable,_cond,_ival)                       \
   dassertp((_enable),(_cond),("%d: error ival=%d\n",        \
-			      armci_msg_me(),(int)(_ival))) 
+			      armci_msg_me(),(int)(_ival)))
 
 #define armci_die(_msg,_code) dassertc(1,0,             \
 ("%d:%s: %d\n", armci_msg_me(),(_msg),(_code)),_code)
@@ -235,7 +238,6 @@ extern int armci_domain_my_id(armci_domain_t domain);
 extern int armci_domain_count(armci_domain_t domain);
 extern int armci_domain_same_id(armci_domain_t domain, int proc);
 
-
 /* PVM group
  * On CrayT3E: the default group is the global group which is (char *)NULL
  *             It is the only working group.
@@ -247,13 +249,13 @@ extern int armci_domain_same_id(armci_domain_t domain, int proc);
 extern char *mp_group_name;
 
 /*********************stuff for non-blocking API******************************/
-/*\ the request structure for non-blocking api. 
+/*\ the request structure for non-blocking api.
   \*/
 /*max of sizes for all platforms. Increase if any platform needs more*/
 typedef int armci_hdl_t;
 
 typedef int ARMCI_Group;
- 
+
 extern void ARMCI_GroupFence(ARMCI_Group *group);
 extern void ARMCI_Group_create(int n, int *pid_list, ARMCI_Group *group_out);
 extern void ARMCI_Group_create_child(int n, int *pid_list,
@@ -264,7 +266,7 @@ extern void ARMCI_Group_size(ARMCI_Group *group, int *size);
 extern void ARMCI_Group_set_default(ARMCI_Group *group);
 extern void ARMCI_Group_get_default(ARMCI_Group *group_out);
 extern void ARMCI_Group_get_world(ARMCI_Group *group_out);
-   
+
 extern int ARMCI_Absolute_id(ARMCI_Group *group, int group_rank);
 extern int ARMCI_Uses_shm_grp(ARMCI_Group *group);
 
@@ -274,7 +276,7 @@ extern int ARMCI_Free_group(void *ptr, ARMCI_Group *group);
 extern int ARMCI_NbPut(void *src, void* dst, int bytes, int proc,armci_hdl_t* nb_handle);
 
 extern int ARMCI_NbPutS(          /* strided put */
-                void *src_ptr,        /* pointer to 1st segment at source*/ 
+                void *src_ptr,        /* pointer to 1st segment at source*/
 		int src_stride_arr[], /* array of strides at source */
 		void* dst_ptr,        /* pointer to 1st segment at destination*/
 		int dst_stride_arr[], /* array of strides at destination */
@@ -287,7 +289,7 @@ extern int ARMCI_NbPutS(          /* strided put */
 extern int ARMCI_NbAccS(                /* strided accumulate */
                 int  optype,          /* operation */
                 void *scale,          /* scale factor x += scale*y */
-                void *src_ptr,        /* pointer to 1st segment at source*/ 
+                void *src_ptr,        /* pointer to 1st segment at source*/
 		int src_stride_arr[], /* array of strides at source */
 		void* dst_ptr,        /* pointer to 1st segment at destination*/
 		int dst_stride_arr[], /* array of strides at destination */
@@ -300,7 +302,7 @@ extern int ARMCI_NbAccS(                /* strided accumulate */
 extern int ARMCI_NbGet(void *src, void* dst, int bytes, int proc,armci_hdl_t* nb_handle);
 
 extern int ARMCI_NbGetS(          /* strided get */
-                void *src_ptr,        /* pointer to 1st segment at source*/ 
+                void *src_ptr,        /* pointer to 1st segment at source*/
 		int src_stride_arr[], /* array of strides at source */
 		void* dst_ptr,        /* pointer to 1st segment at destination*/
 		int dst_stride_arr[], /* array of strides at destination */
@@ -333,28 +335,28 @@ extern int ARMCI_NbAccV( int op,       /* operation code */
 extern int ARMCI_NbPutValueInt(int src,   /* value in a register to put     */
 			       void *dst, /* dest starting addr to put data */
 			       int proc,  /* remote process (or) ID         */
-			       armci_hdl_t* nb_handle /*armci_non-blocking 
+			       armci_hdl_t* nb_handle /*armci_non-blocking
 						       request handle       */
 			       );
 
 extern int ARMCI_NbPutValueLong(long src,  /* value in a register to put     */
 				void *dst, /* dest starting addr to put data */
 				int proc,  /* remote process (or) ID         */
-				armci_hdl_t* nb_handle /*armci_non-blocking 
+				armci_hdl_t* nb_handle /*armci_non-blocking
 							request handle       */
 				);
 
 extern int ARMCI_NbPutValueFloat(float src,/* value in a register to put     */
 				 void *dst,/* dest starting addr to put data */
 				 int proc, /* remote process (or) ID         */
-				 armci_hdl_t* nb_handle /*armci_non-blocking 
+				 armci_hdl_t* nb_handle /*armci_non-blocking
 							 request handle      */
 				 );
 
 extern int ARMCI_NbPutValueDouble(double src,/* value in a register to put   */
 				  void *dst,/* dest starting addr to put data*/
 				  int proc,   /* remote process (or) ID      */
-				  armci_hdl_t* nb_handle /*armci_non-blocking 
+				  armci_hdl_t* nb_handle /*armci_non-blocking
 							  request handle     */
 				  );
 
@@ -374,7 +376,7 @@ extern void ARMCI_UNSET_AGGREGATE_HANDLE(armci_hdl_t* nb_handle);
 #define ARMCI_INIT_HANDLE(hdl) do {((double *)((hdl)->data))[0]=0; \
   ((double *)((hdl)->data))[1]=0; }while(0)
   */
-#define ARMCI_INIT_HANDLE(hdl) 
+#define ARMCI_INIT_HANDLE(hdl)
 
 /* -------------- ARMCI Non-collective memory allocator ------------- */
 typedef struct armci_meminfo_ds {
@@ -388,13 +390,13 @@ typedef struct armci_meminfo_ds {
 } armci_meminfo_t;
 
 extern void ARMCI_Memget(size_t bytes, armci_meminfo_t *meminfo, int memflg);
-  
+
 extern void* ARMCI_Memat(armci_meminfo_t *meminfo, long offset);
-  
+
 extern void ARMCI_Memdt(armci_meminfo_t *meminfo, long offset);
-  
+
 extern void ARMCI_Memctl(armci_meminfo_t *meminfo);
-  
+
 /* ------------------------------------------------------------------ */
 
 #if defined(__cplusplus) || defined(c_plusplus)

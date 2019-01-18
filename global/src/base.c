@@ -3,12 +3,12 @@
 #endif
 
 /* $Id: base.c,v 1.149.2.19 2007/12/18 18:42:20 d3g293 Exp $ */
-/* 
+/*
  * module: base.c
  * author: Jarek Nieplocha
  * description: implements GA primitive operations --
  *              create (regular& irregular) and duplicate, destroy
- * 
+ *
  * DISCLAIMER
  *
  * This material was prepared as an account of work sponsored by an
@@ -55,18 +55,23 @@
 #include "macdecls.h"
 #include "armci.h"
 #include "ga-papi.h"
+#include "ga_util.h"
 #include "ga-wapi.h"
 #include "thread-safe.h"
 
+#ifdef USE_DEVICE_MEM
+#include <cuda.h>
+#include <cuda_runtime.h>
+#endif
 static int calc_maplen(int handle);
 
 #ifdef PROFILE_OLD
 #include "ga_profile.h"
 #endif
-/*#define AVOID_MA_STORAGE 1*/ 
+/*#define AVOID_MA_STORAGE 1*/
 #define DEBUG 0
 #define USE_MALLOC 1
-#define INVALID_MA_HANDLE -1 
+#define INVALID_MA_HANDLE -1
 #define NEAR_INT(x) (x)< 0.0 ? ceil( (x) - 0.5) : floor((x) + 0.5)
 
 #define FLEN        80              /* length of Fortran strings */
@@ -82,7 +87,7 @@ static int calc_maplen(int handle);
 /*uncomment line below to initialize arrays in ga_create/duplicate */
 /*#define GA_CREATE_INDEF yes */
 
-/*uncomment line below to introduce padding between shared memory regions 
+/*uncomment line below to introduce padding between shared memory regions
   of a GA when the region spans in more than 1 process within SMP */
 #define GA_ELEM_PADDING yes
 
@@ -100,6 +105,9 @@ global_array_t *_ga_main_data_structure;
 global_array_t *GA;
 proc_list_t *_proc_list_main_data_structure;
 proc_list_t *PGRP_LIST;
+#ifdef USE_DEVICE_MEM
+llist_t *_ga_active_data_block;
+#endif
 static int GAinitialized = 0;
 static int ARMCIinitialized = 0;
 int _ga_sync_begin = 1;
@@ -164,7 +172,6 @@ int ga_spare_procs;
   }                                                                            \
 }
 
-
 /*\ updates subscript corresponding to next element in a patch <lo[]:hi[]>
 \*/
 #define ga_UpdateSubscriptM(_ndim, _subscript, _lo, _hi, _dims)\
@@ -176,7 +183,6 @@ int ga_spare_procs;
        _subscript[_i] = _lo[_i];                                               \
   }                                                                            \
 }
-
 
 /*\ Initialize n-dimensional loop by counting elements and setting subscript=lo
 \*/
@@ -191,8 +197,7 @@ int ga_spare_procs;
   }                                                                            \
 }
 
-
-Integer GAsizeof(Integer type)    
+Integer GAsizeof(Integer type)
 {
   switch (type) {
      case C_DBL  : return (sizeof(double));
@@ -202,10 +207,9 @@ Integer GAsizeof(Integer type)
      case C_FLOAT : return (sizeof(float));
      case C_LONG : return (sizeof(long));
      case C_LONGLONG : return (sizeof(long long));
-          default   : return 0; 
+          default   : return 0;
   }
 }
-
 
 /*\ Register process list
  *  process list can be used to:
@@ -217,12 +221,10 @@ void ga_register_proclist_(Integer *list, Integer* np)
     /* no longer used */
 }
 
-
 void GA_Register_proclist(int *list, int np)
 {
     /* no long used */
 }
-
 
 /*\ FINAL CLEANUP of shmem when terminating
 \*/
@@ -230,7 +232,6 @@ void ga_clean_resources()
 {
     ARMCI_Cleanup();
 }
-
 
 /*\ CHECK GA HANDLE and if it's wrong TERMINATE
  *  C version
@@ -242,7 +243,6 @@ void pnga_check_handle(Integer g_a, char * string)
 {
   ga_check_handleM(g_a, string);
 }
-
 
 /*\ Initialize MA-like addressing:
  *  get addressees for the base arrays for double, complex and int types
@@ -258,13 +258,13 @@ Integer  off_dbl, off_int, off_dcpl, off_flt,off_scpl;
      DBL_MB = (DoublePrecision*)MA_get_mbase(MT_F_DBL);
      DCPL_MB= (DoubleComplex*)MA_get_mbase(MT_F_DCPL);
      SCPL_MB= (SingleComplex*)MA_get_mbase(MT_F_SCPL);
-     FLT_MB = (float*)MA_get_mbase(MT_F_REAL);  
+     FLT_MB = (float*)MA_get_mbase(MT_F_REAL);
 #   ifdef CHECK_MA_ALGN
         off_dbl = 0 != ((long)DBL_MB)%sizeof(DoublePrecision);
         off_int = 0 != ((long)INT_MB)%sizeof(Integer);
         off_dcpl= 0 != ((long)DCPL_MB)%sizeof(DoublePrecision);
         off_scpl= 0 != ((long)SCPL_MB)%sizeof(float);
-        off_flt = 0 != ((long)FLT_MB)%sizeof(float);  
+        off_flt = 0 != ((long)FLT_MB)%sizeof(float);
         if(off_dbl)
            pnga_error("GA initialize: MA DBL_MB not alligned", (Integer)DBL_MB);
 
@@ -278,15 +278,13 @@ Integer  off_dbl, off_int, off_dcpl, off_flt,off_scpl;
           pnga_error("GA initialize: SCPL_MB not alligned", (Integer)SCPL_MB);
 
         if(off_flt)
-           pnga_error("GA initialize: FLT_MB not alligned", (Integer)FLT_MB);   
+           pnga_error("GA initialize: FLT_MB not alligned", (Integer)FLT_MB);
 
 #   endif
 
     if(DEBUG) printf("%d INT_MB=%p DBL_MB=%p DCPL_MB=%p FLT_MB=%p SCPL_MB=%p\n",
                      (int)GAme, (void*)INT_MB, (void*)DBL_MB, (void*)DCPL_MB, (void*)FLT_MB, (void*)SCPL_MB);
 }
-
-
 
 extern int *_ga_argc;
 extern char ***_ga_argv;
@@ -296,7 +294,7 @@ extern int _ga_initialize_f;
 
 /**
  *  Initialize library structures in Global Arrays.
- *  either ga_initialize_ltd or ga_initialize must be the first 
+ *  either ga_initialize_ltd or ga_initialize must be the first
  *         GA routine called (except ga_uses_ma)
  */
 #if HAVE_SYS_WEAK_ALIAS_PRAGMA
@@ -308,6 +306,10 @@ void pnga_initialize()
     GA_Internal_Threadsafe_Lock();
 Integer  i, j,nproc, nnode, zero;
 int bytes;
+#ifdef USE_DEVICE_MEM
+int deviceCount;
+deviceCount = 0;
+#endif
 
     if(GAinitialized)
     {
@@ -343,7 +345,7 @@ int bytes;
         }
         ARMCIinitialized = 1;
     }
-    
+
     GA_Default_Proc_Group = -1;
     /* zero in pointers in GA array */
     _ga_main_data_structure
@@ -356,6 +358,15 @@ int bytes;
        pnga_error("ga_init:malloc proc_list failed",0);
     GA = _ga_main_data_structure;
     PGRP_LIST = _proc_list_main_data_structure;
+#ifdef USE_DEVICE_MEM
+    _ga_active_data_block = NULL;
+    deviceCount = getDeviceCount();
+    /* bind available device to a rank (ascending) */
+    if(deviceCount > 0) {
+        gpu_device_bind();
+    }
+    // GA_Sync();
+#endif
     for(i=0;i<MAX_ARRAYS; i++) {
        GA[i].ptr  = (char**)0;
        GA[i].mapc = (C_Integer*)0;
@@ -378,7 +389,7 @@ int bytes;
     mapALL = (Integer*)malloc((GAnproc+MAXDIM-1)*sizeof(Integer*));
 
     GAme = (Integer)armci_msg_me();
-    if(GAme<0 || GAme>GAnproc) 
+    if(GAme<0 || GAme>GAnproc)
        pnga_error("ga_init:message-passing initialization problem: my ID=",GAme);
 
     MPme= (Integer)armci_msg_me();
@@ -428,8 +439,6 @@ int bytes;
       _mirror_gop_grp = GA_World_Proc_Group;
     }
 
-
-
     /* Allocate memory for update flags and signal*/
     bytes = 2*MAXDIM*sizeof(int);
     GA_Update_Flags = (int**)malloc(GAnproc*sizeof(void*));
@@ -452,7 +461,7 @@ int bytes;
 
     GAinitialized = 1;
 
-#ifdef PROFILE_OLD 
+#ifdef PROFILE_OLD
     ga_profile_init();
 #endif
 #ifdef ENABLE_CHECKPOINT
@@ -468,12 +477,11 @@ int bytes;
     if(GAme>=tmpcount)
       ga_irecover(0);
     printf("\n%d:here done with initialize\n",GAme);
-                 
+
     }
 #endif
     GA_Internal_Threadsafe_Unlock();
 }
-
 
 #if HAVE_SYS_WEAK_ALIAS_PRAGMA
 #   pragma weak wnga_initialized = pnga_initialized
@@ -492,7 +500,7 @@ void set_ga_group_is_for_ft(int val)
 
 /**
  *  Is MA used for allocation of GA memory?
- */ 
+ */
 #if HAVE_SYS_WEAK_ALIAS_PRAGMA
 #   pragma weak wnga_uses_ma =  pnga_uses_ma
 #endif
@@ -503,7 +511,7 @@ logical pnga_uses_ma()
    return FALSE;
 #else
    if(!GAinitialized) return FALSE;
-   
+
    if(ARMCI_Uses_shm()) return FALSE;
    else return TRUE;
 #endif
@@ -532,8 +540,8 @@ logical pnga_memory_limited()
 Integer pnga_inquire_memory()
 {
 Integer i, sum=0;
-    for(i=0; i<_max_global_array; i++) 
-        if(GA[i].actv) sum += (Integer)GA[i].size; 
+    for(i=0; i<_max_global_array; i++)
+        if(GA[i].actv) sum += (Integer)GA[i].size;
     return(sum);
 }
 
@@ -555,8 +563,6 @@ Integer pnga_memory_avail()
    }
 }
 
-
-
 /**
  *  (re)set limit on GA memory usage
  */
@@ -571,12 +577,12 @@ void pnga_set_memory_limit(Integer mem_limit)
     /* if we had the limit set we need to adjust the amount available */
     if (mem_limit>=0)
       /* adjust the current value by diff between old and new limit */
-      GA_total_memory += (mem_limit - GA_memory_limit);     
+      GA_total_memory += (mem_limit - GA_memory_limit);
     else{
 
       /* negative values reset limit to "unlimited" */
-      GA_memory_limited =  0;     
-      GA_total_memory= -1;     
+      GA_memory_limited =  0;
+      GA_total_memory= -1;
     }
 
   }else{
@@ -590,7 +596,7 @@ void pnga_set_memory_limit(Integer mem_limit)
  *  Initialize Global Array library structures and set a limit on memory
  *  usage by GA.
  *    the byte limit is per processor (even for shared memory)
- *    either ga_initialize_ltd or ga_initialize must be the first 
+ *    either ga_initialize_ltd or ga_initialize must be the first
  *         GA routine called (except ga_uses_ma)
  *    ga_initialize is another version of ga_initialize_ltd, except
  *         without memory control
@@ -602,8 +608,8 @@ void pnga_set_memory_limit(Integer mem_limit)
 
 void pnga_initialize_ltd(Integer mem_limit)
 {
-  GA_total_memory =GA_memory_limit  = mem_limit; 
-  if(mem_limit >= 0) GA_memory_limited = 1; 
+  GA_total_memory =GA_memory_limit  = mem_limit;
+  if(mem_limit >= 0) GA_memory_limited = 1;
   pnga_initialize();
 }
 
@@ -685,7 +691,7 @@ int use_blocks;
    ndim = GA[ga_handle].ndim;
 
    if (GA[ga_handle].distr_type == REGULAR) {
-     for(d=0, *owner=-1; d< ndim; d++) 
+     for(d=0, *owner=-1; d< ndim; d++)
        if(subscript[d]< 1 || subscript[d]>GA[ga_handle].dims[d]) return FALSE;
 
      for(d = 0, dpos = 0; d< ndim; d++){
@@ -694,7 +700,7 @@ int use_blocks;
        dpos += GA[ga_handle].nblock[d];
      }
 
-     ga_ComputeIndexM(&proc, ndim, proc_s, GA[ga_handle].nblock); 
+     ga_ComputeIndexM(&proc, ndim, proc_s, GA[ga_handle].nblock);
 
      *owner = proc;
      if (GA[ga_handle].num_rstrctd > 0) {
@@ -724,11 +730,9 @@ int use_blocks;
      gam_find_block_from_indices(ga_handle, i, index);
      *owner = i;
    }
-   
+
    return TRUE;
 }
-
-
 
 /*\ UTILITY FUNCTION TO LOCATE THE BOUNDING INDICES OF A CONTIGUOUS CHUNK OF
  *  SHARED MEMORY FOR A MIRRORED ARRAY
@@ -789,7 +793,7 @@ void ngai_get_first_last_indices( Integer g_a)  /* array handle (input) */
       nelems = 1;
       for (j = 0; j<ndim; j++) {
         if (index[j] < GA[handle].nblock[j]-1) {
-          
+
           itmp = ((Integer)GA[handle].mapc[map_offset[j]+index[j]+1]
                - (Integer)GA[handle].mapc[map_offset[j]+index[j]]);
           nelems *= itmp;
@@ -974,11 +978,11 @@ void pnga_pgroup_set_default(Integer grp)
 {
 #if 0
     int local_sync_begin,local_sync_end;
- 
+
     local_sync_begin = _ga_sync_begin; local_sync_end = _ga_sync_end;
 #endif
     _ga_sync_begin = 1; _ga_sync_end=1; /*remove any previous sync masking*/
- 
+
     /* force a hang if default group is not being set correctly */
 #if 0
     if (local_sync_begin || local_sync_end) pnga_pgroup_sync(grp);
@@ -991,7 +995,7 @@ void pnga_pgroup_set_default(Integer grp)
        if(GA_Default_Proc_Group > 0)
           parent_grp = PGRP_LIST[GA_Default_Proc_Group].group;
        else
-          ARMCI_Group_get_world(&parent_grp);  
+          ARMCI_Group_get_world(&parent_grp);
        ARMCI_Group_set_default(&parent_grp);
     }
 #endif
@@ -1016,7 +1020,6 @@ Integer pnga_pgroup_create(Integer *list, Integer count)
 #ifdef MSG_COMMS_MPI
     ARMCI_Group *tmpgrp;
 #endif
- 
 
     /* Allocate temporary arrays */
     tmp_list = (Integer*)malloc(GAnproc*sizeof(Integer));
@@ -1030,7 +1033,7 @@ Integer pnga_pgroup_create(Integer *list, Integer count)
     }while(i<_max_global_array && pgrp_handle==-1);
     if( pgrp_handle == -1)
        pnga_error(" Too many process groups ", (Integer)_max_global_array);
- 
+
     /* Check list for validity (no duplicates and no out of range entries) */
     nprocs = GAnproc;
     for (i=0; i<count; i++) {
@@ -1041,7 +1044,7 @@ Integer pnga_pgroup_create(Integer *list, Integer count)
 	     pnga_error(" Duplicate elements in list ", list[i]);
        }
     }
- 
+
     /* Allocate memory for arrays containg processor maps and initialize
        values */
     PGRP_LIST[pgrp_handle].map_proc_list
@@ -1052,11 +1055,11 @@ Integer pnga_pgroup_create(Integer *list, Integer count)
        PGRP_LIST[pgrp_handle].map_proc_list[i] = -1;
     for (i=0; i<GAnproc; i++)
        PGRP_LIST[pgrp_handle].inv_map_proc_list[i] = -1;
-    
+
     for (i=0; i<count; i++) {
        tmp2_list[i] = (int)list[i];
     }
-    
+
     /* use a simple sort routine to reorder list into assending order */
     for (j=1; j<count; j++) {
        itmp = tmp2_list[j];
@@ -1067,7 +1070,7 @@ Integer pnga_pgroup_create(Integer *list, Integer count)
        }
        tmp2_list[i+1] = itmp;
     }
-    
+
     /* Remap elements in list to absolute processor indices (if necessary)*/
     if (GA_Default_Proc_Group != -1) {
        parent = GA_Default_Proc_Group;
@@ -1079,7 +1082,7 @@ Integer pnga_pgroup_create(Integer *list, Integer count)
           tmp_list[i] = (int)tmp2_list[i];
        }
     }
-    
+
     tmp_count = (int)(count);
     /* Create proc list maps */
     for (i=0; i<count; i++) {
@@ -1139,7 +1142,7 @@ logical pnga_pgroup_destroy(Integer grp_id)
       i++;
   }while(i<_max_global_array && ok);
   if (!ok) pnga_error("Attempt to destroy process group with attached GAs",grp_id);
-  
+
   if (PGRP_LIST[grp_id].actv == 0) {
     ret = FALSE;
   }
@@ -1209,10 +1212,10 @@ Integer pnga_pgroup_split(Integer grp, Integer grp_num)
 
   if(grp_num<0) pnga_error("Invalid argument (number of groups < 0)",grp_num);
   if(grp_num==0) return grp;
-  
+
   default_grp = pnga_pgroup_get_default();
   pnga_pgroup_set_default(grp);
-  
+
 #if 0 /* This is wrong. Should split only default group and not world group */
   world_grp = pnga_pgroup_get_world();
   pnga_pgroup_set_default(world_grp);
@@ -1265,8 +1268,7 @@ Integer pnga_pgroup_split_irreg(Integer grp, Integer mycolor)
   Integer nprocs, me, default_grp, grp_id;
   Integer i, icnt=0;
   Integer *nodes, *color_arr;
-  
-  
+
   /* Allocate temporary arrays */
   nodes = (Integer*)malloc(GAnproc*sizeof(Integer));
   color_arr = (Integer*)malloc(GAnproc*sizeof(Integer));
@@ -1297,7 +1299,6 @@ Integer pnga_pgroup_split_irreg(Integer grp, Integer mycolor)
   /* Free temporary arrays */
   free(nodes);
   free(color_arr);
-
 
   return grp_id;
 }
@@ -1567,7 +1568,7 @@ Integer pnga_get_dimension(Integer g_a)
 {
   Integer ga_handle = g_a + GA_OFFSET;
   return (Integer)GA[ga_handle].ndim;
-} 
+}
 
 /**
  *  Use a simple block-cyclic data distribution for array
@@ -2082,7 +2083,7 @@ void pnga_unset_property(Integer g_a) {
       if(GA[ga_handle].id != INVALID_MA_HANDLE) MA_free_heap(GA[ga_handle].id);
     }
 #endif
-    
+
     /* Reset distribution parameters back to original values */
     btot = 0;
     for (i=0; i<ndim; i++) {
@@ -2201,7 +2202,7 @@ logical pnga_allocate(Integer g_a)
      grp_nproc  = PGRP_LIST[p_handle].map_nproc;
      grp_me = PGRP_LIST[p_handle].map_proc_list[GAme];
   }
-  
+
   if(!GAinitialized) pnga_error("GA not initialized ", 0);
   if(!ma_address_init) gai_ma_address_init();
 
@@ -2222,7 +2223,7 @@ logical pnga_allocate(Integer g_a)
 
     /* eliminate dimensions =1 from ddb analysis */
     for(d=0; d<ndim; d++)if(dims[d]==1)blk[d]=1;
- 
+
     if (GAme==0 && DEBUG )
       for (d=0;d<ndim;d++) fprintf(stderr,"b[%ld]=%ld\n",(long)d,(long)blk[d]);
     pnga_pgroup_sync(p_handle);
@@ -2260,7 +2261,7 @@ logical pnga_allocate(Integer g_a)
 
       /* RJH ... don't leave some nodes without data if possible
        but respect the users block size */
-      
+
       if (chunk[d] > 1) {
         Integer ddim = ((dims[d]-1)/GA_MIN(chunk[d],dims[d]) + 1);
         pcut = (ddim -(blk[d]-1)*pe[d]) ;
@@ -2279,16 +2280,16 @@ logical pnga_allocate(Integer g_a)
       }
 
       pe[d] = GA_MIN(pe[d],nblock);
-      map +=  pe[d]; 
+      map +=  pe[d];
     }
     if(GAme==0&& DEBUG){
       gai_print_subscript("pe ",(int)ndim, pe,"\n");
       gai_print_subscript("blocks ",(int)ndim, blk,"\n");
       printf("decomposition map\n");
       for(d=0; d< ndim; d++){
-        printf("dim=%ld: ",(long)d); 
+        printf("dim=%ld: ",(long)d);
         for (i=0;i<pe[d];i++)printf("%ld ",(long)pmap[d][i]);
-        printf("\n"); 
+        printf("\n");
       }
       fflush(stdout);
     }
@@ -2379,7 +2380,7 @@ logical pnga_allocate(Integer g_a)
          / (double)GA[ga_handle].dims[i];
     }
     pnga_set_ghost_corner_flag(g_a, i);
- 
+
     /*** determine which portion of the array I am supposed to hold ***/
     if (p_handle == 0) { /* for mirrored arrays */
        Integer me_local = (Integer)PGRP_LIST[p_handle].map_proc_list[GAme];
@@ -2467,7 +2468,7 @@ logical pnga_create_ghosts_irreg_config(
         Integer *dims,    /* array of dimensions */
         Integer *width,   /* width of boundary cells for each dimension */
         char *array_name, /* array name */
-        Integer *map,     /* decomposition map array */ 
+        Integer *map,     /* decomposition map array */
         Integer *nblock,  /* number of blocks for each dimension in map */
         Integer p_handle, /* processor list handle */
         Integer *g_a)     /* array handle (output) */
@@ -2495,12 +2496,12 @@ logical pnga_create_ghosts_irreg_config(
 #endif
 
 logical pnga_create_ghosts_irreg(
-        Integer type,     /* MA type */ 
+        Integer type,     /* MA type */
         Integer ndim,     /* number of dimensions */
         Integer dims[],   /* array of dimensions */
         Integer width[],  /* width of boundary cells for each dimension */
         char *array_name, /* array name */
-        Integer map[],    /* decomposition map array */ 
+        Integer map[],    /* decomposition map array */
         Integer nblock[], /* number of blocks for each dimension in map */
         Integer *g_a)     /* array handle (output) */
 {
@@ -2508,7 +2509,6 @@ logical pnga_create_ghosts_irreg(
    return pnga_create_ghosts_irreg_config(type, ndim, dims, width,
                 array_name, map, nblock, p_handle, g_a);
 }
-
 
 /** Create an N-dimensional Global Array on user-specified process group.
  *  Allow machine to choose location of array boundaries on individual
@@ -2559,7 +2559,6 @@ logical pnga_create(Integer type,
   GA_Internal_Threadsafe_Unlock();
   return result;
 }
-
 
 /*\ CREATE AN N-DIMENSIONAL GLOBAL ARRAY WITH GHOST CELLS
  *  Allow machine to choose location of array boundaries on individual
@@ -2618,11 +2617,11 @@ logical pnga_create_ghosts(Integer type,
 #endif
 
 logical pnga_create_irreg_config(
-        Integer type,     /* MA type */ 
+        Integer type,     /* MA type */
         Integer ndim,     /* number of dimensions */
         Integer dims[],   /* array of dimensions */
         char *array_name, /* array name */
-        Integer map[],    /* decomposition map array */ 
+        Integer map[],    /* decomposition map array */
         Integer nblock[], /* number of blocks for each dimension in map */
         Integer p_handle, /* processor list hande */
         Integer *g_a)     /* array handle (output) */
@@ -2637,7 +2636,6 @@ logical status;
       return status;
 }
 
-
 /**
  *  Create a Global Array with an irregular distribution. The user can specify
  *  location of array boundaries on individual
@@ -2648,11 +2646,11 @@ logical status;
 #endif
 
 logical pnga_create_irreg(
-        Integer type,     /* MA type */ 
+        Integer type,     /* MA type */
         Integer ndim,     /* number of dimensions */
         Integer dims[],   /* array of dimensions */
         char *array_name, /* array name */
-        Integer map[],    /* decomposition map array */ 
+        Integer map[],    /* decomposition map array */
         Integer nblock[], /* number of blocks for each dimension in map */
         Integer *g_a)     /* array handle (output) */
 {
@@ -2669,14 +2667,14 @@ logical status;
 
 /*\ get memory alligned w.r.t. MA base
  *  required on Linux as g77 ignores natural data alignment in common blocks
-\*/ 
+\*/
 int gai_get_shmem(char **ptr_arr, C_Long bytes, int type, long *adj,
 		  int grp_id)
 {
 int status=0;
 #ifndef _CHECK_MA_ALGN
 char *base;
-long diff, item_size;  
+long diff, item_size;
 Integer *adjust;
 int i, nproc,grp_me=GAme;
 
@@ -2685,27 +2683,27 @@ int i, nproc,grp_me=GAme;
        grp_me = PGRP_LIST[grp_id].map_proc_list[GAme];
     }
     else
-       nproc = GAnproc; 
- 
+       nproc = GAnproc;
+
     /* need to enforce proper, natural allignment (on size boundary)  */
     switch (pnga_type_c2f(type)){
       case MT_F_DBL:   base =  (char *) DBL_MB; break;
       case MT_F_INT:   base =  (char *) INT_MB; break;
       case MT_F_DCPL:  base =  (char *) DCPL_MB; break;
       case MT_F_SCPL:  base =  (char *) SCPL_MB; break;
-      case MT_F_REAL:  base =  (char *) FLT_MB; break;  
+      case MT_F_REAL:  base =  (char *) FLT_MB; break;
       default:        base = (char*)0;
     }
 
     item_size = GAsizeofM(type);
 #   ifdef GA_ELEM_PADDING
-       bytes += (C_Long)item_size; 
+       bytes += (C_Long)item_size;
 #   endif
 
 #endif
 
     *adj = 0;
-       
+
     /* use ARMCI_Malloc_group for groups if proc group is not world group
        or mirror group */
 #ifdef MSG_COMMS_MPI
@@ -2716,7 +2714,7 @@ int i, nproc,grp_me=GAme;
 #endif
       status = ARMCI_Malloc((void**)ptr_arr, (armci_size_t)bytes);
 
-    if(bytes!=0 && ptr_arr[grp_me]==NULL) 
+    if(bytes!=0 && ptr_arr[grp_me]==NULL)
        pnga_error("gai_get_shmem: ARMCI Malloc failed", GAme);
     if(status) return status;
 
@@ -2729,7 +2727,7 @@ int i, nproc,grp_me=GAme;
      * with it. Now malloc/free needed memory. */
     adjust = (Integer*)malloc(GAnproc*sizeof(Integer));
 
-    diff = (GA_ABS( base - (char *) ptr_arr[grp_me])) % item_size; 
+    diff = (GA_ABS( base - (char *) ptr_arr[grp_me])) % item_size;
     for(i=0;i<nproc;i++)adjust[i]=0;
     adjust[grp_me] = (diff > 0) ? item_size - diff : 0;
     *adj = adjust[grp_me];
@@ -2738,7 +2736,7 @@ int i, nproc,grp_me=GAme;
        pnga_pgroup_gop(grp_id, pnga_type_f2c(MT_F_INT), adjust, nproc, "+");
     else
        pnga_gop(pnga_type_f2c(MT_F_INT), adjust, nproc, "+");
-    
+
     for(i=0;i<nproc;i++){
        ptr_arr[i] = adjust[i] + (char*)ptr_arr[i];
     }
@@ -2748,7 +2746,7 @@ int i, nproc,grp_me=GAme;
     return status;
 }
 
-int gai_uses_shm(int grp_id) 
+int gai_uses_shm(int grp_id)
 {
 #ifdef MSG_COMMS_MPI
     if(grp_id > 0) return ARMCI_Uses_shm_grp(&PGRP_LIST[grp_id].group);
@@ -2772,7 +2770,7 @@ char *ptr = (char*)0;
      nproc  = PGRP_LIST[grp_id].map_nproc;
      grp_me = PGRP_LIST[grp_id].map_proc_list[GAme];
    }
- 
+
    if(gai_uses_shm(grp_id)) return gai_get_shmem(ptr_arr, bytes, type, id, grp_id);
    else{
      nelem = bytes/((C_Long)item_size) + 1;
@@ -2781,7 +2779,7 @@ char *ptr = (char*)0;
                 MA_get_pointer(handle, &ptr);}
      *id   = (long)handle;
 
-     /* 
+     /*
             printf("bytes=%d ptr=%ld index=%d\n",bytes, ptr,index);
             fflush(stdout);
      */
@@ -2791,13 +2789,13 @@ char *ptr = (char*)0;
 
 #   ifndef _CHECK_MA_ALGN /* align */
      {
-        long diff, adjust;  
-        diff = ((unsigned long)ptr_arr[grp_me]) % item_size; 
+        long diff, adjust;
+        diff = ((unsigned long)ptr_arr[grp_me]) % item_size;
         adjust = (diff > 0) ? item_size - diff : 0;
         ptr_arr[grp_me] = adjust + (char*)ptr_arr[grp_me];
      }
 #   endif
-     
+
 #   ifdef MSG_COMMS_MPI
      if (grp_id > 0) {
         armci_exchange_address_grp((void**)ptr_arr,(int)nproc,
@@ -2805,12 +2803,11 @@ char *ptr = (char*)0;
      } else
 #   endif
         armci_exchange_address((void**)ptr_arr,(int)nproc);
-     if(bytes && !ptr) return 1; 
+     if(bytes && !ptr) return 1;
      else return 0;
    }
 #endif /* AVOID_MA_STORAGE */
 }
-
 
 /*\ externalized version of gai_getmem to facilitate two-step array creation
 \*/
@@ -2823,7 +2820,7 @@ int bytes;
 int extra=sizeof(getmem_t)+GAnproc*sizeof(char*);
 char *myptr;
 Integer status;
-     type = pnga_type_f2c(type);	
+     type = pnga_type_f2c(type);
      bytes = nelem *  GAsizeofM(type);
      if(GA_memory_limited){
          GA_total_memory -= bytes+extra;
@@ -2837,13 +2834,13 @@ Integer status;
      rc= gai_getmem("ga_getmem", ptr_arr,(Integer)bytes+extra, type, &id, grp_id);
      if(rc)pnga_error("ga_getmem: failed to allocate memory",bytes+extra);
 
-     myptr = ptr_arr[GAme];  
+     myptr = ptr_arr[GAme];
 
      /* make sure that remote memory addresses point to user memory */
      for(i=0; i<GAnproc; i++)ptr_arr[i] += extra;
 
 #ifndef AVOID_MA_STORAGE
-     if(ARMCI_Uses_shm()) 
+     if(ARMCI_Uses_shm())
 #endif
         id += extra; /* id is used to store offset */
 
@@ -2859,10 +2856,9 @@ Integer status;
      return (void*)(myptr+extra);
 }
 
-
 void GA_Freemem(void *ptr)
 {
-int extra = sizeof(getmem_t)+GAnproc*sizeof(char*); 
+int extra = sizeof(getmem_t)+GAnproc*sizeof(char*);
 getmem_t *info = (getmem_t *)((char*)ptr - extra);
 char **ptr_arr = (char**)(info+1);
 
@@ -2941,11 +2937,9 @@ logical pnga_has_ghosts(Integer g_a)
 
 Integer pnga_ndim(Integer g_a)
 {
-      ga_check_handleM(g_a,"ga_ndim");       
+      ga_check_handleM(g_a,"ga_ndim");
       return GA[g_a +GA_OFFSET].ndim;
 }
- 
-
 
 /**
  * Duplicate an existing global array
@@ -2978,9 +2972,9 @@ logical pnga_duplicate(Integer g_a, Integer *g_b, char* array_name)
     grp_me = PGRP_LIST[grp_id].map_proc_list[GAme];
   }
 
-  GAstat.numcre ++; 
+  GAstat.numcre ++;
 
-  ga_check_handleM(g_a,"ga_duplicate");       
+  ga_check_handleM(g_a,"ga_duplicate");
 
   /* find a free global_array handle for g_b */
   ga_handle =-1; i=0;
@@ -3021,7 +3015,7 @@ logical pnga_duplicate(Integer g_a, Integer *g_b, char* array_name)
   }
 
   /*** Memory Allocation & Initialization of GA Addressing Space ***/
-  mem_size = mem_size_proc = GA[ga_handle].size; 
+  mem_size = mem_size_proc = GA[ga_handle].size;
   GA[ga_handle].id = INVALID_MA_HANDLE;
   /* if requested, enforce limits on memory consumption */
   if(GA_memory_limited) GA_total_memory -= mem_size_proc;
@@ -3054,7 +3048,7 @@ logical pnga_duplicate(Integer g_a, Integer *g_b, char* array_name)
 #     ifdef GA_CREATE_INDEF
   /* This code is incorrect. It needs to fixed if INDEF is ever used */
   if(status){
-    Integer one = 1; 
+    Integer one = 1;
     Integer dim1 =(Integer)GA[ga_handle].dims[1], dim2=(Integer)GA[ga_handle].dims[2];
     if(GAme==0)fprintf(stderr,"duplicate:initializing GA array%ld\n",g_b);
     if(GA[ga_handle].type == C_DBL) {
@@ -3069,15 +3063,15 @@ logical pnga_duplicate(Integer g_a, Integer *g_b, char* array_name)
     } else if (GA[ga_handle].type == C_LONGLONG) {
       long long bad = LONG_MAX;
       ga_fill_patch_(g_b, &one, &dim1, &one, &dim2,  &bad);
-    } else if (GA[ga_handle].type == C_DCPL) { 
+    } else if (GA[ga_handle].type == C_DCPL) {
       DoubleComplex bad = {DBL_MAX, DBL_MAX};
       ga_fill_patch_(g_b, &one, &dim1, &one, &dim2,  &bad);
-    } else if (GA[ga_handle].type == C_SCPL) { 
+    } else if (GA[ga_handle].type == C_SCPL) {
       SingleComplex bad = {FLT_MAX, FLT_MAX};
       ga_fill_patch_(g_b, &one, &dim1, &one, &dim2,  &bad);
     } else if (GA[ga_handle].type == C_FLOAT) {
       float bad = FLT_MAX;
-      ga_fill_patch_(g_b, &one, &dim1, &one, &dim2,  &bad);   
+      ga_fill_patch_(g_b, &one, &dim1, &one, &dim2,  &bad);
     } else {
       pnga_error("ga_duplicate: type not supported ",GA[ga_handle].type);
     }
@@ -3088,7 +3082,7 @@ logical pnga_duplicate(Integer g_a, Integer *g_b, char* array_name)
     GAstat.curmem += (long)GA[ga_handle].size;
     GAstat.maxmem  = (long)GA_MAX(GAstat.maxmem, GAstat.curmem);
     return(TRUE);
-  }else{ 
+  }else{
     if (GA_memory_limited) GA_total_memory += mem_size_proc;
     pnga_destroy(*g_b);
     return(FALSE);
@@ -3108,7 +3102,6 @@ char **ptr_arr = (char**)(info+1);
 int g_b;
 int maplen = calc_maplen(GA_OFFSET + g_a);
 
-
       pnga_sync();
 
       GAstat.numcre ++;
@@ -3122,7 +3115,7 @@ int maplen = calc_maplen(GA_OFFSET + g_a);
         i++;
       }while(i<_max_global_array && ga_handle==-1);
       if( ga_handle == -1)
-          pnga_error("ga_assemble_duplicate: too many arrays ", 
+          pnga_error("ga_assemble_duplicate: too many arrays ",
                                            (Integer)_max_global_array);
       g_b = ga_handle - GA_OFFSET;
 
@@ -3174,7 +3167,7 @@ int local_sync_begin,local_sync_end;
 
     if (grp_id > 0) grp_me = PGRP_LIST[grp_id].map_proc_list[GAme];
     else grp_me=GAme;
-    
+
     GAstat.numdes ++; /*regardless of array status we count this call */
     /* fails if handle is out of range or array not active */
     if(ga_handle < 0 || ga_handle >= _max_global_array){
@@ -3186,8 +3179,8 @@ int local_sync_begin,local_sync_end;
     if (GA[ga_handle].cache)
       free(GA[ga_handle].cache);
     GA[ga_handle].cache = NULL;
-    GA[ga_handle].actv = 0;     
-    GA[ga_handle].actv_handle = 0;     
+    GA[ga_handle].actv = 0;
+    GA[ga_handle].actv_handle = 0;
 
     if (GA[ga_handle].num_rstrctd > 0) {
       GA[ga_handle].num_rstrctd = 0;
@@ -3203,7 +3196,7 @@ int local_sync_begin,local_sync_end;
     if(GA[ga_handle].mapc != NULL){
        free(GA[ga_handle].mapc);
        GA[ga_handle].mapc = NULL;
-    } 
+    }
 
     if (GA[ga_handle].property == READ_ONLY) {
       free(GA[ga_handle].old_mapc);
@@ -3212,7 +3205,7 @@ int local_sync_begin,local_sync_end;
 
     if(GA[ga_handle].ptr[grp_me]==NULL){
        return TRUE;
-    } 
+    }
 #ifndef AVOID_MA_STORAGE
     if(gai_uses_shm((int)grp_id)){
 #endif
@@ -3238,19 +3231,17 @@ int local_sync_begin,local_sync_end;
     return(TRUE);
 }
 
-    
-     
 /**
  *  Terminate Global Array structures
  *
  *  All GA arrays are destroyed & shared memory is dealocated
- *  GA routines (except for ga_initialize) should not be called thereafter 
+ *  GA routines (except for ga_initialize) should not be called thereafter
  */
 #if HAVE_SYS_WEAK_ALIAS_PRAGMA
 #   pragma weak wnga_terminate =  pnga_terminate
 #endif
 
-void pnga_terminate() 
+void pnga_terminate()
 {
     //GA_Internal_Threadsafe_Lock();
 Integer i, handle;
@@ -3262,7 +3253,7 @@ Integer i, handle;
         return;
     }
 
-#ifdef PROFILE_OLD 
+#ifdef PROFILE_OLD
     ga_profile_terminate();
 #endif
     for (i=0;i<_max_global_array;i++){
@@ -3294,10 +3285,9 @@ Integer i, handle;
     //GA_Internal_Threadsafe_Unlock();
 }
 
-    
 /**
  *  Is array active or inactive
- */ 
+ */
 #if HAVE_SYS_WEAK_ALIAS_PRAGMA
 #   pragma weak wnga_verify_handle =  pnga_verify_handle
 #endif
@@ -3305,11 +3295,9 @@ Integer i, handle;
 Integer pnga_verify_handle(Integer g_a)
 {
   return (Integer)
-    ((g_a + GA_OFFSET>= 0) && (g_a + GA_OFFSET< _max_global_array) && 
+    ((g_a + GA_OFFSET>= 0) && (g_a + GA_OFFSET< _max_global_array) &&
              GA[GA_OFFSET + (g_a)].actv);
 }
- 
-
 
 /**
  *  Fill array with random values in [0,val)
@@ -3327,12 +3315,10 @@ void pnga_randomize(Integer g_a, void* val)
   Integer grp_id;
   Integer num_blocks;
 
-
   local_sync_begin = _ga_sync_begin; local_sync_end = _ga_sync_end;
   _ga_sync_begin = 1; _ga_sync_end=1; /*remove any previous sync masking*/
   grp_id = pnga_get_pgroup(g_a);
   if(local_sync_begin)pnga_pgroup_sync(grp_id);
-
 
   ga_check_handleM(g_a, "ga_randomize");
   gam_checktype(GA[handle].type);
@@ -3341,7 +3327,7 @@ void pnga_randomize(Integer g_a, void* val)
 
   if (num_blocks < 0) {
     /* Bruce..Please CHECK if this is correct */
-    if (grp_id >= 0){  
+    if (grp_id >= 0){
       Integer grp_me = PGRP_LIST[GA[handle].p_handle].map_proc_list[GAme];
       ptr = GA[handle].ptr[grp_me];
     }
@@ -3349,22 +3335,22 @@ void pnga_randomize(Integer g_a, void* val)
 
     switch (GA[handle].type){
 /*
-      case C_DCPL: 
+      case C_DCPL:
         for(i=0; i<elems;i++)((DoubleComplex*)ptr)[i]=*(DoubleComplex*) rand();
         break;
-      case C_SCPL: 
+      case C_SCPL:
         for(i=0; i<elems;i++)((SingleComplex*)ptr)[i]=*(SingleComplex*)val;
         break;
 */
-      case C_DBL:  
+      case C_DBL:
         for(i=0; i<elems;i++)((double*)ptr)[i]=*(double*) val * ((double)rand())/RAND_MAX;
         break;
-      case C_INT:  
+      case C_INT:
         for(i=0; i<elems;i++)((int*)ptr)[i]=*(int*) val * ((int)rand())/RAND_MAX;
         break;
       case C_FLOAT:
         for(i=0; i<elems;i++)((float*)ptr)[i]=*(float*) val * ((float)rand())/RAND_MAX;
-        break;     
+        break;
       case C_LONG:
         for(i=0; i<elems;i++)((long*)ptr)[i]=*(long*) val * ((long)rand())/RAND_MAX;
         break;
@@ -3380,22 +3366,22 @@ void pnga_randomize(Integer g_a, void* val)
     elems = (C_Long)I_elems;
     switch (GA[handle].type){
 /*
-      case C_DCPL: 
+      case C_DCPL:
         for(i=0; i<elems;i++)((DoubleComplex*)ptr)[i]=*(DoubleComplex*)val;
         break;
-      case C_SCPL: 
+      case C_SCPL:
         for(i=0; i<elems;i++)((SingleComplex*)ptr)[i]=*(SingleComplex*)val;
         break;
 */
-      case C_DBL:  
+      case C_DBL:
         for(i=0; i<elems;i++)((double*)ptr)[i]=*(double*)val * ((double)rand())/RAND_MAX;
         break;
-      case C_INT:  
+      case C_INT:
         for(i=0; i<elems;i++)((int*)ptr)[i]=*(int*)val * ((int)rand())/RAND_MAX;
         break;
       case C_FLOAT:
         for(i=0; i<elems;i++)((float*)ptr)[i]=*(float*)val * ((float)rand())/RAND_MAX;
-        break;     
+        break;
       case C_LONG:
         for(i=0; i<elems;i++)((long*)ptr)[i]=*(long*)val * ((long)rand())/RAND_MAX;
         break;
@@ -3428,12 +3414,10 @@ void pnga_fill(Integer g_a, void* val)
   Integer grp_id;
   Integer num_blocks;
 
-
   local_sync_begin = _ga_sync_begin; local_sync_end = _ga_sync_end;
   _ga_sync_begin = 1; _ga_sync_end=1; /*remove any previous sync masking*/
   grp_id = pnga_get_pgroup(g_a);
   if(local_sync_begin)pnga_pgroup_sync(grp_id);
-
 
   ga_check_handleM(g_a, "ga_fill");
   gam_checktype(GA[handle].type);
@@ -3442,28 +3426,28 @@ void pnga_fill(Integer g_a, void* val)
 
   if (num_blocks < 0) {
     /* Bruce..Please CHECK if this is correct */
-    if (grp_id >= 0){  
+    if (grp_id >= 0){
       Integer grp_me = PGRP_LIST[GA[handle].p_handle].map_proc_list[GAme];
       ptr = GA[handle].ptr[grp_me];
     }
     else  ptr = GA[handle].ptr[GAme];
 
     switch (GA[handle].type){
-      case C_DCPL: 
+      case C_DCPL:
         for(i=0; i<elems;i++)((DoubleComplex*)ptr)[i]=*(DoubleComplex*)val;
         break;
-      case C_SCPL: 
+      case C_SCPL:
         for(i=0; i<elems;i++)((SingleComplex*)ptr)[i]=*(SingleComplex*)val;
         break;
-      case C_DBL:  
+      case C_DBL:
         for(i=0; i<elems;i++)((double*)ptr)[i]=*(double*)val;
         break;
-      case C_INT:  
+      case C_INT:
         for(i=0; i<elems;i++)((int*)ptr)[i]=*(int*)val;
         break;
       case C_FLOAT:
         for(i=0; i<elems;i++)((float*)ptr)[i]=*(float*)val;
-        break;     
+        break;
       case C_LONG:
         for(i=0; i<elems;i++)((long*)ptr)[i]=*(long*)val;
         break;
@@ -3478,21 +3462,21 @@ void pnga_fill(Integer g_a, void* val)
     pnga_access_block_segment_ptr(g_a,GAme,&ptr,&I_elems);
     elems = (C_Long)I_elems;
     switch (GA[handle].type){
-      case C_DCPL: 
+      case C_DCPL:
         for(i=0; i<elems;i++)((DoubleComplex*)ptr)[i]=*(DoubleComplex*)val;
         break;
-      case C_SCPL: 
+      case C_SCPL:
         for(i=0; i<elems;i++)((SingleComplex*)ptr)[i]=*(SingleComplex*)val;
         break;
-      case C_DBL:  
+      case C_DBL:
         for(i=0; i<elems;i++)((double*)ptr)[i]=*(double*)val;
         break;
-      case C_INT:  
+      case C_INT:
         for(i=0; i<elems;i++)((int*)ptr)[i]=*(int*)val;
         break;
       case C_FLOAT:
         for(i=0; i<elems;i++)((float*)ptr)[i]=*(float*)val;
-        break;     
+        break;
       case C_LONG:
         for(i=0; i<elems;i++)((long*)ptr)[i]=*(long*)val;
         break;
@@ -3572,7 +3556,7 @@ Integer d, index, ndim, ga_handle = GA_OFFSET + g_a;
 
    for(d=0; d<ndim; d++){
        subscript[d] = index% GA[ga_handle].nblock[d];
-       index  /= GA[ga_handle].nblock[d];  
+       index  /= GA[ga_handle].nblock[d];
    }
 }
 
@@ -3671,7 +3655,7 @@ logical pnga_locate_nnodes( Integer g_a,
 #pragma _CRI novector
 #endif
     for(d = 0, dpos = 0; d< GA[ga_handle].ndim; d++){
-      findblock(GA[ga_handle].mapc + dpos, GA[ga_handle].nblock[d], 
+      findblock(GA[ga_handle].mapc + dpos, GA[ga_handle].nblock[d],
           GA[ga_handle].scale[d], lo[d], &procT[d]);
       dpos += GA[ga_handle].nblock[d];
     }
@@ -3682,7 +3666,7 @@ logical pnga_locate_nnodes( Integer g_a,
 #pragma _CRI novector
 #endif
     for(d = 0, dpos = 0; d< GA[ga_handle].ndim; d++){
-      findblock(GA[ga_handle].mapc + dpos, GA[ga_handle].nblock[d], 
+      findblock(GA[ga_handle].mapc + dpos, GA[ga_handle].nblock[d],
           GA[ga_handle].scale[d], hi[d], &procB[d]);
       dpos += GA[ga_handle].nblock[d];
     }
@@ -3696,12 +3680,12 @@ logical pnga_locate_nnodes( Integer g_a,
     ga_InitLoopM(&elems, ndim, proc_subscript, procT,procB,GA[ga_handle].nblock);
 
     /* p_handle = (Integer)GA[ga_handle].p_handle; */
-    for(i= 0; i< elems; i++){ 
+    for(i= 0; i< elems; i++){
       Integer _lo[MAXDIM], _hi[MAXDIM];
 
       /* convert i to owner processor id using the current values in
          proc_subscript */
-      ga_ComputeIndexM(&proc, ndim, proc_subscript, GA[ga_handle].nblock); 
+      ga_ComputeIndexM(&proc, ndim, proc_subscript, GA[ga_handle].nblock);
       /* get range of global array indices that are owned by owner */
       ga_ownsM(ga_handle, proc, _lo, _hi);
 
@@ -3741,7 +3725,6 @@ logical pnga_locate_nnodes( Integer g_a,
 #ifdef __crayx1
 #pragma _CRI inline nga_locate_nnodes_
 #endif
-
 
 /**
  *  Locate individual patches and their owner of specified patch of a
@@ -3803,7 +3786,7 @@ logical pnga_locate_region( Integer g_a,
 #pragma _CRI novector
 #endif
     for(d = 0, dpos = 0; d< GA[ga_handle].ndim; d++){
-      findblock(GA[ga_handle].mapc + dpos, GA[ga_handle].nblock[d], 
+      findblock(GA[ga_handle].mapc + dpos, GA[ga_handle].nblock[d],
           GA[ga_handle].scale[d], lo[d], &procT[d]);
       dpos += GA[ga_handle].nblock[d];
     }
@@ -3814,7 +3797,7 @@ logical pnga_locate_region( Integer g_a,
 #pragma _CRI novector
 #endif
     for(d = 0, dpos = 0; d< GA[ga_handle].ndim; d++){
-      findblock(GA[ga_handle].mapc + dpos, GA[ga_handle].nblock[d], 
+      findblock(GA[ga_handle].mapc + dpos, GA[ga_handle].nblock[d],
           GA[ga_handle].scale[d], hi[d], &procB[d]);
       dpos += GA[ga_handle].nblock[d];
     }
@@ -3828,13 +3811,13 @@ logical pnga_locate_region( Integer g_a,
     ga_InitLoopM(&elems, ndim, proc_subscript, procT,procB,GA[ga_handle].nblock);
 
     /* p_handle = (Integer)GA[ga_handle].p_handle; */
-    for(i= 0; i< elems; i++){ 
+    for(i= 0; i< elems; i++){
       Integer _lo[MAXDIM], _hi[MAXDIM];
       Integer  offset;
 
       /* convert i to owner processor id using the current values in
          proc_subscript */
-      ga_ComputeIndexM(&proc, ndim, proc_subscript, GA[ga_handle].nblock); 
+      ga_ComputeIndexM(&proc, ndim, proc_subscript, GA[ga_handle].nblock);
       /* get range of global array indices that are owned by owner */
       ga_ownsM(ga_handle, proc, _lo, _hi);
 
@@ -4007,9 +3990,8 @@ int i;
    _ga_sync_begin = 1; _ga_sync_end=1; /*remove any previous masking*/
    ga_check_handleM(g_a, "distribution a");
    ga_check_handleM(g_b, "distribution b");
-   
 
-   if(GA[h_a].ndim != GA[h_b].ndim) return FALSE; 
+   if(GA[h_a].ndim != GA[h_b].ndim) return FALSE;
 
    for(i=0; i <GA[h_a].ndim; i++)
        if(GA[h_a].dims[i] != GA[h_b].dims[i]) return FALSE;
@@ -4047,7 +4029,6 @@ int i;
    return TRUE;
 }
 
-
 static int num_mutexes=0;
 static int chunk_mutex;
 /**
@@ -4080,7 +4061,6 @@ int myshare;
    }
    return TRUE;
 }
-
 
 /**
  * Lock an object defined by the mutex number
@@ -4115,13 +4095,12 @@ int m,p;
 
    if(GAnproc == 1) return;
    if(num_mutexes< mutex)pnga_error("invalid mutex",mutex);
-   
+
    p = num_mutexes/chunk_mutex -1;
    m = num_mutexes%chunk_mutex;
 
    ARMCI_Unlock(m,p);
-}              
-   
+}
 
 /**
  * Destroy mutexes
@@ -4172,7 +4151,6 @@ logical pnga_valid_handle(Integer g_a)
       ! (GA[GA_OFFSET+(g_a)].actv) ) return FALSE;
    else return TRUE;
 }
-
 
 /**
  *     A function that helps users avoid syncs inside a collective call
@@ -4231,7 +4209,7 @@ void pnga_merge_mirrored(Integer g_a)
   if (!pnga_is_mirrored(g_a)) return;
 
   inode = pnga_cluster_nodeid();
-  nnodes = pnga_cluster_nnodes(); 
+  nnodes = pnga_cluster_nnodes();
   nprocs = pnga_cluster_nprocs(inode);
   zero = 0;
 
@@ -4325,7 +4303,7 @@ void pnga_merge_mirrored(Integer g_a)
           istart+=len;
         }
       }
-    } 
+    }
   } else {
     Integer _ga_tmp;
     Integer idims[MAXDIM], iwidth[MAXDIM], ichunk[MAXDIM];
@@ -4352,7 +4330,7 @@ void pnga_merge_mirrored(Integer g_a)
       case C_SCPL: one = &cf_one; break;
       default: pnga_error("type not supported",type);
     }
-    
+
   /* Nodes contain a mixed number of processors. Create a temporary GA to
      complete merge operation. */
     count = 0;
@@ -4362,7 +4340,7 @@ void pnga_merge_mirrored(Integer g_a)
       ichunk[i] = 0;
     }
     if (!pnga_create_ghosts(type, ndim, idims,
-        iwidth, "temporary", ichunk, &_ga_tmp)) 
+        iwidth, "temporary", ichunk, &_ga_tmp))
       pnga_error("Unable to create work array for merge",GAme);
     pnga_zero(_ga_tmp);
     /* Find data on this processor and accumulate in temporary global array */
@@ -4662,7 +4640,7 @@ void pnga_get_block_info(Integer g_a, Integer *num_blocks, Integer *block_dims)
 {
   Integer ga_handle = GA_OFFSET + g_a;
   Integer i, ndim;
-  ndim = GA[ga_handle].ndim; 
+  ndim = GA[ga_handle].ndim;
   if (GA[ga_handle].distr_type == SCALAPACK ||
       GA[ga_handle].distr_type == TILED) {
     for (i=0; i<ndim; i++) {
@@ -4742,7 +4720,7 @@ int ga_recover_arrays(Integer *gas, int num)
 #   pragma weak wnga_pgroup_absolute_id = pnga_pgroup_absolute_id
 #endif
 
-Integer pnga_pgroup_absolute_id(Integer grp, Integer pid) 
+Integer pnga_pgroup_absolute_id(Integer grp, Integer pid)
 {
 #ifdef MSG_COMMS_MPI
   if(grp == GA_World_Proc_Group) /*a.k.a -1*/
@@ -4767,7 +4745,6 @@ static int calc_maplen(int handle)
     return 0;
 }
 
-
 /***************************************************************
  *
  * GA types related functions
@@ -4783,7 +4760,7 @@ ga_typeinfo_t ga_types[GA_TYPES_MAX] = {
   {1, sizeof(long double)},
   {1, sizeof(SingleComplex)},
   {1, sizeof(DoubleComplex)},
-  {1, -1 /*sizeof(LongDoubleComplex)*/},                     
+  {1, -1 /*sizeof(LongDoubleComplex)*/},
   {1, sizeof(char)},
   {1, sizeof(Integer)},
   {1, sizeof(logical)},
@@ -4823,5 +4800,5 @@ int pnga_deregister_type(int type) {
   }
   ga_types[tp].active = 0;
   ga_types[tp].size = 0;
-  return 0;  
+  return 0;
 }

@@ -134,7 +134,6 @@ static double time_parmci_msg_group_barrier = 0;
 static double time_parmci_notify = 0;
 static double time_parmci_notify_wait = 0;
 
-
 int ARMCI_Acc(int optype, void *scale, void *src, void *dst, int bytes, int proc)
 {
     double local_start;
@@ -147,7 +146,6 @@ int ARMCI_Acc(int optype, void *scale, void *src, void *dst, int bytes, int proc
     time_PARMCI_Acc += local_stop - local_start;
     return ret;
 }
-
 
 int ARMCI_AccS(int optype, void *scale, void *src_ptr, int *src_stride_arr, void *dst_ptr, int *dst_stride_arr, int *count, int stride_levels, int proc)
 {
@@ -162,7 +160,6 @@ int ARMCI_AccS(int optype, void *scale, void *src_ptr, int *src_stride_arr, void
     return ret;
 }
 
-
 int ARMCI_AccV(int op, void *scale, armci_giov_t *darr, int len, int proc)
 {
     double local_start;
@@ -176,34 +173,31 @@ int ARMCI_AccV(int op, void *scale, armci_giov_t *darr, int len, int proc)
     return ret;
 }
 
-
 void ARMCI_AllFence()
 {
     double local_start;
     double local_stop;
-    
+
     ++count_PARMCI_AllFence;
     local_start = MPI_Wtime();
     PARMCI_AllFence();
     local_stop = MPI_Wtime();
     time_PARMCI_AllFence += local_stop - local_start;
-    
-}
 
+}
 
 void ARMCI_Barrier()
 {
     double local_start;
     double local_stop;
-    
+
     ++count_PARMCI_Barrier;
     local_start = MPI_Wtime();
     PARMCI_Barrier();
     local_stop = MPI_Wtime();
     time_PARMCI_Barrier += local_stop - local_start;
-    
-}
 
+}
 
 int ARMCI_Create_mutexes(int num)
 {
@@ -218,7 +212,6 @@ int ARMCI_Create_mutexes(int num)
     return ret;
 }
 
-
 int ARMCI_Destroy_mutexes()
 {
     double local_start;
@@ -232,20 +225,18 @@ int ARMCI_Destroy_mutexes()
     return ret;
 }
 
-
 void ARMCI_Fence(int proc)
 {
     double local_start;
     double local_stop;
-    
+
     ++count_PARMCI_Fence;
     local_start = MPI_Wtime();
     PARMCI_Fence(proc);
     local_stop = MPI_Wtime();
     time_PARMCI_Fence += local_stop - local_start;
-    
-}
 
+}
 
 int ARMCI_Free(void *ptr)
 {
@@ -260,7 +251,6 @@ int ARMCI_Free(void *ptr)
     return ret;
 }
 
-
 int ARMCI_Free_local(void *ptr)
 {
     double local_start;
@@ -273,7 +263,6 @@ int ARMCI_Free_local(void *ptr)
     time_PARMCI_Free_local += local_stop - local_start;
     return ret;
 }
-
 
 int ARMCI_Get(void *src, void *dst, int bytes, int proc)
 {
@@ -288,7 +277,6 @@ int ARMCI_Get(void *src, void *dst, int bytes, int proc)
     return ret;
 }
 
-
 int ARMCI_GetS(void *src_ptr, int *src_stride_arr, void *dst_ptr, int *dst_stride_arr, int *count, int stride_levels, int proc)
 {
     double local_start;
@@ -301,7 +289,6 @@ int ARMCI_GetS(void *src_ptr, int *src_stride_arr, void *dst_ptr, int *dst_strid
     time_PARMCI_GetS += local_stop - local_start;
     return ret;
 }
-
 
 int ARMCI_GetV(armci_giov_t *darr, int len, int proc)
 {
@@ -316,7 +303,6 @@ int ARMCI_GetV(armci_giov_t *darr, int len, int proc)
     return ret;
 }
 
-
 double ARMCI_GetValueDouble(void *src, int proc)
 {
     double local_start;
@@ -329,7 +315,6 @@ double ARMCI_GetValueDouble(void *src, int proc)
     time_PARMCI_GetValueDouble += local_stop - local_start;
     return ret;
 }
-
 
 float ARMCI_GetValueFloat(void *src, int proc)
 {
@@ -344,7 +329,6 @@ float ARMCI_GetValueFloat(void *src, int proc)
     return ret;
 }
 
-
 int ARMCI_GetValueInt(void *src, int proc)
 {
     double local_start;
@@ -358,7 +342,6 @@ int ARMCI_GetValueInt(void *src, int proc)
     return ret;
 }
 
-
 long ARMCI_GetValueLong(void *src, int proc)
 {
     double local_start;
@@ -371,7 +354,6 @@ long ARMCI_GetValueLong(void *src, int proc)
     time_PARMCI_GetValueLong += local_stop - local_start;
     return ret;
 }
-
 
 int ARMCI_Init()
 {
@@ -392,7 +374,6 @@ int ARMCI_Init()
     return ret;
 }
 
-
 int ARMCI_Init_args(int *argc, char ***argv)
 {
     double local_start;
@@ -412,7 +393,6 @@ int ARMCI_Init_args(int *argc, char ***argv)
     return ret;
 }
 
-
 int ARMCI_Initialized()
 {
     double local_start;
@@ -426,20 +406,18 @@ int ARMCI_Initialized()
     return ret;
 }
 
-
 void ARMCI_Lock(int mutex, int proc)
 {
     double local_start;
     double local_stop;
-    
+
     ++count_PARMCI_Lock;
     local_start = MPI_Wtime();
     PARMCI_Lock(mutex, proc);
     local_stop = MPI_Wtime();
     time_PARMCI_Lock += local_stop - local_start;
-    
-}
 
+}
 
 int ARMCI_Malloc(void **ptr_arr, armci_size_t bytes)
 {
@@ -454,7 +432,6 @@ int ARMCI_Malloc(void **ptr_arr, armci_size_t bytes)
     return ret;
 }
 
-
 void* ARMCI_Malloc_local(armci_size_t bytes)
 {
     double local_start;
@@ -467,7 +444,6 @@ void* ARMCI_Malloc_local(armci_size_t bytes)
     time_PARMCI_Malloc_local += local_stop - local_start;
     return ret;
 }
-
 
 void* ARMCI_Memat(armci_meminfo_t *meminfo, long offset)
 {
@@ -482,20 +458,18 @@ void* ARMCI_Memat(armci_meminfo_t *meminfo, long offset)
     return ret;
 }
 
-
 void ARMCI_Memget(size_t bytes, armci_meminfo_t *meminfo, int memflg)
 {
     double local_start;
     double local_stop;
-    
+
     ++count_PARMCI_Memget;
     local_start = MPI_Wtime();
     PARMCI_Memget(bytes, meminfo, memflg);
     local_stop = MPI_Wtime();
     time_PARMCI_Memget += local_stop - local_start;
-    
-}
 
+}
 
 int ARMCI_NbAccS(int optype, void *scale, void *src_ptr, int *src_stride_arr, void *dst_ptr, int *dst_stride_arr, int *count, int stride_levels, int proc, armci_hdl_t *nb_handle)
 {
@@ -510,7 +484,6 @@ int ARMCI_NbAccS(int optype, void *scale, void *src_ptr, int *src_stride_arr, vo
     return ret;
 }
 
-
 int ARMCI_NbAccV(int op, void *scale, armci_giov_t *darr, int len, int proc, armci_hdl_t *nb_handle)
 {
     double local_start;
@@ -523,7 +496,6 @@ int ARMCI_NbAccV(int op, void *scale, armci_giov_t *darr, int len, int proc, arm
     time_PARMCI_NbAccV += local_stop - local_start;
     return ret;
 }
-
 
 int ARMCI_NbGet(void *src, void *dst, int bytes, int proc, armci_hdl_t *nb_handle)
 {
@@ -538,20 +510,29 @@ int ARMCI_NbGet(void *src, void *dst, int bytes, int proc, armci_hdl_t *nb_handl
     return ret;
 }
 
-
-int ARMCI_NbGetS(void *src_ptr, int *src_stride_arr, void *dst_ptr, int *dst_stride_arr, int *count, int stride_levels, int proc, armci_hdl_t *nb_handle)
+int ARMCI_NbGetS(void *src_ptr, int *src_stride_arr, void *dst_ptr, int *dst_stride_arr
+#ifdef USE_DEVICE_MEM
+    , int *count, int stride_levels, int proc, armci_hdl_t *nb_handle, device_info_t dev_info)
+#else
+    , int *count, int stride_levels, int proc, armci_hdl_t *nb_handle)
+#endif
 {
     double local_start;
     double local_stop;
     int ret;
     ++count_PARMCI_NbGetS;
     local_start = MPI_Wtime();
-    ret = PARMCI_NbGetS(src_ptr, src_stride_arr, dst_ptr, dst_stride_arr, count, stride_levels, proc, nb_handle);
+#ifdef USE_DEVICE_MEM
+    ret = PARMCI_NbGetS(src_ptr, src_stride_arr, dst_ptr, dst_stride_arr, count
+                        , stride_levels, proc, nb_handle, dev_info);
+#else
+                        , stride_levels, proc, nb_handle);
+#endif
+
     local_stop = MPI_Wtime();
     time_PARMCI_NbGetS += local_stop - local_start;
     return ret;
 }
-
 
 int ARMCI_NbGetV(armci_giov_t *darr, int len, int proc, armci_hdl_t *nb_handle)
 {
@@ -566,7 +547,6 @@ int ARMCI_NbGetV(armci_giov_t *darr, int len, int proc, armci_hdl_t *nb_handle)
     return ret;
 }
 
-
 int ARMCI_NbPut(void *src, void *dst, int bytes, int proc, armci_hdl_t *nb_handle)
 {
     double local_start;
@@ -579,7 +559,6 @@ int ARMCI_NbPut(void *src, void *dst, int bytes, int proc, armci_hdl_t *nb_handl
     time_PARMCI_NbPut += local_stop - local_start;
     return ret;
 }
-
 
 int ARMCI_NbPutS(void *src_ptr, int *src_stride_arr, void *dst_ptr, int *dst_stride_arr, int *count, int stride_levels, int proc, armci_hdl_t *nb_handle)
 {
@@ -594,7 +573,6 @@ int ARMCI_NbPutS(void *src_ptr, int *src_stride_arr, void *dst_ptr, int *dst_str
     return ret;
 }
 
-
 int ARMCI_NbPutV(armci_giov_t *darr, int len, int proc, armci_hdl_t *nb_handle)
 {
     double local_start;
@@ -607,7 +585,6 @@ int ARMCI_NbPutV(armci_giov_t *darr, int len, int proc, armci_hdl_t *nb_handle)
     time_PARMCI_NbPutV += local_stop - local_start;
     return ret;
 }
-
 
 int ARMCI_NbPutValueDouble(double src, void *dst, int proc, armci_hdl_t *nb_handle)
 {
@@ -622,7 +599,6 @@ int ARMCI_NbPutValueDouble(double src, void *dst, int proc, armci_hdl_t *nb_hand
     return ret;
 }
 
-
 int ARMCI_NbPutValueFloat(float src, void *dst, int proc, armci_hdl_t *nb_handle)
 {
     double local_start;
@@ -635,7 +611,6 @@ int ARMCI_NbPutValueFloat(float src, void *dst, int proc, armci_hdl_t *nb_handle
     time_PARMCI_NbPutValueFloat += local_stop - local_start;
     return ret;
 }
-
 
 int ARMCI_NbPutValueInt(int src, void *dst, int proc, armci_hdl_t *nb_handle)
 {
@@ -650,7 +625,6 @@ int ARMCI_NbPutValueInt(int src, void *dst, int proc, armci_hdl_t *nb_handle)
     return ret;
 }
 
-
 int ARMCI_NbPutValueLong(long src, void *dst, int proc, armci_hdl_t *nb_handle)
 {
     double local_start;
@@ -663,7 +637,6 @@ int ARMCI_NbPutValueLong(long src, void *dst, int proc, armci_hdl_t *nb_handle)
     time_PARMCI_NbPutValueLong += local_stop - local_start;
     return ret;
 }
-
 
 int ARMCI_Put(void *src, void *dst, int bytes, int proc)
 {
@@ -678,7 +651,6 @@ int ARMCI_Put(void *src, void *dst, int bytes, int proc)
     return ret;
 }
 
-
 int ARMCI_PutS(void *src_ptr, int *src_stride_arr, void *dst_ptr, int *dst_stride_arr, int *count, int stride_levels, int proc)
 {
     double local_start;
@@ -691,7 +663,6 @@ int ARMCI_PutS(void *src_ptr, int *src_stride_arr, void *dst_ptr, int *dst_strid
     time_PARMCI_PutS += local_stop - local_start;
     return ret;
 }
-
 
 int ARMCI_PutS_flag(void *src_ptr, int *src_stride_arr, void *dst_ptr, int *dst_stride_arr, int *count, int stride_levels, int *flag, int val, int proc)
 {
@@ -706,7 +677,6 @@ int ARMCI_PutS_flag(void *src_ptr, int *src_stride_arr, void *dst_ptr, int *dst_
     return ret;
 }
 
-
 int ARMCI_PutS_flag_dir(void *src_ptr, int *src_stride_arr, void *dst_ptr, int *dst_stride_arr, int *count, int stride_levels, int *flag, int val, int proc)
 {
     double local_start;
@@ -719,7 +689,6 @@ int ARMCI_PutS_flag_dir(void *src_ptr, int *src_stride_arr, void *dst_ptr, int *
     time_PARMCI_PutS_flag_dir += local_stop - local_start;
     return ret;
 }
-
 
 int ARMCI_PutV(armci_giov_t *darr, int len, int proc)
 {
@@ -734,7 +703,6 @@ int ARMCI_PutV(armci_giov_t *darr, int len, int proc)
     return ret;
 }
 
-
 int ARMCI_PutValueDouble(double src, void *dst, int proc)
 {
     double local_start;
@@ -747,7 +715,6 @@ int ARMCI_PutValueDouble(double src, void *dst, int proc)
     time_PARMCI_PutValueDouble += local_stop - local_start;
     return ret;
 }
-
 
 int ARMCI_PutValueFloat(float src, void *dst, int proc)
 {
@@ -762,7 +729,6 @@ int ARMCI_PutValueFloat(float src, void *dst, int proc)
     return ret;
 }
 
-
 int ARMCI_PutValueInt(int src, void *dst, int proc)
 {
     double local_start;
@@ -775,7 +741,6 @@ int ARMCI_PutValueInt(int src, void *dst, int proc)
     time_PARMCI_PutValueInt += local_stop - local_start;
     return ret;
 }
-
 
 int ARMCI_PutValueLong(long src, void *dst, int proc)
 {
@@ -790,7 +755,6 @@ int ARMCI_PutValueLong(long src, void *dst, int proc)
     return ret;
 }
 
-
 int ARMCI_Put_flag(void *src, void *dst, int bytes, int *f, int v, int proc)
 {
     double local_start;
@@ -803,7 +767,6 @@ int ARMCI_Put_flag(void *src, void *dst, int bytes, int *f, int v, int proc)
     time_PARMCI_Put_flag += local_stop - local_start;
     return ret;
 }
-
 
 int ARMCI_Rmw(int op, void *ploc, void *prem, int extra, int proc)
 {
@@ -818,7 +781,6 @@ int ARMCI_Rmw(int op, void *ploc, void *prem, int extra, int proc)
     return ret;
 }
 
-
 int ARMCI_Test(armci_hdl_t *nb_handle)
 {
     double local_start;
@@ -832,20 +794,18 @@ int ARMCI_Test(armci_hdl_t *nb_handle)
     return ret;
 }
 
-
 void ARMCI_Unlock(int mutex, int proc)
 {
     double local_start;
     double local_stop;
-    
+
     ++count_PARMCI_Unlock;
     local_start = MPI_Wtime();
     PARMCI_Unlock(mutex, proc);
     local_stop = MPI_Wtime();
     time_PARMCI_Unlock += local_stop - local_start;
-    
-}
 
+}
 
 int ARMCI_Wait(armci_hdl_t *nb_handle)
 {
@@ -860,7 +820,6 @@ int ARMCI_Wait(armci_hdl_t *nb_handle)
     return ret;
 }
 
-
 int ARMCI_WaitAll()
 {
     double local_start;
@@ -873,7 +832,6 @@ int ARMCI_WaitAll()
     time_PARMCI_WaitAll += local_stop - local_start;
     return ret;
 }
-
 
 int ARMCI_WaitProc(int proc)
 {
@@ -888,34 +846,31 @@ int ARMCI_WaitProc(int proc)
     return ret;
 }
 
-
 void armci_msg_barrier()
 {
     double local_start;
     double local_stop;
-    
+
     ++count_parmci_msg_barrier;
     local_start = MPI_Wtime();
     parmci_msg_barrier();
     local_stop = MPI_Wtime();
     time_parmci_msg_barrier += local_stop - local_start;
-    
-}
 
+}
 
 void armci_msg_group_barrier(ARMCI_Group *group)
 {
     double local_start;
     double local_stop;
-    
+
     ++count_parmci_msg_group_barrier;
     local_start = MPI_Wtime();
     parmci_msg_group_barrier(group);
     local_stop = MPI_Wtime();
     time_parmci_msg_group_barrier += local_stop - local_start;
-    
-}
 
+}
 
 int armci_notify(int proc)
 {
@@ -929,7 +884,6 @@ int armci_notify(int proc)
     time_parmci_notify += local_stop - local_start;
     return ret;
 }
-
 
 int armci_notify_wait(int proc, int *pval)
 {
@@ -1252,4 +1206,3 @@ void ARMCI_Finalize()
     }
     MPI_Comm_free(&comm);
 }
-

@@ -215,7 +215,12 @@ extern int comex_puts(
         void *src, int *src_stride,
         void *dst, int *dst_stride,
         int *count, int stride_levels,
-        int proc, comex_group_t group);
+        int proc, comex_group_t group
+#ifdef USE_DEVICE_MEM
+        , device_info_t dev_info);
+#else
+);
+#endif
 
 /**
  * Vector Put.
@@ -442,7 +447,13 @@ extern int comex_gets(
         void *src, int *src_stride,
         void *dst, int *dst_stride,
         int *count, int stride_levels,
-        int proc, comex_group_t group);
+        int proc, comex_group_t group
+#ifdef USE_DEVICE_MEM
+        , device_info_t dev_info
+        );
+#else
+        );
+#endif
 
 /**
  * Vector Get.
@@ -490,13 +501,19 @@ extern int comex_nbget(
  * @param[out] nb_handle nonblocking request object
  * @return COMEX_SUCCESS on success
  */
+// TODO: update argument description
 extern int comex_nbgets(
         void *src, int *src_stride,
 		void *dst, int *dst_stride,
 		int *count, int stride_levels,
         int proc, comex_group_t group,
-        comex_request_t *nb_handler);
-
+        comex_request_t *nb_handler
+#ifdef USE_DEVICE_MEM
+        , device_info_t dev_info
+        );
+#else
+        );
+#endif
 /**
  * Nonblocking Vector Get.
  *
@@ -522,8 +539,13 @@ extern int comex_nbgetv(
  * @param[in] group the group to which the calling process belongs
  * @return COMEX_SUCCESS on success
  */
+#ifdef USE_DEVICE_MEM
+extern int comex_malloc(
+        void **ptr_arr, size_t bytes, device_info_t dev_info, comex_group_t group);
+#else
 extern int comex_malloc(
         void **ptr_arr, size_t bytes, comex_group_t group);
+#endif
 
 /**
  * Collective free of memory given the original local pointer.
@@ -532,6 +554,10 @@ extern int comex_malloc(
  * @param[in] group the group to which the calling process belongs
  * @return COMEX_SUCCESS on success
  */
+#ifdef USE_DEVICE_MEM
+extern int comex_free_device(void *ptr, comex_group_t group);
+extern int comex_free_device_local(void *ptr);
+#endif
 extern int comex_free(void *ptr, comex_group_t group);
 
 /**
@@ -544,6 +570,24 @@ extern int comex_free(void *ptr, comex_group_t group);
  * @return COMEX_SUCCESS on success
  */
 extern void* comex_malloc_local(size_t bytes);
+
+/**
+ * Local (noncollective) allocation of registered memory.
+ *
+ * Using memory allocated here may have performance benefits when used as a
+ * communication buffer.
+ *
+ * @param[in] bytes how many bytes to allocate locally
+ * @param[in] id of the gpu device where allocation happens
+ * @return COMEX_SUCCESS on success
+ */
+#ifdef USE_DEVICE_MEM
+// TODO:
+// extern void* comex_device_malloc_local(size_t bytes, int deviceId);
+extern void* comex_device_malloc_local(size_t bytes);
+extern void comex_device_host_memcpy(void* dest, void *src, size_t size);
+extern void comex_host_device_memcpy(void* dest, void *src, size_t size);
+#endif
 
 /**
  * Local (noncollective) free of memory allocated by comex_malloc_local.

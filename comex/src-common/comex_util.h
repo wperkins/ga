@@ -9,8 +9,10 @@ typedef struct {
 } local_ptr_t;
 
 typedef struct {
+    // TODO: On Devices
     int on_device;
-    int count; /* Device Count */
+    int is_ga; /* is data a ga */
+    int count; /* Device Count. TODO: Convert this to size_t? */
 } device_info_t;
 #endif
 

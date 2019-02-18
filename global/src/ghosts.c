@@ -3,12 +3,12 @@
 #endif
 
 /* $Id: ghosts.c,v 1.47.4.2 2007-05-02 16:23:39 d3g293 Exp $ */
-/* 
+/*
  * module: ghosts.c
  * author: Bruce Palmer
  * description: implements GA collective communication operations to
  * update ghost cell regions.
- * 
+ *
  * DISCLAIMER
  *
  * This material was prepared as an account of work sponsored by an
@@ -61,7 +61,7 @@ extern void armci_read_strided(void *ptr, int stride_levels, int stride_arr[], i
 extern armci_hdl_t* get_armci_nbhandle(Integer *);
 
 #define USE_MALLOC 1
-#define INVALID_MA_HANDLE -1 
+#define INVALID_MA_HANDLE -1
 #define NEAR_INT(x) (x)< 0.0 ? ceil( (x) - 0.5) : floor((x) + 0.5)
 
 #define BYTE_ADDRESSABLE_MEMORY
@@ -104,7 +104,6 @@ Integer  i, lo[MAXDIM], hi[MAXDIM];
 Integer ndim = GA[handle].ndim;
 Integer me = pnga_nodeid();
 
-
    pnga_distribution(g_a, me, lo, hi);
 
    for (i=0; i < ndim; i++) {
@@ -112,7 +111,7 @@ Integer me = pnga_nodeid();
    }
 
    gam_LocationWithGhosts(me, handle, dims, &lptr, ld);
-   *(char**)ptr = lptr; 
+   *(char**)ptr = lptr;
    for (i=0; i < ndim; i++)
      dims[i] = hi[i] - lo[i] + 1 + 2*(Integer)GA[handle].width[i];
 }
@@ -172,13 +171,13 @@ Integer me = pnga_nodeid();
      case MT_F_REAL:
         *index = (AccessIndex) ((float*)ptr - FLT_MB);
         lref = (unsigned long)FLT_MB;
-        break;        
+        break;
    }
 
 #ifdef BYTE_ADDRESSABLE_MEMORY
    /* check the allignment */
    lptr = (unsigned long)ptr;
-   if( lptr%elemsize != lref%elemsize ){ 
+   if( lptr%elemsize != lref%elemsize ){
        printf("%d: lptr=%lu(%lu) lref=%lu(%lu)\n",(int)GAme,lptr,lptr%elemsize,
                                                     lref,lref%elemsize);
        pnga_error("nga_access: MA addressing problem: base address misallignment",
@@ -192,28 +191,28 @@ Integer me = pnga_nodeid();
    FLUSH_CACHE;
 }
 
-/*\  PROVIDE POINTER TO LOCALLY HELD DATA, ACCOUNTING FOR 
- *   PRESENCE OF GHOST CELLS 
-\*/ 
+/*\  PROVIDE POINTER TO LOCALLY HELD DATA, ACCOUNTING FOR
+ *   PRESENCE OF GHOST CELLS
+\*/
 #if HAVE_SYS_WEAK_ALIAS_PRAGMA
 #   pragma weak wnga_access_ghost_element_ptr = pnga_access_ghost_element_ptr
 #endif
-void pnga_access_ghost_element_ptr(Integer g_a, void *ptr, 
-                        Integer subscript[], Integer ld[]) 
-{ 
-  char *lptr; 
-  Integer  handle = GA_OFFSET + g_a; 
-  Integer i; 
-  Integer tmp_sub[MAXDIM]; 
-  Integer me = pnga_nodeid(); 
-  /* Indices conform to Fortran convention. Shift them down 1 so that 
-     gam_LocationWithGhosts works. */ 
-  for (i=0; i<GA[handle].ndim; i++) tmp_sub[i] = subscript[i] - 1; 
-  gam_LocationWithGhosts(me, handle, tmp_sub, &lptr, ld); 
- 
-  *(char**)ptr = lptr; 
-} 
- 
+void pnga_access_ghost_element_ptr(Integer g_a, void *ptr,
+                        Integer subscript[], Integer ld[])
+{
+  char *lptr;
+  Integer  handle = GA_OFFSET + g_a;
+  Integer i;
+  Integer tmp_sub[MAXDIM];
+  Integer me = pnga_nodeid();
+  /* Indices conform to Fortran convention. Shift them down 1 so that
+     gam_LocationWithGhosts works. */
+  for (i=0; i<GA[handle].ndim; i++) tmp_sub[i] = subscript[i] - 1;
+  gam_LocationWithGhosts(me, handle, tmp_sub, &lptr, ld);
+
+  *(char**)ptr = lptr;
+}
+
 /*\ PROVIDE ACCESS TO LOCAL PATCH OF A GLOBAL ARRAY WITH GHOST CELLS
 \*/
 #if HAVE_SYS_WEAK_ALIAS_PRAGMA
@@ -264,14 +263,14 @@ unsigned long    lref=0, lptr=0;
      case MT_F_REAL:
         *index = (AccessIndex) ((float*)ptr - FLT_MB);
         lref = (unsigned long)FLT_MB;
-        break;        
+        break;
 
    }
 
 #ifdef BYTE_ADDRESSABLE_MEMORY
    /* check the allignment */
    lptr = (unsigned long)ptr;
-   if( lptr%elemsize != lref%elemsize ){ 
+   if( lptr%elemsize != lref%elemsize ){
        printf("%d: lptr=%lu(%lu) lref=%lu(%lu)\n",(int)GAme,lptr,lptr%elemsize,
                                                     lref,lref%elemsize);
        pnga_error("nga_access: MA addressing problem: base address misallignment",
@@ -637,7 +636,7 @@ void pnga_update1_ghosts(Integer g_a)
              element size. */
           gam_ComputeCount(ndim, plo_rem, phi_rem, count);
           count[0] *= size;
- 
+
           /* get remote data */
           if (p_handle >= 0) {
             proc_rem = PGRP_LIST[p_handle].inv_map_proc_list[proc_rem];
@@ -760,7 +759,7 @@ void pnga_update1_ghosts(Integer g_a)
              element size. */
           gam_ComputeCount(ndim, plo_rem, phi_rem, count);
           count[0] *= size;
- 
+
           /* get remote data */
           if (p_handle >= 0) {
             proc_rem = PGRP_LIST[p_handle].inv_map_proc_list[proc_rem];
@@ -962,7 +961,7 @@ logical pnga_update2_ghosts(Integer g_a)
        element size. */
     gam_ComputeCount(ndim, plo_loc, phi_loc, count);
     count[0] *= size;
- 
+
     /* put data on remote processor */
     /*ARMCI_PutS(ptr_loc, stride_loc, ptr_rem, stride_rem, count,
           (int)(ndim - 1), (int)proc_rem);*/
@@ -970,7 +969,7 @@ logical pnga_update2_ghosts(Integer g_a)
       proc_rem = PGRP_LIST[p_handle].inv_map_proc_list[proc_rem];
     }
     ARMCI_NbPutS(ptr_loc, stride_loc, ptr_rem, stride_rem, count,
-          (int)(ndim - 1), (int)proc_rem, NULL); 
+          (int)(ndim - 1), (int)proc_rem, NULL);
   }
 
   ARMCI_WaitAll();
@@ -1073,6 +1072,18 @@ logical pnga_update3_ghosts(Integer g_a)
   Integer *_ga_map = NULL;
   Integer *_ga_proclist = NULL;
 
+#ifdef USE_DEVICE_MEM
+  device_info_t dev_info;
+  dev_info.on_device = -1;
+  dev_info.is_ga = -1;
+  dev_info.count = -1;
+  if(_my_local_rank < GA[handle].dev_count && (GA[handle].on_device[_my_local_rank])){
+    dev_info.on_device = 1;
+    dev_info.is_ga = 1;
+    dev_info.count = GA[handle].dev_count;
+  }
+#endif
+
   /* This routine makes use of the shift algorithm to update data in the
    * ghost cells bounding the local block of visible data. The shift
    * algorithm starts by updating the blocks of data along the first
@@ -1114,7 +1125,7 @@ logical pnga_update3_ghosts(Integer g_a)
    *
    *       slo_rem[], shi_rem[]: Similar to lo_rem[] and hi_rem[], except
    *       that these indices have been corrected for wrap-around
-   *       boundary conditions. 
+   *       boundary conditions.
    *
    *       thi_rem[], thi_rem[]: The lower and upper indices of the visible
    *       data on a remote processor.
@@ -1223,8 +1234,13 @@ logical pnga_update3_ghosts(Integer g_a)
       if (p_handle >= 0) {
         proc_rem = PGRP_LIST[p_handle].inv_map_proc_list[proc_rem];
       }
+#ifdef USE_DEVICE_MEM
+      ARMCI_PutS(ptr_loc, stride_loc, ptr_rem, stride_rem, count,
+          (int)(ndim - 1), (int)proc_rem, dev_info);
+#else
       ARMCI_PutS(ptr_loc, stride_loc, ptr_rem, stride_rem, count,
           (int)(ndim - 1), (int)proc_rem);
+#endif
 
       /* Perform update in positive direction */
       get_remote_block_pos(idx, ndim, lo_loc, hi_loc, slo_rem, shi_rem,
@@ -1282,8 +1298,13 @@ logical pnga_update3_ghosts(Integer g_a)
       if (p_handle >= 0) {
         proc_rem = PGRP_LIST[p_handle].inv_map_proc_list[proc_rem];
       }
+#ifdef USE_DEVICE_MEM
+      ARMCI_PutS(ptr_loc, stride_loc, ptr_rem, stride_rem, count,
+          (int)(ndim - 1), (int)proc_rem, dev_info);
+#else
       ARMCI_PutS(ptr_loc, stride_loc, ptr_rem, stride_rem, count,
           (int)(ndim - 1), (int)proc_rem);
+#endif
     }
     /* synchronize all processors and update increment array */
     if (idx < ndim-1) pnga_pgroup_sync(p_handle);
@@ -2521,7 +2542,7 @@ logical pnga_update55_ghosts(Integer g_a)
    * consisting of a single integer is sent after the first put call and
    * used to update a signal buffer on the remote processor. Each
    * processor can determine how much data it has received by checking
-   * its signal buffer. 
+   * its signal buffer.
    *
    * To perform the update, this routine makes use of several copies of
    * indices marking the upper and lower limits of data. Indices
@@ -2543,7 +2564,7 @@ logical pnga_update55_ghosts(Integer g_a)
    *
    *       slo_rem[], shi_rem[]: Similar to lo_rem[] and hi_rem[], except
    *       that these indices have been corrected for wrap-around
-   *       boundary conditions. 
+   *       boundary conditions.
    *
    *       thi_rem[], thi_rem[]: The lower and upper indices of the visible
    *       data on a remote processor.
@@ -2778,6 +2799,20 @@ void pnga_update_ghosts_nb(Integer g_a, Integer *nbhandle)
   Integer *_ga_map = NULL;
   Integer *_ga_proclist = NULL;
 
+#ifdef USE_DEVICE_MEM
+  device_info_t dev_info;
+
+  dev_info.on_device = -1;
+  dev_info.is_ga = -1;
+  dev_info.count = -1;
+  if(_my_local_rank < GA[handle].dev_count && (GA[handle].on_device[_my_local_rank]))
+  {
+    dev_info.on_device = 1;
+    dev_info.is_ga = 1;
+    dev_info.count = GA[handle].dev_count;
+  }
+#endif
+
   /* if global array has no ghost cells, just return */
   if (!pnga_has_ghosts(g_a)) {
     return;
@@ -2904,14 +2939,18 @@ void pnga_update_ghosts_nb(Integer g_a, Integer *nbhandle)
        element size. */
     gam_ComputeCount(ndim, plo_loc, phi_loc, count);
     count[0] *= size;
- 
+
     /* get data from remote processor */
     if (p_handle >= 0) {
       proc_rem = PGRP_LIST[p_handle].inv_map_proc_list[proc_rem];
     }
     ARMCI_NbGetS(ptr_rem, stride_rem, ptr_loc, stride_loc, count,
-        (int)(ndim - 1), (int)proc_rem, 
+        (int)(ndim - 1), (int)proc_rem,
+#ifdef USE_DEVICE_MEM
+        (armci_hdl_t*)get_armci_nbhandle(nbhandle), dev_info);
+#else
         (armci_hdl_t*)get_armci_nbhandle(nbhandle));
+#endif
   }
 
   free(_ga_map);
@@ -2951,9 +2990,9 @@ logical pnga_update_ghost_dir(Integer g_a,    /* GA handle */
   _ga_sync_begin = 1; _ga_sync_end=1; /*remove any previous masking*/
 
   /* if global array has no ghost cells, just return */
-  if (!pnga_has_ghosts(g_a)) 
+  if (!pnga_has_ghosts(g_a))
     return TRUE;
-  
+
   p_handle = GA[handle].p_handle;
   if(local_sync_begin)pnga_pgroup_sync(p_handle);
   idim = pdim;
@@ -3095,7 +3134,7 @@ logical pnga_update_ghost_dir(Integer g_a,    /* GA handle */
        element size. */
     gam_ComputeCount(ndim, plo_loc, phi_loc, count);
     count[0] *= size;
- 
+
     /* get data from remote processor */
     if (p_handle >= 0) {
       proc_rem = PGRP_LIST[p_handle].inv_map_proc_list[proc_rem];
@@ -3112,7 +3151,6 @@ logical pnga_update_ghost_dir(Integer g_a,    /* GA handle */
 
 /*uncomment for using message passing sendrecv in north south direction */
 /*#define USE_MP_NORTHSOUTH */
-
 
 /*\ UPDATE GHOST CELLS OF GLOBAL ARRAY USING PUT CALLS WITHOUT CORNERS AND
  *  WITHOUT ANY BARRIERS
@@ -3159,7 +3197,7 @@ logical pnga_update5_ghosts(Integer g_a)
    * consisting of a single integer is sent after the first put call and
    * used to update a signal buffer on the remote processor. Each
    * processor can determine how much data it has received by checking
-   * its signal buffer. 
+   * its signal buffer.
    */
 
   local_sync_begin = _ga_sync_begin; local_sync_end = _ga_sync_end;
@@ -3174,7 +3212,7 @@ logical pnga_update5_ghosts(Integer g_a)
   snd_ptr = ga_malloc(buflen, GA[handle].type, send_name);
   rcv_ptr = ga_malloc(buflen, GA[handle].type, rcv_name);
 #endif
- 
+
   cache = (char *)GA[handle].cache;
   /* if global array has no ghost cells, just return */
   if (!pnga_has_ghosts(g_a)) return TRUE;
@@ -3186,7 +3224,6 @@ logical pnga_update5_ghosts(Integer g_a)
   }
 
   if (!gai_check_ghost_distr(g_a)) return FALSE;
-
 
   /* loop over dimensions for sequential update using shift algorithm */
   msgcnt = 0;
@@ -3206,7 +3243,7 @@ logical pnga_update5_ghosts(Integer g_a)
       proc_rem_ptr = (Integer *)(count+ndim);
       proc_rem = (int)(*proc_rem_ptr);
       cache = (char *)(proc_rem_ptr+1);
-          
+
       if (p_handle >= 0) {
         proc_rem = PGRP_LIST[p_handle].inv_map_proc_list[proc_rem];
       }
@@ -3279,7 +3316,7 @@ logical pnga_update5_ghosts(Integer g_a)
       msgcnt-=2;
     }
   }
-#endif 
+#endif
   if(local_sync_end)pnga_pgroup_sync(p_handle);
   return TRUE;
 }
@@ -3335,7 +3372,7 @@ logical pnga_set_update5_info(Integer g_a)
    *
    *       slo_rem[], shi_rem[]: Similar to lo_rem[] and hi_rem[], except
    *       that these indices have been corrected for wrap-around
-   *       boundary conditions. 
+   *       boundary conditions.
    *
    *       thi_rem[], thi_rem[]: The lower and upper indices of the visible
    *       data on a remote processor.
@@ -3367,16 +3404,16 @@ logical pnga_set_update5_info(Integer g_a)
   cache = (char *)GA[handle].cache;
   corner_flag = GA[handle].corner_flag;
 
-  pnga_distribution(g_a,me,lo_loc,hi_loc); 
+  pnga_distribution(g_a,me,lo_loc,hi_loc);
   for (idx=0; idx < ndim; idx++) {
     increment[idx] = 0;
     width[idx] = (Integer)GA[handle].width[idx];
     dims[idx] = (Integer)GA[handle].dims[idx];
     if (lo_loc[idx] == 0 && hi_loc[idx] == -1){
-      *(char **)cache = NULL; 
+      *(char **)cache = NULL;
       return FALSE;
     }
-  } 
+  }
 
   _ga_map = malloc((GAnproc*2*MAXDIM+1)*sizeof(Integer));
   if(!_ga_map) pnga_error("pnga_set_update5_info:malloc failed (_ga_map)",0);
@@ -3388,8 +3425,8 @@ logical pnga_set_update5_info(Integer g_a)
 #endif
     for (idx=0; idx < ndim; idx++) {
       nwidth = width[idx];
-      if (nwidth != 0) {  
-      
+      if (nwidth != 0) {
+
         ptr_rem = (char **)cache;
         ptr_loc = (char **)(cache+sizeof(char *));
         stride_loc = (int *)(cache+2*sizeof(char *));
@@ -3416,7 +3453,6 @@ logical pnga_set_update5_info(Integer g_a)
         cache = (char *)(proc_rem+1);
 
         pnga_distribution(g_a, *proc_rem, tlo_rem, thi_rem);
-        
 
         for (i = 0; i < ndim; i++) {
           if (increment[i] == 0) {
@@ -3440,7 +3476,7 @@ logical pnga_set_update5_info(Integer g_a)
         }
         gam_LocationWithGhosts(me, handle, plo_loc, ptr_loc, ld_loc);
         gam_LocationWithGhosts(*proc_rem, handle, plo_rem, ptr_rem, ld_rem);
- 
+
         /* Evaluate strides on local and remote processors */
         gam_setstride(ndim, size, ld_loc, ld_rem, stride_rem,
             stride_loc);
@@ -3483,8 +3519,6 @@ logical pnga_set_update5_info(Integer g_a)
 
         pnga_distribution(g_a, *proc_rem, tlo_rem, thi_rem);
 
-
-
         for (i = 0; i < ndim; i++) {
           if (increment[i] == 0) {
             if (i == idx) {
@@ -3505,7 +3539,6 @@ logical pnga_set_update5_info(Integer g_a)
             /*phi_loc[i] = hi_loc[i] - lo_loc[i] + increment[i];*/
           }
         }
-
 
         gam_LocationWithGhosts(GAme, handle, plo_loc, ptr_loc, ld_loc);
         gam_LocationWithGhosts(*proc_rem, handle, plo_rem, ptr_rem, ld_rem);
@@ -3851,7 +3884,7 @@ logical pnga_update6_ghosts(Integer g_a)
           armci_msg_snd(msgcnt, snd_ptr, length, proc_rem_snd);
         } else if (index[idx]%2 == 0 && !sprocflag) {
           armci_msg_rcv(msgcnt, rcv_ptr, bufsize, &msglen, proc_rem_rcv);
-        } 
+        }
         if (rprocflag) {
 #if 0
           ARMCI_PutS(ptr_snd, stride_snd, ptr_rem, stride_rem, count, ndim- 1,
@@ -4040,7 +4073,7 @@ logical pnga_update6_ghosts(Integer g_a)
           armci_msg_snd(msgcnt, snd_ptr, length, proc_rem_snd);
         } else if (index[idx]%2 == 0 && !sprocflag) {
           armci_msg_rcv(msgcnt, rcv_ptr, bufsize, &msglen, proc_rem_rcv);
-        } 
+        }
         if (rprocflag) {
 #if 0
           ARMCI_PutS(ptr_snd, stride_snd, ptr_rem, stride_rem, count, ndim- 1,
@@ -4148,6 +4181,20 @@ logical pnga_update7_ghosts(Integer g_a)
   Integer p_handle;
   Integer *_ga_map = NULL;
   Integer *_ga_proclist = NULL;
+
+#ifdef USE_DEVICE_MEM
+  device_info_t dev_info;
+
+  dev_info.on_device = -1;
+  dev_info.is_ga = -1;
+  dev_info.count = -1;
+  if(_my_local_rank < GA[handle].dev_count && (GA[handle].on_device[_my_local_rank]))
+  {
+    dev_info.on_device = 1;
+    dev_info.is_ga = 1;
+    dev_info.count = GA[handle].dev_count;
+  }
+#endif
 
   /* if global array has no ghost cells, just return */
   if (!pnga_has_ghosts(g_a)) {
@@ -4282,7 +4329,11 @@ logical pnga_update7_ghosts(Integer g_a)
 /*    ARMCI_GetS(ptr_rem, stride_rem, ptr_loc, stride_loc, count,
           (int)(ndim - 1), (int)proc_rem); */
     ARMCI_NbGetS(ptr_rem, stride_rem, ptr_loc, stride_loc, count,
+#ifdef USE_DEVICE_MEM
+          (int)(ndim - 1), (int)proc_rem, NULL, dev_info);
+#else
           (int)(ndim - 1), (int)proc_rem, NULL);
+#endif
   }
 
   ARMCI_WaitAll();
@@ -4351,7 +4402,7 @@ void pnga_nbget_ghost_dir(Integer g_a,
       hi_rem[i] = hi_loc[i];
     }
   }
-  
+
   /* Get pointer to data destination on local block. Start by
      by finding subscript to origin of destination block */
   for (i=0; i<ndim; i++) {
@@ -4366,7 +4417,7 @@ void pnga_nbget_ghost_dir(Integer g_a,
   }
   gam_LocationWithGhosts(me, handle, subscript, &ptr_loc, ld);
   /* get data */
-  pnga_nbget(g_a,lo_rem,hi_rem,ptr_loc,ld,nbhandle);  
+  pnga_nbget(g_a,lo_rem,hi_rem,ptr_loc,ld,nbhandle);
 }
 
 /*\ SET PRECOMPUTED INFO FOR UPDATING GHOST CELLS
@@ -4403,4 +4454,3 @@ void pnga_set_ghost_corner_flag(Integer g_a, logical flag)
     (void)pnga_set_ghost_info(g_a);
   }
 }
-

@@ -10,7 +10,6 @@
 static int me;
 static int nproc;
 
-
 static long count_pnga_abs_value = 0;
 static long count_pnga_abs_value_patch = 0;
 static long count_pnga_acc = 0;
@@ -515,7 +514,6 @@ static double time_pnga_zero = 0;
 static double time_pnga_zero_diagonal = 0;
 static double time_pnga_zero_patch = 0;
 
-
 void wnga_abs_value(Integer g_a)
 {
     double local_start, local_stop;
@@ -525,7 +523,6 @@ void wnga_abs_value(Integer g_a)
     local_stop = MPI_Wtime();
     time_pnga_abs_value += local_stop - local_start;
 }
-
 
 void wnga_abs_value_patch(Integer g_a, Integer *lo, Integer *hi)
 {
@@ -537,7 +534,6 @@ void wnga_abs_value_patch(Integer g_a, Integer *lo, Integer *hi)
     time_pnga_abs_value_patch += local_stop - local_start;
 }
 
-
 void wnga_acc(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld, void *alpha)
 {
     double local_start, local_stop;
@@ -547,7 +543,6 @@ void wnga_acc(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld, voi
     local_stop = MPI_Wtime();
     time_pnga_acc += local_stop - local_start;
 }
-
 
 void wnga_access_block_grid_idx(Integer g_a, Integer *subscript, AccessIndex *index, Integer *ld)
 {
@@ -559,7 +554,6 @@ void wnga_access_block_grid_idx(Integer g_a, Integer *subscript, AccessIndex *in
     time_pnga_access_block_grid_idx += local_stop - local_start;
 }
 
-
 void wnga_access_block_grid_ptr(Integer g_a, Integer *index, void *ptr, Integer *ld)
 {
     double local_start, local_stop;
@@ -569,7 +563,6 @@ void wnga_access_block_grid_ptr(Integer g_a, Integer *index, void *ptr, Integer 
     local_stop = MPI_Wtime();
     time_pnga_access_block_grid_ptr += local_stop - local_start;
 }
-
 
 void wnga_access_block_idx(Integer g_a, Integer idx, AccessIndex *index, Integer *ld)
 {
@@ -581,7 +574,6 @@ void wnga_access_block_idx(Integer g_a, Integer idx, AccessIndex *index, Integer
     time_pnga_access_block_idx += local_stop - local_start;
 }
 
-
 void wnga_access_block_ptr(Integer g_a, Integer idx, void *ptr, Integer *ld)
 {
     double local_start, local_stop;
@@ -591,7 +583,6 @@ void wnga_access_block_ptr(Integer g_a, Integer idx, void *ptr, Integer *ld)
     local_stop = MPI_Wtime();
     time_pnga_access_block_ptr += local_stop - local_start;
 }
-
 
 void wnga_access_block_segment_idx(Integer g_a, Integer proc, AccessIndex *index, Integer *len)
 {
@@ -603,7 +594,6 @@ void wnga_access_block_segment_idx(Integer g_a, Integer proc, AccessIndex *index
     time_pnga_access_block_segment_idx += local_stop - local_start;
 }
 
-
 void wnga_access_block_segment_ptr(Integer g_a, Integer proc, void *ptr, Integer *len)
 {
     double local_start, local_stop;
@@ -613,7 +603,6 @@ void wnga_access_block_segment_ptr(Integer g_a, Integer proc, void *ptr, Integer
     local_stop = MPI_Wtime();
     time_pnga_access_block_segment_ptr += local_stop - local_start;
 }
-
 
 void wnga_access_ghost_element(Integer g_a, AccessIndex *index, Integer subscript[], Integer ld[])
 {
@@ -625,7 +614,6 @@ void wnga_access_ghost_element(Integer g_a, AccessIndex *index, Integer subscrip
     time_pnga_access_ghost_element += local_stop - local_start;
 }
 
-
 void wnga_access_ghost_element_ptr(Integer g_a, void *ptr, Integer subscript[], Integer ld[])
 {
     double local_start, local_stop;
@@ -635,7 +623,6 @@ void wnga_access_ghost_element_ptr(Integer g_a, void *ptr, Integer subscript[], 
     local_stop = MPI_Wtime();
     time_pnga_access_ghost_element_ptr += local_stop - local_start;
 }
-
 
 void wnga_access_ghost_ptr(Integer g_a, Integer dims[], void *ptr, Integer ld[])
 {
@@ -647,7 +634,6 @@ void wnga_access_ghost_ptr(Integer g_a, Integer dims[], void *ptr, Integer ld[])
     time_pnga_access_ghost_ptr += local_stop - local_start;
 }
 
-
 void wnga_access_ghosts(Integer g_a, Integer dims[], AccessIndex *index, Integer ld[])
 {
     double local_start, local_stop;
@@ -657,7 +643,6 @@ void wnga_access_ghosts(Integer g_a, Integer dims[], AccessIndex *index, Integer
     local_stop = MPI_Wtime();
     time_pnga_access_ghosts += local_stop - local_start;
 }
-
 
 void wnga_access_idx(Integer g_a, Integer *lo, Integer *hi, AccessIndex *index, Integer *ld)
 {
@@ -669,7 +654,6 @@ void wnga_access_idx(Integer g_a, Integer *lo, Integer *hi, AccessIndex *index, 
     time_pnga_access_idx += local_stop - local_start;
 }
 
-
 void wnga_access_ptr(Integer g_a, Integer *lo, Integer *hi, void *ptr, Integer *ld)
 {
     double local_start, local_stop;
@@ -679,7 +663,6 @@ void wnga_access_ptr(Integer g_a, Integer *lo, Integer *hi, void *ptr, Integer *
     local_stop = MPI_Wtime();
     time_pnga_access_ptr += local_stop - local_start;
 }
-
 
 void wnga_add(void *alpha, Integer g_a, void *beta, Integer g_b, Integer g_c)
 {
@@ -691,7 +674,6 @@ void wnga_add(void *alpha, Integer g_a, void *beta, Integer g_b, Integer g_c)
     time_pnga_add += local_stop - local_start;
 }
 
-
 void wnga_add_constant(Integer g_a, void *alpha)
 {
     double local_start, local_stop;
@@ -701,7 +683,6 @@ void wnga_add_constant(Integer g_a, void *alpha)
     local_stop = MPI_Wtime();
     time_pnga_add_constant += local_stop - local_start;
 }
-
 
 void wnga_add_constant_patch(Integer g_a, Integer *lo, Integer *hi, void *alpha)
 {
@@ -713,7 +694,6 @@ void wnga_add_constant_patch(Integer g_a, Integer *lo, Integer *hi, void *alpha)
     time_pnga_add_constant_patch += local_stop - local_start;
 }
 
-
 void wnga_add_diagonal(Integer g_a, Integer g_v)
 {
     double local_start, local_stop;
@@ -724,7 +704,6 @@ void wnga_add_diagonal(Integer g_a, Integer g_v)
     time_pnga_add_diagonal += local_stop - local_start;
 }
 
-
 void wnga_add_patch(void *alpha, Integer g_a, Integer *alo, Integer *ahi, void *beta, Integer g_b, Integer *blo, Integer *bhi, Integer g_c, Integer *clo, Integer *chi)
 {
     double local_start, local_stop;
@@ -734,7 +713,6 @@ void wnga_add_patch(void *alpha, Integer g_a, Integer *alo, Integer *ahi, void *
     local_stop = MPI_Wtime();
     time_pnga_add_patch += local_stop - local_start;
 }
-
 
 logical wnga_allocate(Integer g_a)
 {
@@ -748,7 +726,6 @@ logical wnga_allocate(Integer g_a)
     return return_value;
 }
 
-
 void wnga_bin_index(Integer g_bin, Integer g_cnt, Integer g_off, Integer *values, Integer *subs, Integer n, Integer sortit)
 {
     double local_start, local_stop;
@@ -758,7 +735,6 @@ void wnga_bin_index(Integer g_bin, Integer g_cnt, Integer g_off, Integer *values
     local_stop = MPI_Wtime();
     time_pnga_bin_index += local_stop - local_start;
 }
-
 
 void wnga_bin_sorter(Integer g_bin, Integer g_cnt, Integer g_off)
 {
@@ -770,7 +746,6 @@ void wnga_bin_sorter(Integer g_bin, Integer g_cnt, Integer g_off)
     time_pnga_bin_sorter += local_stop - local_start;
 }
 
-
 void wnga_brdcst(Integer type, void *buf, Integer len, Integer originator)
 {
     double local_start, local_stop;
@@ -781,7 +756,6 @@ void wnga_brdcst(Integer type, void *buf, Integer len, Integer originator)
     time_pnga_brdcst += local_stop - local_start;
 }
 
-
 void wnga_check_handle(Integer g_a, char *string)
 {
     double local_start, local_stop;
@@ -791,7 +765,6 @@ void wnga_check_handle(Integer g_a, char *string)
     local_stop = MPI_Wtime();
     time_pnga_check_handle += local_stop - local_start;
 }
-
 
 Integer wnga_cluster_nnodes()
 {
@@ -805,7 +778,6 @@ Integer wnga_cluster_nnodes()
     return return_value;
 }
 
-
 Integer wnga_cluster_nodeid()
 {
     Integer return_value;
@@ -817,7 +789,6 @@ Integer wnga_cluster_nodeid()
     time_pnga_cluster_nodeid += local_stop - local_start;
     return return_value;
 }
-
 
 Integer wnga_cluster_nprocs(Integer node)
 {
@@ -831,7 +802,6 @@ Integer wnga_cluster_nprocs(Integer node)
     return return_value;
 }
 
-
 Integer wnga_cluster_proc_nodeid(Integer proc)
 {
     Integer return_value;
@@ -843,7 +813,6 @@ Integer wnga_cluster_proc_nodeid(Integer proc)
     time_pnga_cluster_proc_nodeid += local_stop - local_start;
     return return_value;
 }
-
 
 Integer wnga_cluster_procid(Integer node, Integer loc_proc_id)
 {
@@ -857,7 +826,6 @@ Integer wnga_cluster_procid(Integer node, Integer loc_proc_id)
     return return_value;
 }
 
-
 logical wnga_comp_patch(Integer andim, Integer *alo, Integer *ahi, Integer bndim, Integer *blo, Integer *bhi)
 {
     logical return_value;
@@ -869,7 +837,6 @@ logical wnga_comp_patch(Integer andim, Integer *alo, Integer *ahi, Integer bndim
     time_pnga_comp_patch += local_stop - local_start;
     return return_value;
 }
-
 
 logical wnga_compare_distr(Integer g_a, Integer g_b)
 {
@@ -883,7 +850,6 @@ logical wnga_compare_distr(Integer g_a, Integer g_b)
     return return_value;
 }
 
-
 void wnga_copy(Integer g_a, Integer g_b)
 {
     double local_start, local_stop;
@@ -893,7 +859,6 @@ void wnga_copy(Integer g_a, Integer g_b)
     local_stop = MPI_Wtime();
     time_pnga_copy += local_stop - local_start;
 }
-
 
 void wnga_copy_patch(char *trans, Integer g_a, Integer *alo, Integer *ahi, Integer g_b, Integer *blo, Integer *bhi)
 {
@@ -905,7 +870,6 @@ void wnga_copy_patch(char *trans, Integer g_a, Integer *alo, Integer *ahi, Integ
     time_pnga_copy_patch += local_stop - local_start;
 }
 
-
 void wnga_copy_patch_dp(char *t_a, Integer g_a, Integer ailo, Integer aihi, Integer ajlo, Integer ajhi, Integer g_b, Integer bilo, Integer bihi, Integer bjlo, Integer bjhi)
 {
     double local_start, local_stop;
@@ -915,7 +879,6 @@ void wnga_copy_patch_dp(char *t_a, Integer g_a, Integer ailo, Integer aihi, Inte
     local_stop = MPI_Wtime();
     time_pnga_copy_patch_dp += local_stop - local_start;
 }
-
 
 logical wnga_create(Integer type, Integer ndim, Integer *dims, char *name, Integer *chunk, Integer *g_a)
 {
@@ -929,7 +892,6 @@ logical wnga_create(Integer type, Integer ndim, Integer *dims, char *name, Integ
     return return_value;
 }
 
-
 logical wnga_create_bin_range(Integer g_bin, Integer g_cnt, Integer g_off, Integer *g_range)
 {
     logical return_value;
@@ -941,7 +903,6 @@ logical wnga_create_bin_range(Integer g_bin, Integer g_cnt, Integer g_off, Integ
     time_pnga_create_bin_range += local_stop - local_start;
     return return_value;
 }
-
 
 logical wnga_create_config(Integer type, Integer ndim, Integer *dims, char *name, Integer *chunk, Integer p_handle, Integer *g_a)
 {
@@ -955,7 +916,6 @@ logical wnga_create_config(Integer type, Integer ndim, Integer *dims, char *name
     return return_value;
 }
 
-
 logical wnga_create_ghosts(Integer type, Integer ndim, Integer *dims, Integer *width, char *name, Integer *chunk, Integer *g_a)
 {
     logical return_value;
@@ -967,7 +927,6 @@ logical wnga_create_ghosts(Integer type, Integer ndim, Integer *dims, Integer *w
     time_pnga_create_ghosts += local_stop - local_start;
     return return_value;
 }
-
 
 logical wnga_create_ghosts_config(Integer type, Integer ndim, Integer *dims, Integer *width, char *name, Integer *chunk, Integer p_handle, Integer *g_a)
 {
@@ -981,7 +940,6 @@ logical wnga_create_ghosts_config(Integer type, Integer ndim, Integer *dims, Int
     return return_value;
 }
 
-
 logical wnga_create_ghosts_irreg(Integer type, Integer ndim, Integer *dims, Integer *width, char *name, Integer *map, Integer *block, Integer *g_a)
 {
     logical return_value;
@@ -993,7 +951,6 @@ logical wnga_create_ghosts_irreg(Integer type, Integer ndim, Integer *dims, Inte
     time_pnga_create_ghosts_irreg += local_stop - local_start;
     return return_value;
 }
-
 
 logical wnga_create_ghosts_irreg_config(Integer type, Integer ndim, Integer *dims, Integer *width, char *name, Integer *map, Integer *block, Integer p_handle, Integer *g_a)
 {
@@ -1007,7 +964,6 @@ logical wnga_create_ghosts_irreg_config(Integer type, Integer ndim, Integer *dim
     return return_value;
 }
 
-
 Integer wnga_create_handle()
 {
     Integer return_value;
@@ -1019,7 +975,6 @@ Integer wnga_create_handle()
     time_pnga_create_handle += local_stop - local_start;
     return return_value;
 }
-
 
 logical wnga_create_irreg(Integer type, Integer ndim, Integer *dims, char *name, Integer *map, Integer *block, Integer *g_a)
 {
@@ -1033,7 +988,6 @@ logical wnga_create_irreg(Integer type, Integer ndim, Integer *dims, char *name,
     return return_value;
 }
 
-
 logical wnga_create_irreg_config(Integer type, Integer ndim, Integer *dims, char *name, Integer *map, Integer *block, Integer p_handle, Integer *g_a)
 {
     logical return_value;
@@ -1045,7 +999,6 @@ logical wnga_create_irreg_config(Integer type, Integer ndim, Integer *dims, char
     time_pnga_create_irreg_config += local_stop - local_start;
     return return_value;
 }
-
 
 logical wnga_create_mutexes(Integer num)
 {
@@ -1059,7 +1012,6 @@ logical wnga_create_mutexes(Integer num)
     return return_value;
 }
 
-
 DoublePrecision wnga_ddot_patch_dp(Integer g_a, char *t_a, Integer ailo, Integer aihi, Integer ajlo, Integer ajhi, Integer g_b, char *t_b, Integer bilo, Integer bihi, Integer bjlo, Integer bjhi)
 {
     DoublePrecision return_value;
@@ -1071,7 +1023,6 @@ DoublePrecision wnga_ddot_patch_dp(Integer g_a, char *t_a, Integer ailo, Integer
     time_pnga_ddot_patch_dp += local_stop - local_start;
     return return_value;
 }
-
 
 int wnga_deregister_type(int type)
 {
@@ -1085,7 +1036,6 @@ int wnga_deregister_type(int type)
     return return_value;
 }
 
-
 logical wnga_destroy(Integer g_a)
 {
     logical return_value;
@@ -1097,7 +1047,6 @@ logical wnga_destroy(Integer g_a)
     time_pnga_destroy += local_stop - local_start;
     return return_value;
 }
-
 
 logical wnga_destroy_mutexes()
 {
@@ -1111,7 +1060,6 @@ logical wnga_destroy_mutexes()
     return return_value;
 }
 
-
 void wnga_diag(Integer g_a, Integer g_s, Integer g_v, DoublePrecision *eval)
 {
     double local_start, local_stop;
@@ -1121,7 +1069,6 @@ void wnga_diag(Integer g_a, Integer g_s, Integer g_v, DoublePrecision *eval)
     local_stop = MPI_Wtime();
     time_pnga_diag += local_stop - local_start;
 }
-
 
 void wnga_diag_reuse(Integer reuse, Integer g_a, Integer g_s, Integer g_v, DoublePrecision *eval)
 {
@@ -1133,7 +1080,6 @@ void wnga_diag_reuse(Integer reuse, Integer g_a, Integer g_s, Integer g_v, Doubl
     time_pnga_diag_reuse += local_stop - local_start;
 }
 
-
 void wnga_diag_seq(Integer g_a, Integer g_s, Integer g_v, DoublePrecision *eval)
 {
     double local_start, local_stop;
@@ -1143,7 +1089,6 @@ void wnga_diag_seq(Integer g_a, Integer g_s, Integer g_v, DoublePrecision *eval)
     local_stop = MPI_Wtime();
     time_pnga_diag_seq += local_stop - local_start;
 }
-
 
 void wnga_diag_std(Integer g_a, Integer g_v, DoublePrecision *eval)
 {
@@ -1155,7 +1100,6 @@ void wnga_diag_std(Integer g_a, Integer g_v, DoublePrecision *eval)
     time_pnga_diag_std += local_stop - local_start;
 }
 
-
 void wnga_diag_std_seq(Integer g_a, Integer g_v, DoublePrecision *eval)
 {
     double local_start, local_stop;
@@ -1165,7 +1109,6 @@ void wnga_diag_std_seq(Integer g_a, Integer g_v, DoublePrecision *eval)
     local_stop = MPI_Wtime();
     time_pnga_diag_std_seq += local_stop - local_start;
 }
-
 
 void wnga_distribution(Integer g_a, Integer proc, Integer *lo, Integer *hi)
 {
@@ -1177,7 +1120,6 @@ void wnga_distribution(Integer g_a, Integer proc, Integer *lo, Integer *hi)
     time_pnga_distribution += local_stop - local_start;
 }
 
-
 void wnga_dot(int type, Integer g_a, Integer g_b, void *value)
 {
     double local_start, local_stop;
@@ -1188,7 +1130,6 @@ void wnga_dot(int type, Integer g_a, Integer g_b, void *value)
     time_pnga_dot += local_stop - local_start;
 }
 
-
 void wnga_dot_patch(Integer g_a, char *t_a, Integer *alo, Integer *ahi, Integer g_b, char *t_b, Integer *blo, Integer *bhi, void *retval)
 {
     double local_start, local_stop;
@@ -1198,7 +1139,6 @@ void wnga_dot_patch(Integer g_a, char *t_a, Integer *alo, Integer *ahi, Integer 
     local_stop = MPI_Wtime();
     time_pnga_dot_patch += local_stop - local_start;
 }
-
 
 logical wnga_duplicate(Integer g_a, Integer *g_b, char *array_name)
 {
@@ -1212,7 +1152,6 @@ logical wnga_duplicate(Integer g_a, Integer *g_b, char *array_name)
     return return_value;
 }
 
-
 void wnga_elem_divide(Integer g_a, Integer g_b, Integer g_c)
 {
     double local_start, local_stop;
@@ -1222,7 +1161,6 @@ void wnga_elem_divide(Integer g_a, Integer g_b, Integer g_c)
     local_stop = MPI_Wtime();
     time_pnga_elem_divide += local_stop - local_start;
 }
-
 
 void wnga_elem_divide_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b, Integer *blo, Integer *bhi, Integer g_c, Integer *clo, Integer *chi)
 {
@@ -1234,7 +1172,6 @@ void wnga_elem_divide_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b
     time_pnga_elem_divide_patch += local_stop - local_start;
 }
 
-
 void wnga_elem_maximum(Integer g_a, Integer g_b, Integer g_c)
 {
     double local_start, local_stop;
@@ -1244,7 +1181,6 @@ void wnga_elem_maximum(Integer g_a, Integer g_b, Integer g_c)
     local_stop = MPI_Wtime();
     time_pnga_elem_maximum += local_stop - local_start;
 }
-
 
 void wnga_elem_maximum_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b, Integer *blo, Integer *bhi, Integer g_c, Integer *clo, Integer *chi)
 {
@@ -1256,7 +1192,6 @@ void wnga_elem_maximum_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_
     time_pnga_elem_maximum_patch += local_stop - local_start;
 }
 
-
 void wnga_elem_minimum(Integer g_a, Integer g_b, Integer g_c)
 {
     double local_start, local_stop;
@@ -1266,7 +1201,6 @@ void wnga_elem_minimum(Integer g_a, Integer g_b, Integer g_c)
     local_stop = MPI_Wtime();
     time_pnga_elem_minimum += local_stop - local_start;
 }
-
 
 void wnga_elem_minimum_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b, Integer *blo, Integer *bhi, Integer g_c, Integer *clo, Integer *chi)
 {
@@ -1278,7 +1212,6 @@ void wnga_elem_minimum_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_
     time_pnga_elem_minimum_patch += local_stop - local_start;
 }
 
-
 void wnga_elem_multiply(Integer g_a, Integer g_b, Integer g_c)
 {
     double local_start, local_stop;
@@ -1288,7 +1221,6 @@ void wnga_elem_multiply(Integer g_a, Integer g_b, Integer g_c)
     local_stop = MPI_Wtime();
     time_pnga_elem_multiply += local_stop - local_start;
 }
-
 
 void wnga_elem_multiply_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b, Integer *blo, Integer *bhi, Integer g_c, Integer *clo, Integer *chi)
 {
@@ -1300,7 +1232,6 @@ void wnga_elem_multiply_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g
     time_pnga_elem_multiply_patch += local_stop - local_start;
 }
 
-
 void wnga_elem_step_divide_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b, Integer *blo, Integer *bhi, Integer g_c, Integer *clo, Integer *chi)
 {
     double local_start, local_stop;
@@ -1310,7 +1241,6 @@ void wnga_elem_step_divide_patch(Integer g_a, Integer *alo, Integer *ahi, Intege
     local_stop = MPI_Wtime();
     time_pnga_elem_step_divide_patch += local_stop - local_start;
 }
-
 
 void wnga_elem_stepb_divide_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b, Integer *blo, Integer *bhi, Integer g_c, Integer *clo, Integer *chi)
 {
@@ -1322,7 +1252,6 @@ void wnga_elem_stepb_divide_patch(Integer g_a, Integer *alo, Integer *ahi, Integ
     time_pnga_elem_stepb_divide_patch += local_stop - local_start;
 }
 
-
 void wnga_error(char *string, Integer icode)
 {
     double local_start, local_stop;
@@ -1332,7 +1261,6 @@ void wnga_error(char *string, Integer icode)
     local_stop = MPI_Wtime();
     time_pnga_error += local_stop - local_start;
 }
-
 
 void wnga_fence()
 {
@@ -1344,7 +1272,6 @@ void wnga_fence()
     time_pnga_fence += local_stop - local_start;
 }
 
-
 void wnga_fill(Integer g_a, void *val)
 {
     double local_start, local_stop;
@@ -1354,7 +1281,6 @@ void wnga_fill(Integer g_a, void *val)
     local_stop = MPI_Wtime();
     time_pnga_fill += local_stop - local_start;
 }
-
 
 void wnga_fill_patch(Integer g_a, Integer *lo, Integer *hi, void *val)
 {
@@ -1366,7 +1292,6 @@ void wnga_fill_patch(Integer g_a, Integer *lo, Integer *hi, void *val)
     time_pnga_fill_patch += local_stop - local_start;
 }
 
-
 void wnga_gather(Integer g_a, void *v, Integer subscript[], Integer nv)
 {
     double local_start, local_stop;
@@ -1376,7 +1301,6 @@ void wnga_gather(Integer g_a, void *v, Integer subscript[], Integer nv)
     local_stop = MPI_Wtime();
     time_pnga_gather += local_stop - local_start;
 }
-
 
 void wnga_gather2d(Integer g_a, void *v, Integer *i, Integer *j, Integer nv)
 {
@@ -1388,7 +1312,6 @@ void wnga_gather2d(Integer g_a, void *v, Integer *i, Integer *j, Integer nv)
     time_pnga_gather2d += local_stop - local_start;
 }
 
-
 void wnga_get(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld)
 {
     double local_start, local_stop;
@@ -1399,7 +1322,6 @@ void wnga_get(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld)
     time_pnga_get += local_stop - local_start;
 }
 
-
 void wnga_get_block_info(Integer g_a, Integer *num_blocks, Integer *block_dims)
 {
     double local_start, local_stop;
@@ -1409,7 +1331,6 @@ void wnga_get_block_info(Integer g_a, Integer *num_blocks, Integer *block_dims)
     local_stop = MPI_Wtime();
     time_pnga_get_block_info += local_stop - local_start;
 }
-
 
 logical wnga_get_debug()
 {
@@ -1423,7 +1344,6 @@ logical wnga_get_debug()
     return return_value;
 }
 
-
 void wnga_get_diag(Integer g_a, Integer g_v)
 {
     double local_start, local_stop;
@@ -1433,7 +1353,6 @@ void wnga_get_diag(Integer g_a, Integer g_v)
     local_stop = MPI_Wtime();
     time_pnga_get_diag += local_stop - local_start;
 }
-
 
 Integer wnga_get_dimension(Integer g_a)
 {
@@ -1447,7 +1366,6 @@ Integer wnga_get_dimension(Integer g_a)
     return return_value;
 }
 
-
 void wnga_get_field(Integer g_a, Integer *lo, Integer *hi, Integer foff, Integer fsize, void *buf, Integer *ld)
 {
     double local_start, local_stop;
@@ -1458,7 +1376,6 @@ void wnga_get_field(Integer g_a, Integer *lo, Integer *hi, Integer foff, Integer
     time_pnga_get_field += local_stop - local_start;
 }
 
-
 void wnga_get_ghost_block(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld)
 {
     double local_start, local_stop;
@@ -1468,7 +1385,6 @@ void wnga_get_ghost_block(Integer g_a, Integer *lo, Integer *hi, void *buf, Inte
     local_stop = MPI_Wtime();
     time_pnga_get_ghost_block += local_stop - local_start;
 }
-
 
 Integer wnga_get_pgroup(Integer g_a)
 {
@@ -1482,7 +1398,6 @@ Integer wnga_get_pgroup(Integer g_a)
     return return_value;
 }
 
-
 Integer wnga_get_pgroup_size(Integer grp_id)
 {
     Integer return_value;
@@ -1495,7 +1410,6 @@ Integer wnga_get_pgroup_size(Integer grp_id)
     return return_value;
 }
 
-
 void wnga_get_proc_grid(Integer g_a, Integer *dims)
 {
     double local_start, local_stop;
@@ -1505,7 +1419,6 @@ void wnga_get_proc_grid(Integer g_a, Integer *dims)
     local_stop = MPI_Wtime();
     time_pnga_get_proc_grid += local_stop - local_start;
 }
-
 
 void wnga_get_proc_index(Integer g_a, Integer iproc, Integer *index)
 {
@@ -1517,7 +1430,6 @@ void wnga_get_proc_index(Integer g_a, Integer iproc, Integer *index)
     time_pnga_get_proc_index += local_stop - local_start;
 }
 
-
 void wnga_ghost_barrier()
 {
     double local_start, local_stop;
@@ -1528,7 +1440,6 @@ void wnga_ghost_barrier()
     time_pnga_ghost_barrier += local_stop - local_start;
 }
 
-
 void wnga_gop(Integer type, void *x, Integer n, char *op)
 {
     double local_start, local_stop;
@@ -1538,7 +1449,6 @@ void wnga_gop(Integer type, void *x, Integer n, char *op)
     local_stop = MPI_Wtime();
     time_pnga_gop += local_stop - local_start;
 }
-
 
 logical wnga_has_ghosts(Integer g_a)
 {
@@ -1552,7 +1462,6 @@ logical wnga_has_ghosts(Integer g_a)
     return return_value;
 }
 
-
 void wnga_init_fence()
 {
     double local_start, local_stop;
@@ -1563,7 +1472,6 @@ void wnga_init_fence()
     time_pnga_init_fence += local_stop - local_start;
 }
 
-
 void wnga_inquire(Integer g_a, Integer *type, Integer *ndim, Integer *dims)
 {
     double local_start, local_stop;
@@ -1573,7 +1481,6 @@ void wnga_inquire(Integer g_a, Integer *type, Integer *ndim, Integer *dims)
     local_stop = MPI_Wtime();
     time_pnga_inquire += local_stop - local_start;
 }
-
 
 Integer wnga_inquire_memory()
 {
@@ -1587,7 +1494,6 @@ Integer wnga_inquire_memory()
     return return_value;
 }
 
-
 void wnga_inquire_name(Integer g_a, char **array_name)
 {
     double local_start, local_stop;
@@ -1598,7 +1504,6 @@ void wnga_inquire_name(Integer g_a, char **array_name)
     time_pnga_inquire_name += local_stop - local_start;
 }
 
-
 void wnga_inquire_type(Integer g_a, Integer *type)
 {
     double local_start, local_stop;
@@ -1608,7 +1513,6 @@ void wnga_inquire_type(Integer g_a, Integer *type)
     local_stop = MPI_Wtime();
     time_pnga_inquire_type += local_stop - local_start;
 }
-
 
 logical wnga_is_mirrored(Integer g_a)
 {
@@ -1622,7 +1526,6 @@ logical wnga_is_mirrored(Integer g_a)
     return return_value;
 }
 
-
 void wnga_list_nodeid(Integer *list, Integer nprocs)
 {
     double local_start, local_stop;
@@ -1632,7 +1535,6 @@ void wnga_list_nodeid(Integer *list, Integer nprocs)
     local_stop = MPI_Wtime();
     time_pnga_list_nodeid += local_stop - local_start;
 }
-
 
 Integer wnga_llt_solve(Integer g_a, Integer g_b)
 {
@@ -1646,7 +1548,6 @@ Integer wnga_llt_solve(Integer g_a, Integer g_b)
     return return_value;
 }
 
-
 logical wnga_locate(Integer g_a, Integer *subscript, Integer *owner)
 {
     logical return_value;
@@ -1658,7 +1559,6 @@ logical wnga_locate(Integer g_a, Integer *subscript, Integer *owner)
     time_pnga_locate += local_stop - local_start;
     return return_value;
 }
-
 
 logical wnga_locate_nnodes(Integer g_a, Integer *lo, Integer *hi, Integer *np)
 {
@@ -1672,7 +1572,6 @@ logical wnga_locate_nnodes(Integer g_a, Integer *lo, Integer *hi, Integer *np)
     return return_value;
 }
 
-
 Integer wnga_locate_num_blocks(Integer g_a, Integer *lo, Integer *hi)
 {
     Integer return_value;
@@ -1684,7 +1583,6 @@ Integer wnga_locate_num_blocks(Integer g_a, Integer *lo, Integer *hi)
     time_pnga_locate_num_blocks += local_stop - local_start;
     return return_value;
 }
-
 
 logical wnga_locate_region(Integer g_a, Integer *lo, Integer *hi, Integer *map, Integer *proclist, Integer *np)
 {
@@ -1698,7 +1596,6 @@ logical wnga_locate_region(Integer g_a, Integer *lo, Integer *hi, Integer *map, 
     return return_value;
 }
 
-
 void wnga_lock(Integer mutex)
 {
     double local_start, local_stop;
@@ -1708,7 +1605,6 @@ void wnga_lock(Integer mutex)
     local_stop = MPI_Wtime();
     time_pnga_lock += local_stop - local_start;
 }
-
 
 void wnga_lu_solve(char *tran, Integer g_a, Integer g_b)
 {
@@ -1720,7 +1616,6 @@ void wnga_lu_solve(char *tran, Integer g_a, Integer g_b)
     time_pnga_lu_solve += local_stop - local_start;
 }
 
-
 void wnga_lu_solve_alt(Integer tran, Integer g_a, Integer g_b)
 {
     double local_start, local_stop;
@@ -1730,7 +1625,6 @@ void wnga_lu_solve_alt(Integer tran, Integer g_a, Integer g_b)
     local_stop = MPI_Wtime();
     time_pnga_lu_solve_alt += local_stop - local_start;
 }
-
 
 void wnga_lu_solve_seq(char *trans, Integer g_a, Integer g_b)
 {
@@ -1742,7 +1636,6 @@ void wnga_lu_solve_seq(char *trans, Integer g_a, Integer g_b)
     time_pnga_lu_solve_seq += local_stop - local_start;
 }
 
-
 void wnga_mask_sync(Integer begin, Integer end)
 {
     double local_start, local_stop;
@@ -1752,7 +1645,6 @@ void wnga_mask_sync(Integer begin, Integer end)
     local_stop = MPI_Wtime();
     time_pnga_mask_sync += local_stop - local_start;
 }
-
 
 void wnga_matmul(char *transa, char *transb, void *alpha, void *beta, Integer g_a, Integer ailo, Integer aihi, Integer ajlo, Integer ajhi, Integer g_b, Integer bilo, Integer bihi, Integer bjlo, Integer bjhi, Integer g_c, Integer cilo, Integer cihi, Integer cjlo, Integer cjhi)
 {
@@ -1764,7 +1656,6 @@ void wnga_matmul(char *transa, char *transb, void *alpha, void *beta, Integer g_
     time_pnga_matmul += local_stop - local_start;
 }
 
-
 void wnga_matmul_mirrored(char *transa, char *transb, void *alpha, void *beta, Integer g_a, Integer ailo, Integer aihi, Integer ajlo, Integer ajhi, Integer g_b, Integer bilo, Integer bihi, Integer bjlo, Integer bjhi, Integer g_c, Integer cilo, Integer cihi, Integer cjlo, Integer cjhi)
 {
     double local_start, local_stop;
@@ -1774,7 +1665,6 @@ void wnga_matmul_mirrored(char *transa, char *transb, void *alpha, void *beta, I
     local_stop = MPI_Wtime();
     time_pnga_matmul_mirrored += local_stop - local_start;
 }
-
 
 void wnga_matmul_patch(char *transa, char *transb, void *alpha, void *beta, Integer g_a, Integer alo[], Integer ahi[], Integer g_b, Integer blo[], Integer bhi[], Integer g_c, Integer clo[], Integer chi[])
 {
@@ -1786,7 +1676,6 @@ void wnga_matmul_patch(char *transa, char *transb, void *alpha, void *beta, Inte
     time_pnga_matmul_patch += local_stop - local_start;
 }
 
-
 void wnga_median(Integer g_a, Integer g_b, Integer g_c, Integer g_m)
 {
     double local_start, local_stop;
@@ -1797,7 +1686,6 @@ void wnga_median(Integer g_a, Integer g_b, Integer g_c, Integer g_m)
     time_pnga_median += local_stop - local_start;
 }
 
-
 void wnga_median_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b, Integer *blo, Integer *bhi, Integer g_c, Integer *clo, Integer *chi, Integer g_m, Integer *mlo, Integer *mhi)
 {
     double local_start, local_stop;
@@ -1807,7 +1695,6 @@ void wnga_median_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b, Int
     local_stop = MPI_Wtime();
     time_pnga_median_patch += local_stop - local_start;
 }
-
 
 Integer wnga_memory_avail()
 {
@@ -1821,7 +1708,6 @@ Integer wnga_memory_avail()
     return return_value;
 }
 
-
 Integer wnga_memory_avail_type(Integer datatype)
 {
     Integer return_value;
@@ -1833,7 +1719,6 @@ Integer wnga_memory_avail_type(Integer datatype)
     time_pnga_memory_avail_type += local_stop - local_start;
     return return_value;
 }
-
 
 logical wnga_memory_limited()
 {
@@ -1847,7 +1732,6 @@ logical wnga_memory_limited()
     return return_value;
 }
 
-
 void wnga_merge_distr_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b, Integer *blo, Integer *bhi)
 {
     double local_start, local_stop;
@@ -1857,7 +1741,6 @@ void wnga_merge_distr_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b
     local_stop = MPI_Wtime();
     time_pnga_merge_distr_patch += local_stop - local_start;
 }
-
 
 void wnga_merge_mirrored(Integer g_a)
 {
@@ -1869,7 +1752,6 @@ void wnga_merge_mirrored(Integer g_a)
     time_pnga_merge_mirrored += local_stop - local_start;
 }
 
-
 void wnga_msg_brdcst(Integer type, void *buffer, Integer len, Integer root)
 {
     double local_start, local_stop;
@@ -1879,7 +1761,6 @@ void wnga_msg_brdcst(Integer type, void *buffer, Integer len, Integer root)
     local_stop = MPI_Wtime();
     time_pnga_msg_brdcst += local_stop - local_start;
 }
-
 
 void wnga_msg_pgroup_sync(Integer grp_id)
 {
@@ -1891,7 +1772,6 @@ void wnga_msg_pgroup_sync(Integer grp_id)
     time_pnga_msg_pgroup_sync += local_stop - local_start;
 }
 
-
 void wnga_msg_sync()
 {
     double local_start, local_stop;
@@ -1901,7 +1781,6 @@ void wnga_msg_sync()
     local_stop = MPI_Wtime();
     time_pnga_msg_sync += local_stop - local_start;
 }
-
 
 void wnga_nbacc(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld, void *alpha, Integer *nbhndl)
 {
@@ -1913,7 +1792,6 @@ void wnga_nbacc(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld, v
     time_pnga_nbacc += local_stop - local_start;
 }
 
-
 void wnga_nbget(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld, Integer *nbhandle)
 {
     double local_start, local_stop;
@@ -1923,7 +1801,6 @@ void wnga_nbget(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld, I
     local_stop = MPI_Wtime();
     time_pnga_nbget += local_stop - local_start;
 }
-
 
 void wnga_nbget_field(Integer g_a, Integer *lo, Integer *hi, Integer foff, Integer fsize, void *buf, Integer *ld, Integer *nbhandle)
 {
@@ -1935,7 +1812,6 @@ void wnga_nbget_field(Integer g_a, Integer *lo, Integer *hi, Integer foff, Integ
     time_pnga_nbget_field += local_stop - local_start;
 }
 
-
 void wnga_nbget_ghost_dir(Integer g_a, Integer *mask, Integer *nbhandle)
 {
     double local_start, local_stop;
@@ -1945,7 +1821,6 @@ void wnga_nbget_ghost_dir(Integer g_a, Integer *mask, Integer *nbhandle)
     local_stop = MPI_Wtime();
     time_pnga_nbget_ghost_dir += local_stop - local_start;
 }
-
 
 void wnga_nblock(Integer g_a, Integer *nblock)
 {
@@ -1957,7 +1832,6 @@ void wnga_nblock(Integer g_a, Integer *nblock)
     time_pnga_nblock += local_stop - local_start;
 }
 
-
 void wnga_nbput(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld, Integer *nbhandle)
 {
     double local_start, local_stop;
@@ -1968,7 +1842,6 @@ void wnga_nbput(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld, I
     time_pnga_nbput += local_stop - local_start;
 }
 
-
 void wnga_nbput_field(Integer g_a, Integer *lo, Integer *hi, Integer foff, Integer fsize, void *buf, Integer *ld, Integer *nbhandle)
 {
     double local_start, local_stop;
@@ -1978,7 +1851,6 @@ void wnga_nbput_field(Integer g_a, Integer *lo, Integer *hi, Integer foff, Integ
     local_stop = MPI_Wtime();
     time_pnga_nbput_field += local_stop - local_start;
 }
-
 
 Integer wnga_nbtest(Integer *nbhandle)
 {
@@ -1992,7 +1864,6 @@ Integer wnga_nbtest(Integer *nbhandle)
     return return_value;
 }
 
-
 void wnga_nbwait(Integer *nbhandle)
 {
     double local_start, local_stop;
@@ -2002,7 +1873,6 @@ void wnga_nbwait(Integer *nbhandle)
     local_stop = MPI_Wtime();
     time_pnga_nbwait += local_stop - local_start;
 }
-
 
 Integer wnga_ndim(Integer g_a)
 {
@@ -2016,6 +1886,29 @@ Integer wnga_ndim(Integer g_a)
     return return_value;
 }
 
+#ifdef USE_DEVICE_MEM
+Integer wnga_dev_has_data(Integer g_a)
+{
+    Integer return_value;
+    double local_start, local_stop;
+    local_start = MPI_Wtime();
+    return_value = pnga_dev_has_data(g_a);
+    local_stop = MPI_Wtime();
+    time_pnga_ndim += local_stop - local_start;
+    return return_value;
+}
+
+void wnga_dev_host_copy(void* dest, void* src, size_t size)
+{
+    double local_start, local_stop;
+    ++count_pnga_norm1;
+    local_start = MPI_Wtime();
+    //pnga_norm1(g_a, nm);
+    pnga_dev_host_copy(dest, src, size);
+    local_stop = MPI_Wtime();
+    time_pnga_norm1 += local_stop - local_start;
+}
+#endif
 
 Integer wnga_nnodes()
 {
@@ -2029,7 +1922,6 @@ Integer wnga_nnodes()
     return return_value;
 }
 
-
 Integer wnga_nodeid()
 {
     Integer return_value;
@@ -2042,7 +1934,6 @@ Integer wnga_nodeid()
     return return_value;
 }
 
-
 void wnga_norm1(Integer g_a, double *nm)
 {
     double local_start, local_stop;
@@ -2052,7 +1943,6 @@ void wnga_norm1(Integer g_a, double *nm)
     local_stop = MPI_Wtime();
     time_pnga_norm1 += local_stop - local_start;
 }
-
 
 void wnga_norm_infinity(Integer g_a, double *nm)
 {
@@ -2064,7 +1954,6 @@ void wnga_norm_infinity(Integer g_a, double *nm)
     time_pnga_norm_infinity += local_stop - local_start;
 }
 
-
 void wnga_pack(Integer g_a, Integer g_b, Integer g_sbit, Integer lo, Integer hi, Integer *icount)
 {
     double local_start, local_stop;
@@ -2075,7 +1964,6 @@ void wnga_pack(Integer g_a, Integer g_b, Integer g_sbit, Integer lo, Integer hi,
     time_pnga_pack += local_stop - local_start;
 }
 
-
 void wnga_patch_enum(Integer g_a, Integer lo, Integer hi, void *start, void *stride)
 {
     double local_start, local_stop;
@@ -2085,7 +1973,6 @@ void wnga_patch_enum(Integer g_a, Integer lo, Integer hi, void *start, void *str
     local_stop = MPI_Wtime();
     time_pnga_patch_enum += local_stop - local_start;
 }
-
 
 logical wnga_patch_intersect(Integer *lo, Integer *hi, Integer *lop, Integer *hip, Integer ndim)
 {
@@ -2099,7 +1986,6 @@ logical wnga_patch_intersect(Integer *lo, Integer *hi, Integer *lop, Integer *hi
     return return_value;
 }
 
-
 void wnga_periodic(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld, void *alpha, Integer op_code)
 {
     double local_start, local_stop;
@@ -2109,7 +1995,6 @@ void wnga_periodic(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld
     local_stop = MPI_Wtime();
     time_pnga_periodic += local_stop - local_start;
 }
-
 
 Integer wnga_pgroup_absolute_id(Integer grp, Integer pid)
 {
@@ -2123,7 +2008,6 @@ Integer wnga_pgroup_absolute_id(Integer grp, Integer pid)
     return return_value;
 }
 
-
 void wnga_pgroup_brdcst(Integer grp_id, Integer type, void *buf, Integer len, Integer originator)
 {
     double local_start, local_stop;
@@ -2133,7 +2017,6 @@ void wnga_pgroup_brdcst(Integer grp_id, Integer type, void *buf, Integer len, In
     local_stop = MPI_Wtime();
     time_pnga_pgroup_brdcst += local_stop - local_start;
 }
-
 
 Integer wnga_pgroup_create(Integer *list, Integer count)
 {
@@ -2147,7 +2030,6 @@ Integer wnga_pgroup_create(Integer *list, Integer count)
     return return_value;
 }
 
-
 logical wnga_pgroup_destroy(Integer grp)
 {
     logical return_value;
@@ -2159,7 +2041,6 @@ logical wnga_pgroup_destroy(Integer grp)
     time_pnga_pgroup_destroy += local_stop - local_start;
     return return_value;
 }
-
 
 Integer wnga_pgroup_get_default()
 {
@@ -2173,7 +2054,6 @@ Integer wnga_pgroup_get_default()
     return return_value;
 }
 
-
 Integer wnga_pgroup_get_mirror()
 {
     Integer return_value;
@@ -2185,7 +2065,6 @@ Integer wnga_pgroup_get_mirror()
     time_pnga_pgroup_get_mirror += local_stop - local_start;
     return return_value;
 }
-
 
 Integer wnga_pgroup_get_world()
 {
@@ -2199,7 +2078,6 @@ Integer wnga_pgroup_get_world()
     return return_value;
 }
 
-
 void wnga_pgroup_gop(Integer p_grp, Integer type, void *x, Integer n, char *op)
 {
     double local_start, local_stop;
@@ -2209,7 +2087,6 @@ void wnga_pgroup_gop(Integer p_grp, Integer type, void *x, Integer n, char *op)
     local_stop = MPI_Wtime();
     time_pnga_pgroup_gop += local_stop - local_start;
 }
-
 
 Integer wnga_pgroup_nnodes(Integer grp)
 {
@@ -2223,7 +2100,6 @@ Integer wnga_pgroup_nnodes(Integer grp)
     return return_value;
 }
 
-
 Integer wnga_pgroup_nodeid(Integer grp)
 {
     Integer return_value;
@@ -2236,7 +2112,6 @@ Integer wnga_pgroup_nodeid(Integer grp)
     return return_value;
 }
 
-
 void wnga_pgroup_set_default(Integer grp)
 {
     double local_start, local_stop;
@@ -2246,7 +2121,6 @@ void wnga_pgroup_set_default(Integer grp)
     local_stop = MPI_Wtime();
     time_pnga_pgroup_set_default += local_stop - local_start;
 }
-
 
 Integer wnga_pgroup_split(Integer grp, Integer grp_num)
 {
@@ -2260,7 +2134,6 @@ Integer wnga_pgroup_split(Integer grp, Integer grp_num)
     return return_value;
 }
 
-
 Integer wnga_pgroup_split_irreg(Integer grp, Integer mycolor)
 {
     Integer return_value;
@@ -2273,7 +2146,6 @@ Integer wnga_pgroup_split_irreg(Integer grp, Integer mycolor)
     return return_value;
 }
 
-
 void wnga_pgroup_sync(Integer grp_id)
 {
     double local_start, local_stop;
@@ -2283,7 +2155,6 @@ void wnga_pgroup_sync(Integer grp_id)
     local_stop = MPI_Wtime();
     time_pnga_pgroup_sync += local_stop - local_start;
 }
-
 
 void wnga_print(Integer g_a)
 {
@@ -2295,7 +2166,6 @@ void wnga_print(Integer g_a)
     time_pnga_print += local_stop - local_start;
 }
 
-
 void wnga_print_distribution(int fstyle, Integer g_a)
 {
     double local_start, local_stop;
@@ -2305,7 +2175,6 @@ void wnga_print_distribution(int fstyle, Integer g_a)
     local_stop = MPI_Wtime();
     time_pnga_print_distribution += local_stop - local_start;
 }
-
 
 void wnga_print_file(FILE *file, Integer g_a)
 {
@@ -2317,7 +2186,6 @@ void wnga_print_file(FILE *file, Integer g_a)
     time_pnga_print_file += local_stop - local_start;
 }
 
-
 void wnga_print_patch(Integer g_a, Integer *lo, Integer *hi, Integer pretty)
 {
     double local_start, local_stop;
@@ -2327,7 +2195,6 @@ void wnga_print_patch(Integer g_a, Integer *lo, Integer *hi, Integer pretty)
     local_stop = MPI_Wtime();
     time_pnga_print_patch += local_stop - local_start;
 }
-
 
 void wnga_print_patch2d(Integer g_a, Integer ilo, Integer ihi, Integer jlo, Integer jhi, Integer pretty)
 {
@@ -2339,7 +2206,6 @@ void wnga_print_patch2d(Integer g_a, Integer ilo, Integer ihi, Integer jlo, Inte
     time_pnga_print_patch2d += local_stop - local_start;
 }
 
-
 void wnga_print_patch_file(FILE *file, Integer g_a, Integer *lo, Integer *hi, Integer pretty)
 {
     double local_start, local_stop;
@@ -2349,7 +2215,6 @@ void wnga_print_patch_file(FILE *file, Integer g_a, Integer *lo, Integer *hi, In
     local_stop = MPI_Wtime();
     time_pnga_print_patch_file += local_stop - local_start;
 }
-
 
 void wnga_print_patch_file2d(FILE *file, Integer g_a, Integer ilo, Integer ihi, Integer jlo, Integer jhi, Integer pretty)
 {
@@ -2361,7 +2226,6 @@ void wnga_print_patch_file2d(FILE *file, Integer g_a, Integer ilo, Integer ihi, 
     time_pnga_print_patch_file2d += local_stop - local_start;
 }
 
-
 void wnga_print_stats()
 {
     double local_start, local_stop;
@@ -2371,7 +2235,6 @@ void wnga_print_stats()
     local_stop = MPI_Wtime();
     time_pnga_print_stats += local_stop - local_start;
 }
-
 
 void wnga_proc_topology(Integer g_a, Integer proc, Integer *subscript)
 {
@@ -2383,7 +2246,6 @@ void wnga_proc_topology(Integer g_a, Integer proc, Integer *subscript)
     time_pnga_proc_topology += local_stop - local_start;
 }
 
-
 void wnga_put(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld)
 {
     double local_start, local_stop;
@@ -2393,7 +2255,6 @@ void wnga_put(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld)
     local_stop = MPI_Wtime();
     time_pnga_put += local_stop - local_start;
 }
-
 
 void wnga_put_field(Integer g_a, Integer *lo, Integer *hi, Integer foff, Integer fsize, void *buf, Integer *ld)
 {
@@ -2405,7 +2266,6 @@ void wnga_put_field(Integer g_a, Integer *lo, Integer *hi, Integer foff, Integer
     time_pnga_put_field += local_stop - local_start;
 }
 
-
 void wnga_randomize(Integer g_a, void *val)
 {
     double local_start, local_stop;
@@ -2415,7 +2275,6 @@ void wnga_randomize(Integer g_a, void *val)
     local_stop = MPI_Wtime();
     time_pnga_randomize += local_stop - local_start;
 }
-
 
 Integer wnga_read_inc(Integer g_a, Integer *subscript, Integer inc)
 {
@@ -2429,7 +2288,6 @@ Integer wnga_read_inc(Integer g_a, Integer *subscript, Integer inc)
     return return_value;
 }
 
-
 void wnga_recip(Integer g_a)
 {
     double local_start, local_stop;
@@ -2440,7 +2298,6 @@ void wnga_recip(Integer g_a)
     time_pnga_recip += local_stop - local_start;
 }
 
-
 void wnga_recip_patch(Integer g_a, Integer *lo, Integer *hi)
 {
     double local_start, local_stop;
@@ -2450,7 +2307,6 @@ void wnga_recip_patch(Integer g_a, Integer *lo, Integer *hi)
     local_stop = MPI_Wtime();
     time_pnga_recip_patch += local_stop - local_start;
 }
-
 
 int wnga_register_type(size_t size)
 {
@@ -2464,7 +2320,6 @@ int wnga_register_type(size_t size)
     return return_value;
 }
 
-
 void wnga_release(Integer g_a, Integer *lo, Integer *hi)
 {
     double local_start, local_stop;
@@ -2474,7 +2329,6 @@ void wnga_release(Integer g_a, Integer *lo, Integer *hi)
     local_stop = MPI_Wtime();
     time_pnga_release += local_stop - local_start;
 }
-
 
 void wnga_release_block(Integer g_a, Integer iblock)
 {
@@ -2486,7 +2340,6 @@ void wnga_release_block(Integer g_a, Integer iblock)
     time_pnga_release_block += local_stop - local_start;
 }
 
-
 void wnga_release_block_grid(Integer g_a, Integer *index)
 {
     double local_start, local_stop;
@@ -2496,7 +2349,6 @@ void wnga_release_block_grid(Integer g_a, Integer *index)
     local_stop = MPI_Wtime();
     time_pnga_release_block_grid += local_stop - local_start;
 }
-
 
 void wnga_release_block_segment(Integer g_a, Integer iproc)
 {
@@ -2508,7 +2360,6 @@ void wnga_release_block_segment(Integer g_a, Integer iproc)
     time_pnga_release_block_segment += local_stop - local_start;
 }
 
-
 void wnga_release_ghost_element(Integer g_a, Integer subscript[])
 {
     double local_start, local_stop;
@@ -2518,7 +2369,6 @@ void wnga_release_ghost_element(Integer g_a, Integer subscript[])
     local_stop = MPI_Wtime();
     time_pnga_release_ghost_element += local_stop - local_start;
 }
-
 
 void wnga_release_ghosts(Integer g_a)
 {
@@ -2530,7 +2380,6 @@ void wnga_release_ghosts(Integer g_a)
     time_pnga_release_ghosts += local_stop - local_start;
 }
 
-
 void wnga_release_update(Integer g_a, Integer *lo, Integer *hi)
 {
     double local_start, local_stop;
@@ -2540,7 +2389,6 @@ void wnga_release_update(Integer g_a, Integer *lo, Integer *hi)
     local_stop = MPI_Wtime();
     time_pnga_release_update += local_stop - local_start;
 }
-
 
 void wnga_release_update_block(Integer g_a, Integer iblock)
 {
@@ -2552,7 +2400,6 @@ void wnga_release_update_block(Integer g_a, Integer iblock)
     time_pnga_release_update_block += local_stop - local_start;
 }
 
-
 void wnga_release_update_block_grid(Integer g_a, Integer *index)
 {
     double local_start, local_stop;
@@ -2562,7 +2409,6 @@ void wnga_release_update_block_grid(Integer g_a, Integer *index)
     local_stop = MPI_Wtime();
     time_pnga_release_update_block_grid += local_stop - local_start;
 }
-
 
 void wnga_release_update_block_segment(Integer g_a, Integer iproc)
 {
@@ -2574,7 +2420,6 @@ void wnga_release_update_block_segment(Integer g_a, Integer iproc)
     time_pnga_release_update_block_segment += local_stop - local_start;
 }
 
-
 void wnga_release_update_ghost_element(Integer g_a, Integer subscript[])
 {
     double local_start, local_stop;
@@ -2584,7 +2429,6 @@ void wnga_release_update_ghost_element(Integer g_a, Integer subscript[])
     local_stop = MPI_Wtime();
     time_pnga_release_update_ghost_element += local_stop - local_start;
 }
-
 
 void wnga_release_update_ghosts(Integer g_a)
 {
@@ -2596,7 +2440,6 @@ void wnga_release_update_ghosts(Integer g_a)
     time_pnga_release_update_ghosts += local_stop - local_start;
 }
 
-
 void wnga_scale(Integer g_a, void *alpha)
 {
     double local_start, local_stop;
@@ -2606,7 +2449,6 @@ void wnga_scale(Integer g_a, void *alpha)
     local_stop = MPI_Wtime();
     time_pnga_scale += local_stop - local_start;
 }
-
 
 void wnga_scale_cols(Integer g_a, Integer g_v)
 {
@@ -2618,7 +2460,6 @@ void wnga_scale_cols(Integer g_a, Integer g_v)
     time_pnga_scale_cols += local_stop - local_start;
 }
 
-
 void wnga_scale_patch(Integer g_a, Integer *lo, Integer *hi, void *alpha)
 {
     double local_start, local_stop;
@@ -2628,7 +2469,6 @@ void wnga_scale_patch(Integer g_a, Integer *lo, Integer *hi, void *alpha)
     local_stop = MPI_Wtime();
     time_pnga_scale_patch += local_stop - local_start;
 }
-
 
 void wnga_scale_rows(Integer g_a, Integer g_v)
 {
@@ -2640,7 +2480,6 @@ void wnga_scale_rows(Integer g_a, Integer g_v)
     time_pnga_scale_rows += local_stop - local_start;
 }
 
-
 void wnga_scan_add(Integer g_a, Integer g_b, Integer g_sbit, Integer lo, Integer hi, Integer excl)
 {
     double local_start, local_stop;
@@ -2650,7 +2489,6 @@ void wnga_scan_add(Integer g_a, Integer g_b, Integer g_sbit, Integer lo, Integer
     local_stop = MPI_Wtime();
     time_pnga_scan_add += local_stop - local_start;
 }
-
 
 void wnga_scan_copy(Integer g_a, Integer g_b, Integer g_sbit, Integer lo, Integer hi)
 {
@@ -2662,7 +2500,6 @@ void wnga_scan_copy(Integer g_a, Integer g_b, Integer g_sbit, Integer lo, Intege
     time_pnga_scan_copy += local_stop - local_start;
 }
 
-
 void wnga_scatter(Integer g_a, void *v, Integer *subscript, Integer nv)
 {
     double local_start, local_stop;
@@ -2672,7 +2509,6 @@ void wnga_scatter(Integer g_a, void *v, Integer *subscript, Integer nv)
     local_stop = MPI_Wtime();
     time_pnga_scatter += local_stop - local_start;
 }
-
 
 void wnga_scatter2d(Integer g_a, void *v, Integer *i, Integer *j, Integer nv)
 {
@@ -2684,7 +2520,6 @@ void wnga_scatter2d(Integer g_a, void *v, Integer *i, Integer *j, Integer nv)
     time_pnga_scatter2d += local_stop - local_start;
 }
 
-
 void wnga_scatter_acc(Integer g_a, void *v, Integer subscript[], Integer nv, void *alpha)
 {
     double local_start, local_stop;
@@ -2694,7 +2529,6 @@ void wnga_scatter_acc(Integer g_a, void *v, Integer subscript[], Integer nv, voi
     local_stop = MPI_Wtime();
     time_pnga_scatter_acc += local_stop - local_start;
 }
-
 
 void wnga_scatter_acc2d(Integer g_a, void *v, Integer *i, Integer *j, Integer nv, void *alpha)
 {
@@ -2706,7 +2540,6 @@ void wnga_scatter_acc2d(Integer g_a, void *v, Integer *i, Integer *j, Integer nv
     time_pnga_scatter_acc2d += local_stop - local_start;
 }
 
-
 void wnga_select_elem(Integer g_a, char *op, void *val, Integer *subscript)
 {
     double local_start, local_stop;
@@ -2716,7 +2549,6 @@ void wnga_select_elem(Integer g_a, char *op, void *val, Integer *subscript)
     local_stop = MPI_Wtime();
     time_pnga_select_elem += local_stop - local_start;
 }
-
 
 void wnga_set_array_name(Integer g_a, char *array_name)
 {
@@ -2728,7 +2560,6 @@ void wnga_set_array_name(Integer g_a, char *array_name)
     time_pnga_set_array_name += local_stop - local_start;
 }
 
-
 void wnga_set_block_cyclic(Integer g_a, Integer *dims)
 {
     double local_start, local_stop;
@@ -2738,7 +2569,6 @@ void wnga_set_block_cyclic(Integer g_a, Integer *dims)
     local_stop = MPI_Wtime();
     time_pnga_set_block_cyclic += local_stop - local_start;
 }
-
 
 void wnga_set_block_cyclic_proc_grid(Integer g_a, Integer *dims, Integer *proc_grid)
 {
@@ -2750,7 +2580,6 @@ void wnga_set_block_cyclic_proc_grid(Integer g_a, Integer *dims, Integer *proc_g
     time_pnga_set_block_cyclic_proc_grid += local_stop - local_start;
 }
 
-
 void wnga_set_chunk(Integer g_a, Integer *chunk)
 {
     double local_start, local_stop;
@@ -2760,7 +2589,6 @@ void wnga_set_chunk(Integer g_a, Integer *chunk)
     local_stop = MPI_Wtime();
     time_pnga_set_chunk += local_stop - local_start;
 }
-
 
 void wnga_set_data(Integer g_a, Integer ndim, Integer *dims, Integer type)
 {
@@ -2772,7 +2600,6 @@ void wnga_set_data(Integer g_a, Integer ndim, Integer *dims, Integer type)
     time_pnga_set_data += local_stop - local_start;
 }
 
-
 void wnga_set_debug(logical flag)
 {
     double local_start, local_stop;
@@ -2782,7 +2609,6 @@ void wnga_set_debug(logical flag)
     local_stop = MPI_Wtime();
     time_pnga_set_debug += local_stop - local_start;
 }
-
 
 void wnga_set_diagonal(Integer g_a, Integer g_v)
 {
@@ -2794,7 +2620,6 @@ void wnga_set_diagonal(Integer g_a, Integer g_v)
     time_pnga_set_diagonal += local_stop - local_start;
 }
 
-
 void wnga_set_ghost_corner_flag(Integer g_a, logical flag)
 {
     double local_start, local_stop;
@@ -2804,7 +2629,6 @@ void wnga_set_ghost_corner_flag(Integer g_a, logical flag)
     local_stop = MPI_Wtime();
     time_pnga_set_ghost_corner_flag += local_stop - local_start;
 }
-
 
 logical wnga_set_ghost_info(Integer g_a)
 {
@@ -2818,7 +2642,6 @@ logical wnga_set_ghost_info(Integer g_a)
     return return_value;
 }
 
-
 void wnga_set_ghosts(Integer g_a, Integer *width)
 {
     double local_start, local_stop;
@@ -2828,7 +2651,6 @@ void wnga_set_ghosts(Integer g_a, Integer *width)
     local_stop = MPI_Wtime();
     time_pnga_set_ghosts += local_stop - local_start;
 }
-
 
 void wnga_set_irreg_distr(Integer g_a, Integer *map, Integer *block)
 {
@@ -2840,7 +2662,6 @@ void wnga_set_irreg_distr(Integer g_a, Integer *map, Integer *block)
     time_pnga_set_irreg_distr += local_stop - local_start;
 }
 
-
 void wnga_set_irreg_flag(Integer g_a, logical flag)
 {
     double local_start, local_stop;
@@ -2850,7 +2671,6 @@ void wnga_set_irreg_flag(Integer g_a, logical flag)
     local_stop = MPI_Wtime();
     time_pnga_set_irreg_flag += local_stop - local_start;
 }
-
 
 void wnga_set_memory_limit(Integer mem_limit)
 {
@@ -2862,7 +2682,6 @@ void wnga_set_memory_limit(Integer mem_limit)
     time_pnga_set_memory_limit += local_stop - local_start;
 }
 
-
 void wnga_set_pgroup(Integer g_a, Integer p_handle)
 {
     double local_start, local_stop;
@@ -2872,7 +2691,6 @@ void wnga_set_pgroup(Integer g_a, Integer p_handle)
     local_stop = MPI_Wtime();
     time_pnga_set_pgroup += local_stop - local_start;
 }
-
 
 void wnga_set_restricted(Integer g_a, Integer *list, Integer size)
 {
@@ -2884,7 +2702,6 @@ void wnga_set_restricted(Integer g_a, Integer *list, Integer size)
     time_pnga_set_restricted += local_stop - local_start;
 }
 
-
 void wnga_set_restricted_range(Integer g_a, Integer lo_proc, Integer hi_proc)
 {
     double local_start, local_stop;
@@ -2894,7 +2711,6 @@ void wnga_set_restricted_range(Integer g_a, Integer lo_proc, Integer hi_proc)
     local_stop = MPI_Wtime();
     time_pnga_set_restricted_range += local_stop - local_start;
 }
-
 
 logical wnga_set_update4_info(Integer g_a)
 {
@@ -2908,7 +2724,6 @@ logical wnga_set_update4_info(Integer g_a)
     return return_value;
 }
 
-
 logical wnga_set_update5_info(Integer g_a)
 {
     logical return_value;
@@ -2921,7 +2736,6 @@ logical wnga_set_update5_info(Integer g_a)
     return return_value;
 }
 
-
 void wnga_shift_diagonal(Integer g_a, void *c)
 {
     double local_start, local_stop;
@@ -2931,7 +2745,6 @@ void wnga_shift_diagonal(Integer g_a, void *c)
     local_stop = MPI_Wtime();
     time_pnga_shift_diagonal += local_stop - local_start;
 }
-
 
 Integer wnga_solve(Integer g_a, Integer g_b)
 {
@@ -2945,7 +2758,6 @@ Integer wnga_solve(Integer g_a, Integer g_b)
     return return_value;
 }
 
-
 Integer wnga_spd_invert(Integer g_a)
 {
     Integer return_value;
@@ -2958,7 +2770,6 @@ Integer wnga_spd_invert(Integer g_a)
     return return_value;
 }
 
-
 void wnga_step_bound_info(Integer g_xx, Integer g_vv, Integer g_xxll, Integer g_xxuu, void *boundmin, void *wolfemin, void *boundmax)
 {
     double local_start, local_stop;
@@ -2968,7 +2779,6 @@ void wnga_step_bound_info(Integer g_xx, Integer g_vv, Integer g_xxll, Integer g_
     local_stop = MPI_Wtime();
     time_pnga_step_bound_info += local_stop - local_start;
 }
-
 
 void wnga_step_bound_info_patch(Integer g_xx, Integer *xxlo, Integer *xxhi, Integer g_vv, Integer *vvlo, Integer *vvhi, Integer g_xxll, Integer *xxlllo, Integer *xxllhi, Integer g_xxuu, Integer *xxuulo, Integer *xxuuhi, void *boundmin, void *wolfemin, void *boundmax)
 {
@@ -2980,7 +2790,6 @@ void wnga_step_bound_info_patch(Integer g_xx, Integer *xxlo, Integer *xxhi, Inte
     time_pnga_step_bound_info_patch += local_stop - local_start;
 }
 
-
 void wnga_step_mask_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b, Integer *blo, Integer *bhi, Integer g_c, Integer *clo, Integer *chi)
 {
     double local_start, local_stop;
@@ -2990,7 +2799,6 @@ void wnga_step_mask_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b, 
     local_stop = MPI_Wtime();
     time_pnga_step_mask_patch += local_stop - local_start;
 }
-
 
 void wnga_step_max(Integer g_a, Integer g_b, void *retval)
 {
@@ -3002,7 +2810,6 @@ void wnga_step_max(Integer g_a, Integer g_b, void *retval)
     time_pnga_step_max += local_stop - local_start;
 }
 
-
 void wnga_step_max_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b, Integer *blo, Integer *bhi, void *result)
 {
     double local_start, local_stop;
@@ -3012,7 +2819,6 @@ void wnga_step_max_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b, I
     local_stop = MPI_Wtime();
     time_pnga_step_max_patch += local_stop - local_start;
 }
-
 
 void wnga_strided_acc(Integer g_a, Integer *lo, Integer *hi, Integer *skip, void *buf, Integer *ld, void *alpha)
 {
@@ -3024,7 +2830,6 @@ void wnga_strided_acc(Integer g_a, Integer *lo, Integer *hi, Integer *skip, void
     time_pnga_strided_acc += local_stop - local_start;
 }
 
-
 void wnga_strided_get(Integer g_a, Integer *lo, Integer *hi, Integer *skip, void *buf, Integer *ld)
 {
     double local_start, local_stop;
@@ -3034,7 +2839,6 @@ void wnga_strided_get(Integer g_a, Integer *lo, Integer *hi, Integer *skip, void
     local_stop = MPI_Wtime();
     time_pnga_strided_get += local_stop - local_start;
 }
-
 
 void wnga_strided_put(Integer g_a, Integer *lo, Integer *hi, Integer *skip, void *buf, Integer *ld)
 {
@@ -3046,7 +2850,6 @@ void wnga_strided_put(Integer g_a, Integer *lo, Integer *hi, Integer *skip, void
     time_pnga_strided_put += local_stop - local_start;
 }
 
-
 void wnga_summarize(Integer verbose)
 {
     double local_start, local_stop;
@@ -3056,7 +2859,6 @@ void wnga_summarize(Integer verbose)
     local_stop = MPI_Wtime();
     time_pnga_summarize += local_stop - local_start;
 }
-
 
 void wnga_symmetrize(Integer g_a)
 {
@@ -3068,7 +2870,6 @@ void wnga_symmetrize(Integer g_a)
     time_pnga_symmetrize += local_stop - local_start;
 }
 
-
 void wnga_sync()
 {
     double local_start, local_stop;
@@ -3078,7 +2879,6 @@ void wnga_sync()
     local_stop = MPI_Wtime();
     time_pnga_sync += local_stop - local_start;
 }
-
 
 double wnga_timer()
 {
@@ -3092,7 +2892,6 @@ double wnga_timer()
     return return_value;
 }
 
-
 Integer wnga_total_blocks(Integer g_a)
 {
     Integer return_value;
@@ -3105,7 +2904,6 @@ Integer wnga_total_blocks(Integer g_a)
     return return_value;
 }
 
-
 void wnga_transpose(Integer g_a, Integer g_b)
 {
     double local_start, local_stop;
@@ -3115,7 +2913,6 @@ void wnga_transpose(Integer g_a, Integer g_b)
     local_stop = MPI_Wtime();
     time_pnga_transpose += local_stop - local_start;
 }
-
 
 Integer wnga_type_c2f(Integer type)
 {
@@ -3129,7 +2926,6 @@ Integer wnga_type_c2f(Integer type)
     return return_value;
 }
 
-
 Integer wnga_type_f2c(Integer type)
 {
     Integer return_value;
@@ -3142,7 +2938,6 @@ Integer wnga_type_f2c(Integer type)
     return return_value;
 }
 
-
 void wnga_unlock(Integer mutex)
 {
     double local_start, local_stop;
@@ -3152,7 +2947,6 @@ void wnga_unlock(Integer mutex)
     local_stop = MPI_Wtime();
     time_pnga_unlock += local_stop - local_start;
 }
-
 
 void wnga_unpack(Integer g_a, Integer g_b, Integer g_sbit, Integer lo, Integer hi, Integer *icount)
 {
@@ -3164,7 +2958,6 @@ void wnga_unpack(Integer g_a, Integer g_b, Integer g_sbit, Integer lo, Integer h
     time_pnga_unpack += local_stop - local_start;
 }
 
-
 void wnga_update1_ghosts(Integer g_a)
 {
     double local_start, local_stop;
@@ -3174,7 +2967,6 @@ void wnga_update1_ghosts(Integer g_a)
     local_stop = MPI_Wtime();
     time_pnga_update1_ghosts += local_stop - local_start;
 }
-
 
 logical wnga_update2_ghosts(Integer g_a)
 {
@@ -3188,7 +2980,6 @@ logical wnga_update2_ghosts(Integer g_a)
     return return_value;
 }
 
-
 logical wnga_update3_ghosts(Integer g_a)
 {
     logical return_value;
@@ -3200,7 +2991,6 @@ logical wnga_update3_ghosts(Integer g_a)
     time_pnga_update3_ghosts += local_stop - local_start;
     return return_value;
 }
-
 
 logical wnga_update44_ghosts(Integer g_a)
 {
@@ -3214,7 +3004,6 @@ logical wnga_update44_ghosts(Integer g_a)
     return return_value;
 }
 
-
 logical wnga_update4_ghosts(Integer g_a)
 {
     logical return_value;
@@ -3226,7 +3015,6 @@ logical wnga_update4_ghosts(Integer g_a)
     time_pnga_update4_ghosts += local_stop - local_start;
     return return_value;
 }
-
 
 logical wnga_update55_ghosts(Integer g_a)
 {
@@ -3240,7 +3028,6 @@ logical wnga_update55_ghosts(Integer g_a)
     return return_value;
 }
 
-
 logical wnga_update5_ghosts(Integer g_a)
 {
     logical return_value;
@@ -3252,7 +3039,6 @@ logical wnga_update5_ghosts(Integer g_a)
     time_pnga_update5_ghosts += local_stop - local_start;
     return return_value;
 }
-
 
 logical wnga_update6_ghosts(Integer g_a)
 {
@@ -3266,7 +3052,6 @@ logical wnga_update6_ghosts(Integer g_a)
     return return_value;
 }
 
-
 logical wnga_update7_ghosts(Integer g_a)
 {
     logical return_value;
@@ -3278,7 +3063,6 @@ logical wnga_update7_ghosts(Integer g_a)
     time_pnga_update7_ghosts += local_stop - local_start;
     return return_value;
 }
-
 
 logical wnga_update_ghost_dir(Integer g_a, Integer pdim, Integer pdir, logical pflag)
 {
@@ -3292,7 +3076,6 @@ logical wnga_update_ghost_dir(Integer g_a, Integer pdim, Integer pdir, logical p
     return return_value;
 }
 
-
 void wnga_update_ghosts(Integer g_a)
 {
     double local_start, local_stop;
@@ -3302,7 +3085,6 @@ void wnga_update_ghosts(Integer g_a)
     local_stop = MPI_Wtime();
     time_pnga_update_ghosts += local_stop - local_start;
 }
-
 
 logical wnga_uses_ma()
 {
@@ -3316,7 +3098,6 @@ logical wnga_uses_ma()
     return return_value;
 }
 
-
 logical wnga_uses_proc_grid(Integer g_a)
 {
     logical return_value;
@@ -3328,7 +3109,6 @@ logical wnga_uses_proc_grid(Integer g_a)
     time_pnga_uses_proc_grid += local_stop - local_start;
     return return_value;
 }
-
 
 logical wnga_valid_handle(Integer g_a)
 {
@@ -3342,7 +3122,6 @@ logical wnga_valid_handle(Integer g_a)
     return return_value;
 }
 
-
 Integer wnga_verify_handle(Integer g_a)
 {
     Integer return_value;
@@ -3354,7 +3133,6 @@ Integer wnga_verify_handle(Integer g_a)
     time_pnga_verify_handle += local_stop - local_start;
     return return_value;
 }
-
 
 DoublePrecision wnga_wtime()
 {
@@ -3368,7 +3146,6 @@ DoublePrecision wnga_wtime()
     return return_value;
 }
 
-
 void wnga_zero(Integer g_a)
 {
     double local_start, local_stop;
@@ -3379,7 +3156,6 @@ void wnga_zero(Integer g_a)
     time_pnga_zero += local_stop - local_start;
 }
 
-
 void wnga_zero_diagonal(Integer g_a)
 {
     double local_start, local_stop;
@@ -3389,7 +3165,6 @@ void wnga_zero_diagonal(Integer g_a)
     local_stop = MPI_Wtime();
     time_pnga_zero_diagonal += local_stop - local_start;
 }
-
 
 void wnga_zero_patch(Integer g_a, Integer *lo, Integer *hi)
 {
@@ -4683,4 +4458,3 @@ void wnga_terminate()
 
     }
 }
-

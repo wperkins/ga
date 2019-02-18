@@ -43,20 +43,20 @@ static Integer* copy_map64(int64_t block[], int block_ndim, int64_t map[]);
 
 #ifdef USE_FAPI
 #  define COPYC2F(carr, farr, n){\
-   int i; for(i=0; i< (n); i++)(farr)[i]=(Integer)(carr)[i];} 
+   int i; for(i=0; i< (n); i++)(farr)[i]=(Integer)(carr)[i];}
 #  define COPYF2C(farr, carr, n){\
-   int i; for(i=0; i< (n); i++)(carr)[i]=(int)(farr)[i];} 
+   int i; for(i=0; i< (n); i++)(carr)[i]=(int)(farr)[i];}
 #  define COPYF2C_64(farr, carr, n){\
-   int i; for(i=0; i< (n); i++)(carr)[i]=(int64_t)(farr)[i];} 
+   int i; for(i=0; i< (n); i++)(carr)[i]=(int64_t)(farr)[i];}
 #  define COPYINDEX_F2C     COPYF2C
 #  define COPYINDEX_F2C_64  COPYF2C_64
 #else
 #  define COPYC2F(carr, farr, n){\
-   int i; for(i=0; i< (n); i++)(farr)[n-i-1]=(Integer)(carr)[i];} 
+   int i; for(i=0; i< (n); i++)(farr)[n-i-1]=(Integer)(carr)[i];}
 #  define COPYF2C(farr, carr, n){\
-   int i; for(i=0; i< (n); i++)(carr)[n-i-1]=(int)(farr)[i];} 
+   int i; for(i=0; i< (n); i++)(carr)[n-i-1]=(int)(farr)[i];}
 #  define COPYF2C_64(farr, carr, n){\
-   int i; for(i=0; i< (n); i++)(carr)[n-i-1]=(int64_t)(farr)[i];} 
+   int i; for(i=0; i< (n); i++)(carr)[n-i-1]=(int64_t)(farr)[i];}
 #  define COPYINDEX_C2F(carr, farr, n){\
    int i; for(i=0; i< (n); i++)(farr)[n-i-1]=(Integer)(carr)[i]+1;}
 #  define COPYINDEX_F2C(farr, carr, n){\
@@ -67,11 +67,11 @@ static Integer* copy_map64(int64_t block[], int block_ndim, int64_t map[]);
 #endif
 
 #define COPY(CAST,src,dst,n) {\
-   int i; for(i=0; i< (n); i++)(dst)[i]=(CAST)(src)[i];} 
+   int i; for(i=0; i< (n); i++)(dst)[i]=(CAST)(src)[i];}
 #define COPY_INC(CAST,src,dst,n) {\
-   int i; for(i=0; i< (n); i++)(dst)[i]=(CAST)(src)[i]+1;} 
+   int i; for(i=0; i< (n); i++)(dst)[i]=(CAST)(src)[i]+1;}
 #define COPY_DEC(CAST,src,dst,n) {\
-   int i; for(i=0; i< (n); i++)(dst)[i]=(CAST)(src)[i]-1;} 
+   int i; for(i=0; i< (n); i++)(dst)[i]=(CAST)(src)[i]-1;}
 
 int GA_Uses_fapi(void)
 {
@@ -81,7 +81,6 @@ return 1;
 return 0;
 #endif
 }
-
 
 void GA_Initialize_ltd(size_t limit)
 {
@@ -129,20 +128,20 @@ int NGA_Initialized()
     return wnga_initialized();
 }
 
-void GA_Terminate() 
+void GA_Terminate()
 {
     wnga_terminate();
-    
+
     _ga_argc = NULL;
     _ga_argv = NULL;
     _ga_initialize_args = 0;
     _ga_initialize_c = 0;
 }
 
-void NGA_Terminate() 
+void NGA_Terminate()
 {
     wnga_terminate();
-    
+
     _ga_argc = NULL;
     _ga_argv = NULL;
     _ga_initialize_args = 0;
@@ -151,14 +150,14 @@ void NGA_Terminate()
 
 int NGA_Create(int type, int ndim, int dims[], char *name, int *chunk)
 {
-    Integer *ptr, g_a; 
+    Integer *ptr, g_a;
     logical st;
     Integer _ga_work[MAXDIM];
     Integer _ga_dims[MAXDIM];
     if(ndim>MAXDIM)return 0;
 
     COPYC2F(dims,_ga_dims, ndim);
-    if(!chunk)ptr=(Integer*)0;  
+    if(!chunk)ptr=(Integer*)0;
     else {
          COPYC2F(chunk,_ga_work, ndim);
          ptr = _ga_work;
@@ -170,14 +169,14 @@ int NGA_Create(int type, int ndim, int dims[], char *name, int *chunk)
 
 int NGA_Create64(int type, int ndim, int64_t dims[], char *name, int64_t *chunk)
 {
-    Integer *ptr, g_a; 
+    Integer *ptr, g_a;
     logical st;
     Integer _ga_dims[MAXDIM];
     Integer _ga_work[MAXDIM];
     if(ndim>MAXDIM)return 0;
 
     COPYC2F(dims,_ga_dims, ndim);
-    if(!chunk)ptr=(Integer*)0;  
+    if(!chunk)ptr=(Integer*)0;
     else {
          COPYC2F(chunk,_ga_work, ndim);
          ptr = _ga_work;
@@ -190,14 +189,14 @@ int NGA_Create64(int type, int ndim, int64_t dims[], char *name, int64_t *chunk)
 int NGA_Create_config(int type, int ndim, int dims[], char *name, int chunk[],
                       int p_handle)
 {
-    Integer *ptr, g_a; 
+    Integer *ptr, g_a;
     logical st;
     Integer _ga_dims[MAXDIM];
     Integer _ga_work[MAXDIM];
     if(ndim>MAXDIM)return 0;
 
     COPYC2F(dims,_ga_dims, ndim);
-    if(!chunk)ptr=(Integer*)0;  
+    if(!chunk)ptr=(Integer*)0;
     else {
          COPYC2F(chunk,_ga_work, ndim);
          ptr = _ga_work;
@@ -208,17 +207,16 @@ int NGA_Create_config(int type, int ndim, int dims[], char *name, int chunk[],
     else return 0;
 }
 
-
 int NGA_Create_config64(int type, int ndim, int64_t dims[], char *name, int64_t chunk[], int p_handle)
 {
-    Integer *ptr, g_a; 
+    Integer *ptr, g_a;
     logical st;
     Integer _ga_dims[MAXDIM];
     Integer _ga_work[MAXDIM];
     if(ndim>MAXDIM)return 0;
 
     COPYC2F(dims,_ga_dims, ndim);
-    if(!chunk)ptr=(Integer*)0;  
+    if(!chunk)ptr=(Integer*)0;
     else {
          COPYC2F(chunk,_ga_work, ndim);
          ptr = _ga_work;
@@ -340,7 +338,7 @@ int NGA_Create_ghosts_irreg(int type,int ndim,int dims[],int width[],char *name,
     _ga_irreg_flag = 1; /* set this flag=1, to indicate array is irregular */
     st = wnga_create_ghosts_irreg(type, (Integer)ndim, _ga_dims, _ga_width,
             name, _ga_map_capi, _ga_work, &g_a);
-    _ga_irreg_flag = 0; /* unset it, after creating array */ 
+    _ga_irreg_flag = 0; /* unset it, after creating array */
 
     free(_ga_map_capi);
     if(st==TRUE) return (int) g_a;
@@ -365,8 +363,8 @@ int NGA_Create_ghosts_irreg64(int type,int ndim,int64_t dims[],int64_t width[],c
     _ga_irreg_flag = 1; /* set this flag=1, to indicate array is irregular */
     st = wnga_create_ghosts_irreg(type, (Integer)ndim, _ga_dims, _ga_width,
             name, _ga_map_capi, _ga_work, &g_a);
-    _ga_irreg_flag = 0; /* unset it, after creating array */ 
-     
+    _ga_irreg_flag = 0; /* unset it, after creating array */
+
     free(_ga_map_capi);
     if(st==TRUE) return (int) g_a;
     else return 0;
@@ -389,9 +387,9 @@ int NGA_Create_ghosts_irreg_config(int type, int ndim, int dims[], int width[], 
 
     _ga_irreg_flag = 1; /* set this flag=1, to indicate array is irregular */
     st = wnga_create_ghosts_irreg_config(type, (Integer)ndim, _ga_dims,
-					 _ga_width, name, _ga_map_capi, _ga_work, 
+					 _ga_width, name, _ga_map_capi, _ga_work,
 					 (Integer)p_handle, &g_a);
-    _ga_irreg_flag = 0; /* unset it, after creating array */ 
+    _ga_irreg_flag = 0; /* unset it, after creating array */
 
     free(_ga_map_capi);
     if(st==TRUE) return (int) g_a;
@@ -415,9 +413,9 @@ int NGA_Create_ghosts_irreg_config64(int type, int ndim, int64_t dims[], int64_t
 
     _ga_irreg_flag = 1; /* set this flag=1, to indicate array is irregular */
     st = wnga_create_ghosts_irreg_config(type, (Integer)ndim, _ga_dims,
-					 _ga_width, name, _ga_map_capi, _ga_work, 
+					 _ga_width, name, _ga_map_capi, _ga_work,
 					 (Integer)p_handle, &g_a);
-    _ga_irreg_flag = 0; /* unset it, after creating array */ 
+    _ga_irreg_flag = 0; /* unset it, after creating array */
 
     free(_ga_map_capi);
     if(st==TRUE) return (int) g_a;
@@ -427,7 +425,7 @@ int NGA_Create_ghosts_irreg_config64(int type, int ndim, int64_t dims[], int64_t
 int NGA_Create_ghosts(int type, int ndim,int dims[], int width[], char *name,
     int chunk[])
 {
-    Integer *ptr, g_a; 
+    Integer *ptr, g_a;
     logical st;
     Integer _ga_dims[MAXDIM];
     Integer _ga_work[MAXDIM];
@@ -436,7 +434,7 @@ int NGA_Create_ghosts(int type, int ndim,int dims[], int width[], char *name,
 
     COPYC2F(dims,_ga_dims, ndim);
     COPYC2F(width,_ga_width, ndim);
-    if(!chunk)ptr=(Integer*)0;  
+    if(!chunk)ptr=(Integer*)0;
     else {
          COPYC2F(chunk,_ga_work, ndim);
          ptr = _ga_work;
@@ -446,12 +444,11 @@ int NGA_Create_ghosts(int type, int ndim,int dims[], int width[], char *name,
     if(st==TRUE) return (int) g_a;
     else return 0;
 }
-
 
 int NGA_Create_ghosts64(int type, int ndim, int64_t dims[], int64_t width[], char *name,
     int64_t chunk[])
 {
-    Integer *ptr, g_a; 
+    Integer *ptr, g_a;
     logical st;
     Integer _ga_dims[MAXDIM];
     Integer _ga_work[MAXDIM];
@@ -460,7 +457,7 @@ int NGA_Create_ghosts64(int type, int ndim, int64_t dims[], int64_t width[], cha
 
     COPYC2F(dims,_ga_dims, ndim);
     COPYC2F(width,_ga_width, ndim);
-    if(!chunk)ptr=(Integer*)0;  
+    if(!chunk)ptr=(Integer*)0;
     else {
          COPYC2F(chunk,_ga_work, ndim);
          ptr = _ga_work;
@@ -471,11 +468,10 @@ int NGA_Create_ghosts64(int type, int ndim, int64_t dims[], int64_t width[], cha
     else return 0;
 }
 
-
 int NGA_Create_ghosts_config(int type, int ndim,int dims[], int width[], char *name,
     int chunk[], int p_handle)
 {
-    Integer *ptr, g_a; 
+    Integer *ptr, g_a;
     logical st;
     Integer _ga_dims[MAXDIM];
     Integer _ga_work[MAXDIM];
@@ -484,7 +480,7 @@ int NGA_Create_ghosts_config(int type, int ndim,int dims[], int width[], char *n
 
     COPYC2F(dims,_ga_dims, ndim);
     COPYC2F(width,_ga_width, ndim);
-    if(!chunk)ptr=(Integer*)0;  
+    if(!chunk)ptr=(Integer*)0;
     else {
          COPYC2F(chunk,_ga_work, ndim);
          ptr = _ga_work;
@@ -498,7 +494,7 @@ int NGA_Create_ghosts_config(int type, int ndim,int dims[], int width[], char *n
 int NGA_Create_ghosts_config64(int type, int ndim,int64_t  dims[], int64_t width[], char *name,
     int64_t chunk[], int p_handle)
 {
-    Integer *ptr, g_a; 
+    Integer *ptr, g_a;
     logical st;
     Integer _ga_dims[MAXDIM];
     Integer _ga_work[MAXDIM];
@@ -507,7 +503,7 @@ int NGA_Create_ghosts_config64(int type, int ndim,int64_t  dims[], int64_t width
 
     COPYC2F(dims,_ga_dims, ndim);
     COPYC2F(width,_ga_width, ndim);
-    if(!chunk)ptr=(Integer*)0;  
+    if(!chunk)ptr=(Integer*)0;
     else {
          COPYC2F(chunk,_ga_work, ndim);
          ptr = _ga_work;
@@ -582,7 +578,7 @@ void GA_Set_chunk(int g_a, int chunk[])
     Integer _ga_work[MAXDIM];
     aa = (Integer)g_a;
     ndim = wnga_get_dimension(aa);
-    if(!chunk)ptr=(Integer*)0;  
+    if(!chunk)ptr=(Integer*)0;
     else {
       COPYC2F(chunk,_ga_work, ndim);
       ptr = _ga_work;
@@ -596,7 +592,7 @@ void GA_Set_chunk64(int g_a, int64_t chunk[])
     Integer _ga_work[MAXDIM];
     aa = (Integer)g_a;
     ndim = wnga_get_dimension(aa);
-    if(!chunk)ptr=(Integer*)0;  
+    if(!chunk)ptr=(Integer*)0;
     else {
       COPYC2F(chunk,_ga_work, ndim);
       ptr = _ga_work;
@@ -610,7 +606,7 @@ void NGA_Set_chunk(int g_a, int chunk[])
     Integer _ga_work[MAXDIM];
     aa = (Integer)g_a;
     ndim = wnga_get_dimension(aa);
-    if(!chunk)ptr=(Integer*)0;  
+    if(!chunk)ptr=(Integer*)0;
     else {
       COPYC2F(chunk,_ga_work, ndim);
       ptr = _ga_work;
@@ -624,7 +620,7 @@ void NGA_Set_chunk64(int g_a, int64_t chunk[])
     Integer _ga_work[MAXDIM];
     aa = (Integer)g_a;
     ndim = wnga_get_dimension(aa);
-    if(!chunk)ptr=(Integer*)0;  
+    if(!chunk)ptr=(Integer*)0;
     else {
       COPYC2F(chunk,_ga_work, ndim);
       ptr = _ga_work;
@@ -932,7 +928,7 @@ void GA_Set_ghosts(int g_a, int width[])
     Integer _ga_work[MAXDIM];
     aa = (Integer)g_a;
     ndim = wnga_get_dimension(aa);
-    if(!width)ptr=(Integer*)0;  
+    if(!width)ptr=(Integer*)0;
     else {
       COPYC2F(width,_ga_work, ndim);
       ptr = _ga_work;
@@ -946,7 +942,7 @@ void GA_Set_ghosts64(int g_a, int64_t width[])
     Integer _ga_work[MAXDIM];
     aa = (Integer)g_a;
     ndim = wnga_get_dimension(aa);
-    if(!width)ptr=(Integer*)0;  
+    if(!width)ptr=(Integer*)0;
     else {
       COPYC2F(width,_ga_work, ndim);
       ptr = _ga_work;
@@ -960,7 +956,7 @@ void NGA_Set_ghosts(int g_a, int width[])
     Integer _ga_work[MAXDIM];
     aa = (Integer)g_a;
     ndim = wnga_get_dimension(aa);
-    if(!width)ptr=(Integer*)0;  
+    if(!width)ptr=(Integer*)0;
     else {
       COPYC2F(width,_ga_work, ndim);
       ptr = _ga_work;
@@ -974,7 +970,7 @@ void NGA_Set_ghosts64(int g_a, int64_t width[])
     Integer _ga_work[MAXDIM];
     aa = (Integer)g_a;
     ndim = wnga_get_dimension(aa);
-    if(!width)ptr=(Integer*)0;  
+    if(!width)ptr=(Integer*)0;
     else {
       COPYC2F(width,_ga_work, ndim);
       ptr = _ga_work;
@@ -1296,10 +1292,10 @@ void NGA_Merge_distr_patch(int g_a, int *alo, int *ahi,
     Integer bndim = wnga_ndim(b);
     Integer _ga_alo[MAXDIM], _ga_ahi[MAXDIM];
     Integer _ga_blo[MAXDIM], _ga_bhi[MAXDIM];
-    
+
     COPYINDEX_C2F(alo,_ga_alo, andim);
     COPYINDEX_C2F(ahi,_ga_ahi, andim);
-    
+
     COPYINDEX_C2F(blo,_ga_blo, bndim);
     COPYINDEX_C2F(bhi,_ga_bhi, bndim);
 
@@ -1316,10 +1312,10 @@ void NGA_Merge_distr_patch64(int g_a, int64_t *alo, int64_t *ahi,
     Integer bndim = wnga_ndim(b);
     Integer _ga_alo[MAXDIM], _ga_ahi[MAXDIM];
     Integer _ga_blo[MAXDIM], _ga_bhi[MAXDIM];
-    
+
     COPYINDEX_C2F(alo,_ga_alo, andim);
     COPYINDEX_C2F(ahi,_ga_ahi, andim);
-    
+
     COPYINDEX_C2F(blo,_ga_blo, bndim);
     COPYINDEX_C2F(bhi,_ga_bhi, bndim);
 
@@ -1526,7 +1522,6 @@ int GA_Idot(int g_a, int g_b)
     return value;
 }
 
-
 long GA_Ldot(int g_a, int g_b)
 {
     long value;
@@ -1535,7 +1530,6 @@ long GA_Ldot(int g_a, int g_b)
     wnga_dot(C_LONG, a, b, &value);
     return value;
 }
-
 
 long long GA_Lldot(int g_a, int g_b)
 {
@@ -1546,7 +1540,6 @@ long long GA_Lldot(int g_a, int g_b)
     return value;
 }
 
-     
 double GA_Ddot(int g_a, int g_b)
 {
     double value;
@@ -1555,7 +1548,6 @@ double GA_Ddot(int g_a, int g_b)
     wnga_dot(C_DBL, a, b, &value);
     return value;
 }
-
 
 DoubleComplex GA_Zdot(int g_a, int g_b)
 {
@@ -1566,7 +1558,6 @@ DoubleComplex GA_Zdot(int g_a, int g_b)
     return value;
 }
 
-
 SingleComplex GA_Cdot(int g_a, int g_b)
 {
     SingleComplex value;
@@ -1576,7 +1567,6 @@ SingleComplex GA_Cdot(int g_a, int g_b)
     return value;
 }
 
-
 float GA_Fdot(int g_a, int g_b)
 {
     float sum;
@@ -1584,8 +1574,7 @@ float GA_Fdot(int g_a, int g_b)
     Integer b=(Integer)g_b;
     wnga_dot(C_FLOAT, a, b, &sum);
     return sum;
-}    
-
+}
 
 void GA_Randomize(int g_a, void *value)
 {
@@ -1617,7 +1606,6 @@ void GA_Scale(int g_a, void *value)
     wnga_scale(a,value);
 }
 
-
 void GA_Add(void *alpha, int g_a, void* beta, int g_b, int g_c)
 {
     Integer a=(Integer)g_a;
@@ -1626,7 +1614,6 @@ void GA_Add(void *alpha, int g_a, void* beta, int g_b, int g_c)
     wnga_add(alpha, a, beta, b, c);
 }
 
-
 void GA_Copy(int g_a, int g_b)
 {
     Integer a=(Integer)g_a;
@@ -1634,8 +1621,11 @@ void GA_Copy(int g_a, int g_b)
     wnga_copy(a, b);
 }
 
-
+// #ifdef USE_DEVICE_MEM
+// void NGA_Get(int g_a, int lo[], int hi[], local_ptr_t buf, int ld[])
+// #else
 void NGA_Get(int g_a, int lo[], int hi[], void* buf, int ld[])
+// #endif
 {
     Integer a=(Integer)g_a;
     Integer ndim = wnga_ndim(a);
@@ -1695,7 +1685,7 @@ void NGA_Put(int g_a, int lo[], int hi[], void* buf, int ld[])
     COPYINDEX_C2F(hi,_ga_hi, ndim);
     COPYC2F(ld,_ga_work, ndim-1);
     wnga_put(a, _ga_lo, _ga_hi, buf, _ga_work);
-}    
+}
 
 void NGA_Put64(int g_a, int64_t lo[], int64_t hi[], void* buf, int64_t ld[])
 {
@@ -1707,7 +1697,7 @@ void NGA_Put64(int g_a, int64_t lo[], int64_t hi[], void* buf, int64_t ld[])
     COPYINDEX_C2F(hi,_ga_hi, ndim);
     COPYC2F(ld,_ga_work, ndim-1);
     wnga_put(a, _ga_lo, _ga_hi, buf, _ga_work);
-}    
+}
 
 void NGA_NbPut(int g_a, int lo[], int hi[], void* buf, int ld[],
                ga_nbhdl_t* nbhandle)
@@ -1757,7 +1747,7 @@ void NGA_Strided_acc(int g_a, int lo[], int hi[], int skip[],
     COPYC2F(ld,_ga_work, ndim-1);
     COPYC2F(skip, _ga_skip, ndim);
     wnga_strided_acc(a, _ga_lo, _ga_hi, _ga_skip, buf, _ga_work, alpha);
-}    
+}
 
 void NGA_Strided_acc64(int g_a, int64_t lo[], int64_t hi[], int64_t skip[],
                      void* buf, int64_t ld[], void *alpha)
@@ -1787,7 +1777,7 @@ void NGA_Strided_get(int g_a, int lo[], int hi[], int skip[],
     COPYC2F(ld,_ga_work, ndim-1);
     COPYC2F(skip, _ga_skip, ndim);
     wnga_strided_get(a, _ga_lo, _ga_hi, _ga_skip, buf, _ga_work);
-}    
+}
 
 void NGA_Strided_get64(int g_a, int64_t lo[], int64_t hi[], int64_t skip[],
                      void* buf, int64_t ld[])
@@ -1817,7 +1807,7 @@ void NGA_Strided_put(int g_a, int lo[], int hi[], int skip[],
     COPYC2F(ld,_ga_work, ndim-1);
     COPYC2F(skip, _ga_skip, ndim);
     wnga_strided_put(a, _ga_lo, _ga_hi, _ga_skip, buf, _ga_work);
-}    
+}
 
 void NGA_Strided_put64(int g_a, int64_t lo[], int64_t hi[], int64_t skip[],
                      void* buf, int64_t ld[])
@@ -1844,7 +1834,7 @@ void NGA_Acc(int g_a, int lo[], int hi[], void* buf,int ld[], void* alpha)
     COPYINDEX_C2F(hi,_ga_hi, ndim);
     COPYC2F(ld,_ga_work, ndim-1);
     wnga_acc(a, _ga_lo, _ga_hi, buf, _ga_work, alpha);
-}    
+}
 
 void NGA_Acc64(int g_a, int64_t lo[], int64_t hi[], void* buf, int64_t ld[], void* alpha)
 {
@@ -1856,7 +1846,7 @@ void NGA_Acc64(int g_a, int64_t lo[], int64_t hi[], void* buf, int64_t ld[], voi
     COPYINDEX_C2F(hi,_ga_hi, ndim);
     COPYC2F(ld,_ga_work, ndim-1);
     wnga_acc(a, _ga_lo, _ga_hi, buf, _ga_work, alpha);
-}    
+}
 
 void NGA_NbAcc(int g_a, int lo[], int hi[], void* buf,int ld[], void* alpha,
                ga_nbhdl_t* nbhandle)
@@ -1918,7 +1908,7 @@ void NGA_Periodic_put(int g_a, int lo[], int hi[], void* buf, int ld[])
     COPYINDEX_C2F(hi,_ga_hi, ndim);
     COPYC2F(ld,_ga_work, ndim-1);
     wnga_periodic(a, _ga_lo, _ga_hi, buf, _ga_work, NULL, PERIODIC_PUT);
-}    
+}
 
 void NGA_Periodic_put64(int g_a, int64_t lo[], int64_t hi[], void* buf, int64_t ld[])
 {
@@ -2090,7 +2080,7 @@ void GA_Pack(int g_src, int g_dest, int g_mask, int lo, int hi, int *icount)
      Integer icnt;
      Integer alo = lo+1;
      Integer ahi = hi+1;
-     wnga_pack(a, b, s, alo, ahi, &icnt); 
+     wnga_pack(a, b, s, alo, ahi, &icnt);
      *icount = icnt;
 }
 
@@ -2102,7 +2092,7 @@ void GA_Pack64(int g_src, int g_dest, int g_mask, int64_t lo, int64_t hi, int64_
      Integer icnt;
      Integer alo = lo+1;
      Integer ahi = hi+1;
-     wnga_pack(a, b, s, alo, ahi, &icnt); 
+     wnga_pack(a, b, s, alo, ahi, &icnt);
      *icount = icnt;
 }
 
@@ -2114,7 +2104,7 @@ void GA_Unpack(int g_src, int g_dest, int g_mask, int lo, int hi, int *icount)
      Integer icnt;
      Integer alo = lo+1;
      Integer ahi = hi+1;
-     wnga_unpack(a, b, s, alo, ahi, &icnt); 
+     wnga_unpack(a, b, s, alo, ahi, &icnt);
      *icount = icnt;
 }
 
@@ -2126,7 +2116,7 @@ void GA_Unpack64(int g_src, int g_dest, int g_mask, int64_t lo, int64_t hi, int6
      Integer icnt;
      Integer alo = lo+1;
      Integer ahi = hi+1;
-     wnga_unpack(a, b, s, alo, ahi, &icnt); 
+     wnga_unpack(a, b, s, alo, ahi, &icnt);
      *icount = icnt;
 }
 
@@ -2150,16 +2140,84 @@ int NGA_Compare_distr(int g_a, int g_b)
     else return 1;
 }
 
+#ifdef USE_DEVICE_MEM
+void NGA_Access(int g_a, int lo[], int hi[], local_ptr_t *lptr, int ld[])
+#else
 void NGA_Access(int g_a, int lo[], int hi[], void *ptr, int ld[])
+#endif
 {
      Integer a=(Integer)g_a;
      Integer ndim = wnga_ndim(a);
+#ifdef USE_DEVICE_MEM
+     int ga_handle = g_a + GA_OFFSET;
+     C_Long d_sz = 0;        /* local data size in bytes */
+     Integer dev_data_present = wnga_dev_has_data(a);
+     Integer elems = 0;
+     // TODO: Make this globally available?
+     // GET_ELEMS(ndim, lo, hi, ld, &elems);
+     // if(MY_DEBUG)
+     //    printf("NGA_Access, elems:%d, mynodeId:%d\n",elems, _my_node_id);
+#endif
      Integer _ga_lo[MAXDIM], _ga_hi[MAXDIM];
      Integer _ga_work[MAXDIM];
      COPYINDEX_C2F(lo,_ga_lo,ndim);
      COPYINDEX_C2F(hi,_ga_hi,ndim);
+#ifdef USE_DEVICE_MEM
+     void *ptr_tmp = NULL;
+     if(MY_DEBUG)
+       printf("{%d} NGA_ACCESS: lo[0]:%d hi[0]:%d, lo[1]:%d hi[1]%d\n",_my_node_id, lo[0],hi[0],lo[1],hi[1]);
+     wnga_access_ptr(a,_ga_lo, _ga_hi, &ptr_tmp, _ga_work);
+     if(dev_data_present)
+     {
+    /*if(MY_DEBUG){
+        printf("WNGA_pointer Device Access\n");
+    }*/
+       //d_sz = wnga_data_size(a);
+       int *temp;
+       temp = (int*)malloc(sizeof(int) * ndim);
+       int i;
+       for(i = 0; i < ndim; i++) {
+         temp[i] = _ga_hi[i] - _ga_lo[i];
+       }
+       d_sz = temp[0] + 1;
+       for(i = 1; i < ndim; i++)
+         d_sz *= temp[i]+1;
 
+       d_sz = d_sz * GAsizeof(GA[ga_handle].type);
+       if(MY_DEBUG)
+         printf("NGA_Access, d_sz:%d, mynodeId:%d\n",d_sz, _my_node_id);
+
+       if(d_sz > 0)
+       {
+       if(MY_DEBUG)
+         printf(" {%d} NGA_Access, src_ptr:%p \n", _my_node_id, ptr_tmp);
+         // printf(" {%d} NGA_Access, src_ptr:%p, *src_ptr:%p\n", _my_node_id, ptr_tmp, *ptr_tmp);
+         lptr->ptr = (void*)malloc(d_sz);
+         lptr->is_malloced = 1;
+         size_t size = d_sz;
+         wnga_dev_host_copy(lptr->ptr, ptr_tmp, d_sz);
+         // for(i= 0;i < d_sz; i++) {
+         //   printf("ptr_tmp:%p Test Memcpy(devHost) Val [%d]: %lf",ptr_tmp, i, ((double*)lptr->ptr)[i]);
+         //   printf("\n");
+         // }
+         //_dev_host_memcpy(lptr->ptr, ptr_tmp, d_sz);
+       }
+       else
+       {
+         // Throw GA error;
+         printf(stderr, "Memory Access Violation.\n");
+         exit(EXIT_FAILURE);
+       }
+     }
+     else
+     {
+        lptr->ptr = ptr_tmp;
+        lptr->is_malloced = 0;
+     }
+
+#else
      wnga_access_ptr(a,_ga_lo, _ga_hi, ptr, _ga_work);
+#endif
      COPYF2C(_ga_work,ld, ndim-1);
 }
 
@@ -2349,7 +2407,6 @@ void NGA_Release_ghost_element64(int g_a, int64_t index[])
      wnga_release_ghost_element(a, _ga_lo);
 }
 
-
 void NGA_Release_ghosts(int g_a)
 {
      Integer a=(Integer)g_a;
@@ -2383,7 +2440,6 @@ int NGA_Locate64(int g_a, int64_t subscript[])
     else return -1;
 }
 
-
 int NGA_Locate_nnodes(int g_a, int lo[], int hi[])
 {
      /* logical st; */
@@ -2398,7 +2454,6 @@ int NGA_Locate_nnodes(int g_a, int lo[], int hi[])
      return (int)np;
 }
 
-
 int NGA_Locate_nnodes64(int g_a, int64_t lo[], int64_t hi[])
 {
      /* logical st; */
@@ -2412,7 +2467,6 @@ int NGA_Locate_nnodes64(int g_a, int64_t lo[], int64_t hi[])
      (void)wnga_locate_nnodes(a, _ga_lo, _ga_hi, &np);
      return (int)np;
 }
-
 
 int NGA_Locate_region(int g_a,int lo[],int hi[],int map[],int procs[])
 {
@@ -2445,7 +2499,7 @@ int NGA_Locate_region(int g_a,int lo[],int hi[],int map[],int procs[])
      for(i=0; i< np_actual*2; i++){
         Integer *ptmap = tmap+i*ndim;
         int *pmap = map +i*ndim;
-        COPYINDEX_F2C(ptmap, pmap, ndim);  
+        COPYINDEX_F2C(ptmap, pmap, ndim);
      }
      free(tmap);
      free(_ga_map_capi);
@@ -2483,7 +2537,7 @@ int NGA_Locate_region64(int g_a,int64_t lo[],int64_t hi[],int64_t map[],int proc
      for(i=0; i< np_actual*2; i++){
         Integer *ptmap = tmap+i*ndim;
         int64_t *pmap = map +i*ndim;
-        COPYINDEX_F2C_64(ptmap, pmap, ndim);  
+        COPYINDEX_F2C_64(ptmap, pmap, ndim);
      }
      free(tmap);
      free(_ga_map_capi);
@@ -2502,14 +2556,13 @@ int NGA_Locate_num_blocks(int g_a, int *lo, int *hi)
   return (int)ret;
 }
 
-
 void NGA_Inquire(int g_a, int *type, int *ndim, int dims[])
 {
      Integer a=(Integer)g_a;
      Integer ttype, nndim;
      Integer _ga_dims[MAXDIM];
      wnga_inquire(a,&ttype, &nndim, _ga_dims);
-     COPYF2C(_ga_dims, dims,nndim);  
+     COPYF2C(_ga_dims, dims,nndim);
      *ndim = (int)nndim;
      *type = (int)ttype;
 }
@@ -2520,7 +2573,7 @@ void NGA_Inquire64(int g_a, int *type, int *ndim, int64_t dims[])
      Integer ttype, nndim;
      Integer _ga_dims[MAXDIM];
      wnga_inquire(a,&ttype, &nndim, _ga_dims);
-     COPYF2C_64(_ga_dims, dims,nndim);  
+     COPYF2C_64(_ga_dims, dims,nndim);
      *ndim = (int)nndim;
      *type = (int)ttype;
 }
@@ -2570,7 +2623,7 @@ void NGA_Proc_topology(int g_a, int proc, int coord[])
      Integer ndim = wnga_ndim(a);
      Integer _ga_work[MAXDIM];
      wnga_proc_topology(a, p, _ga_work);
-     COPY(int,_ga_work, coord,ndim);  
+     COPY(int,_ga_work, coord,ndim);
 }
 
 void GA_Get_proc_grid(int g_a, int dims[])
@@ -2579,7 +2632,7 @@ void GA_Get_proc_grid(int g_a, int dims[])
      Integer ndim = wnga_ndim(a);
      Integer _ga_work[MAXDIM];
      wnga_get_proc_grid(a, _ga_work);
-     COPY(int,_ga_work, dims ,ndim);  
+     COPY(int,_ga_work, dims ,ndim);
 }
 
 void NGA_Get_proc_grid(int g_a, int dims[])
@@ -2588,7 +2641,7 @@ void NGA_Get_proc_grid(int g_a, int dims[])
      Integer _ga_work[MAXDIM];
      Integer ndim = wnga_ndim(a);
      wnga_get_proc_grid(a, _ga_work);
-     COPY(int,_ga_work, dims ,ndim);  
+     COPY(int,_ga_work, dims ,ndim);
 }
 
 void GA_Check_handle(int g_a, char* string)
@@ -2652,7 +2705,7 @@ void GA_Brdcst(void *buf, int lenbuf, int root)
   Integer orig = (Integer)root;
   wnga_msg_brdcst(type, buf, len, orig);
 }
-   
+
 void GA_Pgroup_brdcst(int grp_id, void *buf, int lenbuf, int root)
 {
     Integer type=GA_TYPE_BRD;
@@ -2687,7 +2740,7 @@ void GA_Llgop(long long x[], int n, char *op)
 { wnga_gop(C_LONGLONG, x, n, op); }
 
 void GA_Fgop(float x[], int n, char *op)
-{ wnga_gop(C_FLOAT, x, n, op); }       
+{ wnga_gop(C_FLOAT, x, n, op); }
 
 void GA_Dgop(double x[], int n, char *op)
 { wnga_gop(C_DBL, x, n, op); }
@@ -2711,7 +2764,7 @@ void NGA_Llgop(long long x[], int n, char *op)
 { wnga_gop(C_LONGLONG, x, n, op); }
 
 void NGA_Fgop(float x[], int n, char *op)
-{ wnga_gop(C_FLOAT, x, n, op); }       
+{ wnga_gop(C_FLOAT, x, n, op); }
 
 void NGA_Dgop(double x[], int n, char *op)
 { wnga_gop(C_DBL, x, n, op); }
@@ -2727,49 +2780,49 @@ void GA_Pgroup_gop(int grp_id, int type, double x[], int n, char *op)
 
 void GA_Pgroup_igop(int grp_id, int x[], int n, char *op)
 { wnga_pgroup_gop(grp_id, C_INT, x, n, op); }
- 
+
 void GA_Pgroup_lgop(int grp_id, long x[], int n, char *op)
 { wnga_pgroup_gop(grp_id, C_LONG, x, n, op); }
- 
+
 void GA_Pgroup_llgop(int grp_id, long long x[], int n, char *op)
 { wnga_pgroup_gop(grp_id, C_LONGLONG, x, n, op); }
- 
+
 void GA_Pgroup_fgop(int grp_id, float x[], int n, char *op)
 { wnga_pgroup_gop(grp_id, C_FLOAT, x, n, op); }
- 
+
 void GA_Pgroup_dgop(int grp_id, double x[], int n, char *op)
 { wnga_pgroup_gop(grp_id, C_DBL, x, n, op); }
- 
+
 void GA_Pgroup_cgop(int grp_id, SingleComplex x[], int n, char *op)
 { wnga_pgroup_gop(grp_id, C_SCPL, x, n, op); }
- 
+
 void GA_Pgroup_zgop(int grp_id, DoubleComplex x[], int n, char *op)
 { wnga_pgroup_gop(grp_id, C_DCPL, x, n, op); }
- 
+
 void NGA_Pgroup_gop(int grp_id, int type, double x[], int n, char *op)
 { wnga_pgroup_gop(grp_id, type, x, n, op); }
 
 void NGA_Pgroup_igop(int grp_id, int x[], int n, char *op)
 { wnga_pgroup_gop(grp_id, C_INT, x, n, op); }
- 
+
 void NGA_Pgroup_lgop(int grp_id, long x[], int n, char *op)
 { wnga_pgroup_gop(grp_id, C_LONG, x, n, op); }
- 
+
 void NGA_Pgroup_llgop(int grp_id, long long x[], int n, char *op)
 { wnga_pgroup_gop(grp_id, C_LONGLONG, x, n, op); }
- 
+
 void NGA_Pgroup_fgop(int grp_id, float x[], int n, char *op)
 { wnga_pgroup_gop(grp_id, C_FLOAT, x, n, op); }
- 
+
 void NGA_Pgroup_dgop(int grp_id, double x[], int n, char *op)
 { wnga_pgroup_gop(grp_id, C_DBL, x, n, op); }
- 
+
 void NGA_Pgroup_cgop(int grp_id, SingleComplex x[], int n, char *op)
 { wnga_pgroup_gop(grp_id, C_SCPL, x, n, op); }
- 
+
 void NGA_Pgroup_zgop(int grp_id, DoubleComplex x[], int n, char *op)
 { wnga_pgroup_gop(grp_id, C_DCPL, x, n, op); }
- 
+
 void NGA_Alloc_gatscat_buf(int nelems)
 {
   Integer elems = (Integer)nelems;
@@ -2815,12 +2868,11 @@ void NGA_Scatter_flat(int g_a, void *v, int subsArray[], int n)
     for(idx=0; idx<n; idx++)
         for(i=0; i<ndim; i++)
             _subs_array[idx*ndim+(ndim-i-1)] = subsArray[idx*ndim+i] + 1;
-    
+
     wnga_scatter(a, v, _subs_array, 0, nv);
-    
+
     free(_subs_array);
 }
-
 
 void NGA_Scatter64(int g_a, void *v, int64_t* subsArray[], int64_t n)
 {
@@ -2857,12 +2909,11 @@ void NGA_Scatter_flat64(int g_a, void *v, int64_t subsArray[], int64_t n)
     for(idx=0; idx<n; idx++)
         for(i=0; i<ndim; i++)
             _subs_array[idx*ndim+(ndim-i-1)] = subsArray[idx*ndim+i] + 1;
-    
+
     wnga_scatter(a, v, _subs_array, 0, nv);
-    
+
     free(_subs_array);
 }
-
 
 void NGA_Scatter_acc(int g_a, void *v, int* subsArray[], int n, void *alpha)
 {
@@ -2898,9 +2949,9 @@ void NGA_Scatter_acc_flat(int g_a, void *v, int subsArray[], int n, void *alpha)
     for(idx=0; idx<n; idx++)
         for(i=0; i<ndim; i++)
             _subs_array[idx*ndim+(ndim-i-1)] = subsArray[idx*ndim+i] + 1;
-    
+
     wnga_scatter_acc(a, v, _subs_array, 0, nv, alpha);
-    
+
     free(_subs_array);
 }
 
@@ -2939,9 +2990,9 @@ void NGA_Scatter_acc_flat64(int g_a, void *v, int64_t subsArray[], int64_t n, vo
     for(idx=0; idx<n; idx++)
         for(i=0; i<ndim; i++)
             _subs_array[idx*ndim+(ndim-i-1)] = subsArray[idx*ndim+i] + 1;
-    
+
     wnga_scatter_acc(a, v, _subs_array, 0, nv, alpha);
-    
+
     free(_subs_array);
 }
 
@@ -2967,7 +3018,6 @@ void NGA_Gather(int g_a, void *v, int* subsArray[], int n)
 #endif
 }
 
-
 void NGA_Gather_flat(int g_a, void *v, int subsArray[], int n)
 {
     int idx, i;
@@ -2982,12 +3032,11 @@ void NGA_Gather_flat(int g_a, void *v, int subsArray[], int n)
     for(idx=0; idx<n; idx++)
         for(i=0; i<ndim; i++)
             _subs_array[idx*ndim+(ndim-i-1)] = subsArray[idx*ndim+i] + 1;
-    
+
     wnga_gather(a, v, _subs_array, 0, nv);
-    
+
     free(_subs_array);
 }
-
 
 void NGA_Gather64(int g_a, void *v, int64_t* subsArray[], int64_t n)
 {
@@ -3012,7 +3061,6 @@ void NGA_Gather64(int g_a, void *v, int64_t* subsArray[], int64_t n)
 #endif
 }
 
-
 void NGA_Gather_flat64(int g_a, void *v, int64_t subsArray[], int64_t n)
 {
     int idx, i;
@@ -3027,12 +3075,11 @@ void NGA_Gather_flat64(int g_a, void *v, int64_t subsArray[], int64_t n)
     for(idx=0; idx<n; idx++)
         for(i=0; i<ndim; i++)
             _subs_array[idx*ndim+(ndim-i-1)] = subsArray[idx*ndim+i] + 1;
-    
+
     wnga_gather(a, v, _subs_array, 0, nv);
-    
+
     free(_subs_array);
 }
-
 
 void GA_Dgemm_c(char ta, char tb, int m, int n, int k,
               double alpha, int g_a, int g_b, double beta, int g_c )
@@ -3045,17 +3092,17 @@ void GA_Dgemm_c(char ta, char tb, int m, int n, int k,
   Integer aihi = m;
   Integer ajlo = 1;
   Integer ajhi = k;
-  
+
   Integer bilo = 1;
   Integer bihi = k;
   Integer bjlo = 1;
   Integer bjhi = n;
-  
+
   Integer cilo = 1;
   Integer cihi = m;
   Integer cjlo = 1;
   Integer cjhi = n;
-  
+
   pnga_matmul(&ta, &tb, (DoublePrecision *)&alpha,(DoublePrecision *)&beta,
 	    G_a, ailo, aihi, ajlo, ajhi,
 	    G_b, bilo, bihi, bjlo, bjhi,
@@ -3063,7 +3110,7 @@ void GA_Dgemm_c(char ta, char tb, int m, int n, int k,
 }
 
 void GA_Zgemm_c(char ta, char tb, int m, int n, int k,
-              DoubleComplex alpha, int g_a, int g_b, 
+              DoubleComplex alpha, int g_a, int g_b,
 	      DoubleComplex beta, int g_c )
 {
   Integer G_a = g_a;
@@ -3074,17 +3121,17 @@ void GA_Zgemm_c(char ta, char tb, int m, int n, int k,
   Integer aihi = m;
   Integer ajlo = 1;
   Integer ajhi = k;
-  
+
   Integer bilo = 1;
   Integer bihi = k;
   Integer bjlo = 1;
   Integer bjhi = n;
-  
+
   Integer cilo = 1;
   Integer cihi = m;
   Integer cjlo = 1;
   Integer cjhi = n;
-  
+
   pnga_matmul(&ta, &tb, (DoublePrecision *)&alpha,(DoublePrecision *)&beta,
 	    G_a, ailo, aihi, ajlo, ajhi,
 	    G_b, bilo, bihi, bjlo, bjhi,
@@ -3092,7 +3139,7 @@ void GA_Zgemm_c(char ta, char tb, int m, int n, int k,
 }
 
 void GA_Cgemm_c(char ta, char tb, int m, int n, int k,
-              SingleComplex alpha, int g_a, int g_b, 
+              SingleComplex alpha, int g_a, int g_b,
 	      SingleComplex beta, int g_c )
 {
   Integer G_a = g_a;
@@ -3103,17 +3150,17 @@ void GA_Cgemm_c(char ta, char tb, int m, int n, int k,
   Integer aihi = m;
   Integer ajlo = 1;
   Integer ajhi = k;
-  
+
   Integer bilo = 1;
   Integer bihi = k;
   Integer bjlo = 1;
   Integer bjhi = n;
-  
+
   Integer cilo = 1;
   Integer cihi = m;
   Integer cjlo = 1;
   Integer cjhi = n;
-  
+
   pnga_matmul(&ta, &tb, (float *)&alpha,(float *)&beta,
 	    G_a, ailo, aihi, ajlo, ajhi,
 	    G_b, bilo, bihi, bjlo, bjhi,
@@ -3121,7 +3168,7 @@ void GA_Cgemm_c(char ta, char tb, int m, int n, int k,
 }
 
 void GA_Sgemm_c(char ta, char tb, int m, int n, int k,
-              float alpha, int g_a, int g_b, 
+              float alpha, int g_a, int g_b,
 	      float beta,  int g_c )
 {
   Integer G_a = g_a;
@@ -3132,17 +3179,17 @@ void GA_Sgemm_c(char ta, char tb, int m, int n, int k,
   Integer aihi = m;
   Integer ajlo = 1;
   Integer ajhi = k;
-  
+
   Integer bilo = 1;
   Integer bihi = k;
   Integer bjlo = 1;
   Integer bjhi = n;
-  
+
   Integer cilo = 1;
   Integer cihi = m;
   Integer cjlo = 1;
   Integer cjhi = n;
-  
+
   pnga_matmul(&ta, &tb, (float*)&alpha, (float*)&beta,
 	    G_a, ailo, aihi, ajlo, ajhi,
 	    G_b, bilo, bihi, bjlo, bjhi,
@@ -3160,17 +3207,17 @@ void GA_Dgemm64_c(char ta, char tb, int64_t m, int64_t n, int64_t k,
   Integer aihi = m;
   Integer ajlo = 1;
   Integer ajhi = k;
-  
+
   Integer bilo = 1;
   Integer bihi = k;
   Integer bjlo = 1;
   Integer bjhi = n;
-  
+
   Integer cilo = 1;
   Integer cihi = m;
   Integer cjlo = 1;
   Integer cjhi = n;
-  
+
   pnga_matmul(&ta, &tb, (DoublePrecision *)&alpha,(DoublePrecision *)&beta,
 	    G_a, ailo, aihi, ajlo, ajhi,
 	    G_b, bilo, bihi, bjlo, bjhi,
@@ -3178,7 +3225,7 @@ void GA_Dgemm64_c(char ta, char tb, int64_t m, int64_t n, int64_t k,
 }
 
 void GA_Zgemm64_c(char ta, char tb, int64_t m, int64_t n, int64_t k,
-                DoubleComplex alpha, int g_a, int g_b, 
+                DoubleComplex alpha, int g_a, int g_b,
                 DoubleComplex beta, int g_c )
 {
   Integer G_a = g_a;
@@ -3189,17 +3236,17 @@ void GA_Zgemm64_c(char ta, char tb, int64_t m, int64_t n, int64_t k,
   Integer aihi = m;
   Integer ajlo = 1;
   Integer ajhi = k;
-  
+
   Integer bilo = 1;
   Integer bihi = k;
   Integer bjlo = 1;
   Integer bjhi = n;
-  
+
   Integer cilo = 1;
   Integer cihi = m;
   Integer cjlo = 1;
   Integer cjhi = n;
-  
+
   pnga_matmul(&ta, &tb, (DoublePrecision *)&alpha,(DoublePrecision *)&beta,
 	    G_a, ailo, aihi, ajlo, ajhi,
 	    G_b, bilo, bihi, bjlo, bjhi,
@@ -3207,7 +3254,7 @@ void GA_Zgemm64_c(char ta, char tb, int64_t m, int64_t n, int64_t k,
 }
 
 void GA_Cgemm64_c(char ta, char tb, int64_t m, int64_t n, int64_t k,
-                SingleComplex alpha, int g_a, int g_b, 
+                SingleComplex alpha, int g_a, int g_b,
                 SingleComplex beta, int g_c )
 {
   Integer G_a = g_a;
@@ -3218,17 +3265,17 @@ void GA_Cgemm64_c(char ta, char tb, int64_t m, int64_t n, int64_t k,
   Integer aihi = m;
   Integer ajlo = 1;
   Integer ajhi = k;
-  
+
   Integer bilo = 1;
   Integer bihi = k;
   Integer bjlo = 1;
   Integer bjhi = n;
-  
+
   Integer cilo = 1;
   Integer cihi = m;
   Integer cjlo = 1;
   Integer cjhi = n;
-  
+
   pnga_matmul(&ta, &tb, (float *)&alpha,(float *)&beta,
 	    G_a, ailo, aihi, ajlo, ajhi,
 	    G_b, bilo, bihi, bjlo, bjhi,
@@ -3236,7 +3283,7 @@ void GA_Cgemm64_c(char ta, char tb, int64_t m, int64_t n, int64_t k,
 }
 
 void GA_Sgemm64_c(char ta, char tb, int64_t m, int64_t n, int64_t k,
-                float alpha, int g_a, int g_b, 
+                float alpha, int g_a, int g_b,
                 float beta,  int g_c )
 {
   Integer G_a = g_a;
@@ -3247,17 +3294,17 @@ void GA_Sgemm64_c(char ta, char tb, int64_t m, int64_t n, int64_t k,
   Integer aihi = m;
   Integer ajlo = 1;
   Integer ajhi = k;
-  
+
   Integer bilo = 1;
   Integer bihi = k;
   Integer bjlo = 1;
   Integer bjhi = n;
-  
+
   Integer cilo = 1;
   Integer cihi = m;
   Integer cjlo = 1;
   Integer cjhi = n;
-  
+
   pnga_matmul(&ta, &tb, (float*)&alpha, (float*)&beta,
 	    G_a, ailo, aihi, ajlo, ajhi,
 	    G_b, bilo, bihi, bjlo, bjhi,
@@ -3280,21 +3327,21 @@ void GA_Dgemm(char ta, char tb, int m, int n, int k,
 }
 
 void GA_Zgemm(char ta, char tb, int m, int n, int k,
-              DoubleComplex alpha, int g_a, int g_b, 
+              DoubleComplex alpha, int g_a, int g_b,
 	      DoubleComplex beta, int g_c )
 {
     GA_Zgemm_c(tb, ta, n, m, k, alpha, g_b, g_a, beta, g_c);
 }
 
 void GA_Cgemm(char ta, char tb, int m, int n, int k,
-              SingleComplex alpha, int g_a, int g_b, 
+              SingleComplex alpha, int g_a, int g_b,
 	      SingleComplex beta, int g_c )
 {
     GA_Cgemm_c(tb, ta, n, m, k, alpha, g_b, g_a, beta, g_c);
 }
 
 void GA_Sgemm(char ta, char tb, int m, int n, int k,
-              float alpha, int g_a, int g_b, 
+              float alpha, int g_a, int g_b,
 	      float beta,  int g_c )
 {
     GA_Sgemm_c(tb, ta, n, m, k, alpha, g_b, g_a, beta, g_c);
@@ -3307,21 +3354,21 @@ void GA_Dgemm64(char ta, char tb, int64_t m, int64_t n, int64_t k,
 }
 
 void GA_Zgemm64(char ta, char tb, int64_t m, int64_t n, int64_t k,
-                DoubleComplex alpha, int g_a, int g_b, 
+                DoubleComplex alpha, int g_a, int g_b,
                 DoubleComplex beta, int g_c )
 {
     GA_Zgemm64_c(tb, ta, n, m, k, alpha, g_b, g_a, beta, g_c);
 }
 
 void GA_Cgemm64(char ta, char tb, int64_t m, int64_t n, int64_t k,
-                SingleComplex alpha, int g_a, int g_b, 
+                SingleComplex alpha, int g_a, int g_b,
                 SingleComplex beta, int g_c )
 {
     GA_Cgemm64_c(tb, ta, n, m, k, alpha, g_b, g_a, beta, g_c);
 }
 
 void GA_Sgemm64(char ta, char tb, int64_t m, int64_t n, int64_t k,
-                float alpha, int g_a, int g_b, 
+                float alpha, int g_a, int g_b,
                 float beta,  int g_c )
 {
     GA_Sgemm64_c(tb, ta, n, m, k, alpha, g_b, g_a, beta, g_c);
@@ -3337,12 +3384,12 @@ void NGA_Copy_patch(char trans, int g_a, int alo[], int ahi[],
 
     Integer b=(Integer)g_b;
     Integer bndim = wnga_ndim(b);
-    
+
     Integer _ga_alo[MAXDIM], _ga_ahi[MAXDIM];
     Integer _ga_blo[MAXDIM], _ga_bhi[MAXDIM];
     COPYINDEX_C2F(alo,_ga_alo, andim);
     COPYINDEX_C2F(ahi,_ga_ahi, andim);
-    
+
     COPYINDEX_C2F(blo,_ga_blo, bndim);
     COPYINDEX_C2F(bhi,_ga_bhi, bndim);
 
@@ -3357,12 +3404,12 @@ void NGA_Copy_patch64(char trans, int g_a, int64_t alo[], int64_t ahi[],
 
     Integer b=(Integer)g_b;
     Integer bndim = wnga_ndim(b);
-    
+
     Integer _ga_alo[MAXDIM], _ga_ahi[MAXDIM];
     Integer _ga_blo[MAXDIM], _ga_bhi[MAXDIM];
     COPYINDEX_C2F(alo,_ga_alo, andim);
     COPYINDEX_C2F(ahi,_ga_ahi, andim);
-    
+
     COPYINDEX_C2F(blo,_ga_blo, bndim);
     COPYINDEX_C2F(bhi,_ga_bhi, bndim);
 
@@ -3379,7 +3426,7 @@ void GA_Matmul_patch(char transa, char transb, void* alpha, void *beta,
     Integer Ig_b = g_b;
     Integer Ig_c = g_c;
 #if 0
-    Integer alo[2], ahi[2]; 
+    Integer alo[2], ahi[2];
     Integer blo[2], bhi[2];
     Integer clo[2], chi[2];
     alo[0]=ailo+1; ahi[0]=aihi+1; alo[1]=ajlo+1; ahi[1]=ajhi+1;
@@ -3417,7 +3464,7 @@ void GA_Matmul_patch64(char transa, char transb, void* alpha, void *beta,
     Integer Ig_b = g_b;
     Integer Ig_c = g_c;
 #if 0
-    Integer alo[2], ahi[2]; 
+    Integer alo[2], ahi[2];
     Integer blo[2], bhi[2];
     Integer clo[2], chi[2];
     alo[0]=ailo+1; ahi[0]=aihi+1; alo[1]=ajlo+1; ahi[1]=ajhi+1;
@@ -3446,32 +3493,32 @@ void GA_Matmul_patch64(char transa, char transb, void* alpha, void *beta,
 }
 
 void NGA_Matmul_patch(char transa, char transb, void* alpha, void *beta,
-		      int g_a, int alo[], int ahi[], 
-		      int g_b, int blo[], int bhi[], 
-		      int g_c, int clo[], int chi[]) 
+		      int g_a, int alo[], int ahi[],
+		      int g_b, int blo[], int bhi[],
+		      int g_c, int clo[], int chi[])
 
 {
     Integer a=(Integer)g_a;
     Integer andim = wnga_ndim(a);
-    
+
     Integer b=(Integer)g_b;
     Integer bndim = wnga_ndim(b);
-    
+
     Integer c=(Integer)g_c;
     Integer cndim = wnga_ndim(c);
-    
+
     Integer _ga_alo[MAXDIM], _ga_ahi[MAXDIM];
     Integer _ga_blo[MAXDIM], _ga_bhi[MAXDIM];
     Integer _ga_clo[MAXDIM], _ga_chi[MAXDIM];
     COPYINDEX_C2F(alo,_ga_alo, andim);
     COPYINDEX_C2F(ahi,_ga_ahi, andim);
-    
+
     COPYINDEX_C2F(blo,_ga_blo, bndim);
     COPYINDEX_C2F(bhi,_ga_bhi, bndim);
-    
+
     COPYINDEX_C2F(clo,_ga_clo, cndim);
     COPYINDEX_C2F(chi,_ga_chi, cndim);
-    
+
     pnga_matmul_patch(&transb, &transa, alpha, beta,
 		     b, _ga_blo, _ga_bhi,
 		     a, _ga_alo, _ga_ahi,
@@ -3479,32 +3526,32 @@ void NGA_Matmul_patch(char transa, char transb, void* alpha, void *beta,
 }
 
 void NGA_Matmul_patch64(char transa, char transb, void* alpha, void *beta,
-                        int g_a, int64_t alo[], int64_t ahi[], 
-                        int g_b, int64_t blo[], int64_t bhi[], 
-                        int g_c, int64_t clo[], int64_t chi[]) 
+                        int g_a, int64_t alo[], int64_t ahi[],
+                        int g_b, int64_t blo[], int64_t bhi[],
+                        int g_c, int64_t clo[], int64_t chi[])
 
 {
     Integer a=(Integer)g_a;
     Integer andim = wnga_ndim(a);
-    
+
     Integer b=(Integer)g_b;
     Integer bndim = wnga_ndim(b);
-    
+
     Integer c=(Integer)g_c;
     Integer cndim = wnga_ndim(c);
-    
+
     Integer _ga_alo[MAXDIM], _ga_ahi[MAXDIM];
     Integer _ga_blo[MAXDIM], _ga_bhi[MAXDIM];
     Integer _ga_clo[MAXDIM], _ga_chi[MAXDIM];
     COPYINDEX_C2F(alo,_ga_alo, andim);
     COPYINDEX_C2F(ahi,_ga_ahi, andim);
-    
+
     COPYINDEX_C2F(blo,_ga_blo, bndim);
     COPYINDEX_C2F(bhi,_ga_bhi, bndim);
-    
+
     COPYINDEX_C2F(clo,_ga_clo, cndim);
     COPYINDEX_C2F(chi,_ga_chi, cndim);
-    
+
     pnga_matmul_patch(&transb, &transa, alpha, beta,
 		     b, _ga_blo, _ga_bhi,
 		     a, _ga_alo, _ga_ahi,
@@ -3520,12 +3567,12 @@ int NGA_Idot_patch(int g_a, char t_a, int alo[], int ahi[],
 
     Integer b=(Integer)g_b;
     Integer bndim = wnga_ndim(b);
-    
+
     Integer _ga_alo[MAXDIM], _ga_ahi[MAXDIM];
     Integer _ga_blo[MAXDIM], _ga_bhi[MAXDIM];
     COPYINDEX_C2F(alo,_ga_alo, andim);
     COPYINDEX_C2F(ahi,_ga_ahi, andim);
-    
+
     COPYINDEX_C2F(blo,_ga_blo, bndim);
     COPYINDEX_C2F(bhi,_ga_bhi, bndim);
 
@@ -3544,12 +3591,12 @@ long NGA_Ldot_patch(int g_a, char t_a, int alo[], int ahi[],
 
     Integer b=(Integer)g_b;
     Integer bndim = wnga_ndim(b);
-    
+
     Integer _ga_alo[MAXDIM], _ga_ahi[MAXDIM];
     Integer _ga_blo[MAXDIM], _ga_bhi[MAXDIM];
     COPYINDEX_C2F(alo,_ga_alo, andim);
     COPYINDEX_C2F(ahi,_ga_ahi, andim);
-    
+
     COPYINDEX_C2F(blo,_ga_blo, bndim);
     COPYINDEX_C2F(bhi,_ga_bhi, bndim);
 
@@ -3568,12 +3615,12 @@ long long NGA_Lldot_patch(int g_a, char t_a, int alo[], int ahi[],
 
     Integer b=(Integer)g_b;
     Integer bndim = wnga_ndim(b);
-    
+
     Integer _ga_alo[MAXDIM], _ga_ahi[MAXDIM];
     Integer _ga_blo[MAXDIM], _ga_bhi[MAXDIM];
     COPYINDEX_C2F(alo,_ga_alo, andim);
     COPYINDEX_C2F(ahi,_ga_ahi, andim);
-    
+
     COPYINDEX_C2F(blo,_ga_blo, bndim);
     COPYINDEX_C2F(bhi,_ga_bhi, bndim);
 
@@ -3611,24 +3658,24 @@ DoubleComplex NGA_Zdot_patch(int g_a, char t_a, int alo[], int ahi[],
                              int g_b, char t_b, int blo[], int bhi[])
 {
     DoubleComplex res;
-    
+
     Integer a=(Integer)g_a;
     Integer andim = wnga_ndim(a);
-    
+
     Integer b=(Integer)g_b;
     Integer bndim = wnga_ndim(b);
-    
+
     Integer _ga_alo[MAXDIM], _ga_ahi[MAXDIM];
     Integer _ga_blo[MAXDIM], _ga_bhi[MAXDIM];
     COPYINDEX_C2F(alo,_ga_alo, andim);
     COPYINDEX_C2F(ahi,_ga_ahi, andim);
-    
+
     COPYINDEX_C2F(blo,_ga_blo, bndim);
     COPYINDEX_C2F(bhi,_ga_bhi, bndim);
-    
+
     wnga_dot_patch(a, &t_a, _ga_alo, _ga_ahi,
                    b, &t_b, _ga_blo, _ga_bhi, &res);
-    
+
     return res;
 }
 
@@ -3636,24 +3683,24 @@ SingleComplex NGA_Cdot_patch(int g_a, char t_a, int alo[], int ahi[],
                              int g_b, char t_b, int blo[], int bhi[])
 {
     SingleComplex res;
-    
+
     Integer a=(Integer)g_a;
     Integer andim = wnga_ndim(a);
-    
+
     Integer b=(Integer)g_b;
     Integer bndim = wnga_ndim(b);
-    
+
     Integer _ga_alo[MAXDIM], _ga_ahi[MAXDIM];
     Integer _ga_blo[MAXDIM], _ga_bhi[MAXDIM];
     COPYINDEX_C2F(alo,_ga_alo, andim);
     COPYINDEX_C2F(ahi,_ga_ahi, andim);
-    
+
     COPYINDEX_C2F(blo,_ga_blo, bndim);
     COPYINDEX_C2F(bhi,_ga_bhi, bndim);
-    
+
     wnga_dot_patch(a, &t_a, _ga_alo, _ga_ahi,
                    b, &t_b, _ga_blo, _ga_bhi, &res);
-    
+
     return res;
 }
 
@@ -3663,23 +3710,23 @@ float NGA_Fdot_patch(int g_a, char t_a, int alo[], int ahi[],
     float res;
     Integer a=(Integer)g_a;
     Integer andim = wnga_ndim(a);
- 
+
     Integer b=(Integer)g_b;
     Integer bndim = wnga_ndim(b);
- 
+
     Integer _ga_alo[MAXDIM], _ga_ahi[MAXDIM];
     Integer _ga_blo[MAXDIM], _ga_bhi[MAXDIM];
     COPYINDEX_C2F(alo,_ga_alo, andim);
     COPYINDEX_C2F(ahi,_ga_ahi, andim);
- 
+
     COPYINDEX_C2F(blo,_ga_blo, bndim);
     COPYINDEX_C2F(bhi,_ga_bhi, bndim);
- 
+
     wnga_dot_patch(a, &t_a, _ga_alo, _ga_ahi,
                    b, &t_b, _ga_blo, _ga_bhi, &res);
- 
+
     return res;
-}                                           
+}
 
 int NGA_Idot_patch64(int g_a, char t_a, int64_t alo[], int64_t ahi[],
                      int g_b, char t_b, int64_t blo[], int64_t bhi[])
@@ -3690,12 +3737,12 @@ int NGA_Idot_patch64(int g_a, char t_a, int64_t alo[], int64_t ahi[],
 
     Integer b=(Integer)g_b;
     Integer bndim = wnga_ndim(b);
-    
+
     Integer _ga_alo[MAXDIM], _ga_ahi[MAXDIM];
     Integer _ga_blo[MAXDIM], _ga_bhi[MAXDIM];
     COPYINDEX_C2F(alo,_ga_alo, andim);
     COPYINDEX_C2F(ahi,_ga_ahi, andim);
-    
+
     COPYINDEX_C2F(blo,_ga_blo, bndim);
     COPYINDEX_C2F(bhi,_ga_bhi, bndim);
 
@@ -3714,12 +3761,12 @@ long NGA_Ldot_patch64(int g_a, char t_a, int64_t alo[], int64_t ahi[],
 
     Integer b=(Integer)g_b;
     Integer bndim = wnga_ndim(b);
-    
+
     Integer _ga_alo[MAXDIM], _ga_ahi[MAXDIM];
     Integer _ga_blo[MAXDIM], _ga_bhi[MAXDIM];
     COPYINDEX_C2F(alo,_ga_alo, andim);
     COPYINDEX_C2F(ahi,_ga_ahi, andim);
-    
+
     COPYINDEX_C2F(blo,_ga_blo, bndim);
     COPYINDEX_C2F(bhi,_ga_bhi, bndim);
 
@@ -3738,12 +3785,12 @@ long long NGA_Lldot_patch64(int g_a, char t_a, int64_t alo[], int64_t ahi[],
 
     Integer b=(Integer)g_b;
     Integer bndim = wnga_ndim(b);
-    
+
     Integer _ga_alo[MAXDIM], _ga_ahi[MAXDIM];
     Integer _ga_blo[MAXDIM], _ga_bhi[MAXDIM];
     COPYINDEX_C2F(alo,_ga_alo, andim);
     COPYINDEX_C2F(ahi,_ga_ahi, andim);
-    
+
     COPYINDEX_C2F(blo,_ga_blo, bndim);
     COPYINDEX_C2F(bhi,_ga_bhi, bndim);
 
@@ -3781,24 +3828,24 @@ DoubleComplex NGA_Zdot_patch64(int g_a, char t_a, int64_t alo[], int64_t ahi[],
                                int g_b, char t_b, int64_t blo[], int64_t bhi[])
 {
     DoubleComplex res;
-    
+
     Integer a=(Integer)g_a;
     Integer andim = wnga_ndim(a);
-    
+
     Integer b=(Integer)g_b;
     Integer bndim = wnga_ndim(b);
-    
+
     Integer _ga_alo[MAXDIM], _ga_ahi[MAXDIM];
     Integer _ga_blo[MAXDIM], _ga_bhi[MAXDIM];
     COPYINDEX_C2F(alo,_ga_alo, andim);
     COPYINDEX_C2F(ahi,_ga_ahi, andim);
-    
+
     COPYINDEX_C2F(blo,_ga_blo, bndim);
     COPYINDEX_C2F(bhi,_ga_bhi, bndim);
-    
+
     wnga_dot_patch(a, &t_a, _ga_alo, _ga_ahi,
                    b, &t_b, _ga_blo, _ga_bhi, &res);
-    
+
     return res;
 }
 
@@ -3806,24 +3853,24 @@ SingleComplex NGA_Cdot_patch64(int g_a, char t_a, int64_t alo[], int64_t ahi[],
                                int g_b, char t_b, int64_t blo[], int64_t bhi[])
 {
     SingleComplex res;
-    
+
     Integer a=(Integer)g_a;
     Integer andim = wnga_ndim(a);
-    
+
     Integer b=(Integer)g_b;
     Integer bndim = wnga_ndim(b);
-    
+
     Integer _ga_alo[MAXDIM], _ga_ahi[MAXDIM];
     Integer _ga_blo[MAXDIM], _ga_bhi[MAXDIM];
     COPYINDEX_C2F(alo,_ga_alo, andim);
     COPYINDEX_C2F(ahi,_ga_ahi, andim);
-    
+
     COPYINDEX_C2F(blo,_ga_blo, bndim);
     COPYINDEX_C2F(bhi,_ga_bhi, bndim);
-    
+
     wnga_dot_patch(a, &t_a, _ga_alo, _ga_ahi,
                    b, &t_b, _ga_blo, _ga_bhi, &res);
-    
+
     return res;
 }
 
@@ -3833,24 +3880,23 @@ float NGA_Fdot_patch64(int g_a, char t_a, int64_t alo[], int64_t ahi[],
     float res;
     Integer a=(Integer)g_a;
     Integer andim = wnga_ndim(a);
- 
+
     Integer b=(Integer)g_b;
     Integer bndim = wnga_ndim(b);
- 
+
     Integer _ga_alo[MAXDIM], _ga_ahi[MAXDIM];
     Integer _ga_blo[MAXDIM], _ga_bhi[MAXDIM];
     COPYINDEX_C2F(alo,_ga_alo, andim);
     COPYINDEX_C2F(ahi,_ga_ahi, andim);
- 
+
     COPYINDEX_C2F(blo,_ga_blo, bndim);
     COPYINDEX_C2F(bhi,_ga_bhi, bndim);
- 
+
     wnga_dot_patch(a, &t_a, _ga_alo, _ga_ahi,
                    b, &t_b, _ga_blo, _ga_bhi, &res);
- 
+
     return res;
 }
-
 
 void NGA_Fill_patch(int g_a, int lo[], int hi[], void *val)
 {
@@ -3936,7 +3982,7 @@ void NGA_Add_patch(void * alpha, int g_a, int alo[], int ahi[],
 
     COPYINDEX_C2F(alo,_ga_alo, andim);
     COPYINDEX_C2F(ahi,_ga_ahi, andim);
-    
+
     COPYINDEX_C2F(blo,_ga_blo, bndim);
     COPYINDEX_C2F(bhi,_ga_bhi, bndim);
 
@@ -3965,7 +4011,7 @@ void NGA_Add_patch64(void * alpha, int g_a, int64_t alo[], int64_t ahi[],
     Integer _ga_clo[MAXDIM], _ga_chi[MAXDIM];
     COPYINDEX_C2F(alo,_ga_alo, andim);
     COPYINDEX_C2F(ahi,_ga_ahi, andim);
-    
+
     COPYINDEX_C2F(blo,_ga_blo, bndim);
     COPYINDEX_C2F(bhi,_ga_bhi, bndim);
 
@@ -3975,7 +4021,6 @@ void NGA_Add_patch64(void * alpha, int g_a, int64_t alo[], int64_t ahi[],
     wnga_add_patch(alpha, a, _ga_alo, _ga_ahi, beta, b, _ga_blo, _ga_bhi,
                    c, _ga_clo, _ga_chi);
 }
-
 
 void GA_Print_patch(int g_a,int ilo,int ihi,int jlo,int jhi,int pretty)
 {
@@ -3991,7 +4036,6 @@ void GA_Print_patch(int g_a,int ilo,int ihi,int jlo,int jhi,int pretty)
     COPYINDEX_C2F(hi,_ga_hi,2);
     wnga_print_patch(a, _ga_lo, _ga_hi, p);
 }
-
 
 void NGA_Print_patch(int g_a, int lo[], int hi[], int pretty)
 {
@@ -4013,7 +4057,7 @@ void NGA_Print_patch64(int g_a, int64_t lo[], int64_t hi[], int pretty)
     Integer _ga_lo[MAXDIM], _ga_hi[MAXDIM];
     COPYINDEX_C2F(lo,_ga_lo, ndim);
     COPYINDEX_C2F(hi,_ga_hi, ndim);
-  
+
     wnga_print_patch(a, _ga_lo, _ga_hi, p);
 }
 
@@ -4147,7 +4191,6 @@ void GA_Transpose(int g_a, int g_b)
     wnga_transpose(a, b);
 }
 
-
 void GA_Print_distribution(int g_a)
 {
 #ifdef USE_FAPI
@@ -4156,7 +4199,6 @@ void GA_Print_distribution(int g_a)
     wnga_print_distribution(0,(Integer)g_a);
 #endif
 }
-
 
 void NGA_Release_update(int g_a, int lo[], int hi[])
 {
@@ -4243,7 +4285,6 @@ int NGA_Ndim(int g_a)
 
 /*Limin's functions */
 
-
 void GA_Step_bound_info(int g_xx, int g_vv, int g_xxll, int g_xxuu,  void *boundmin, void *wolfemin, void *boundmax)
 {
     Integer xx = (Integer)g_xx;
@@ -4272,7 +4313,7 @@ void GA_Step_bound_info_patch(int g_xx, int xxlo[], int xxhi[],  int g_vv, int v
     COPYINDEX_C2F(xxllhi,_ga_xxllhi, ndim);
     COPYINDEX_C2F(xxuulo,_ga_xxuulo, ndim);
     COPYINDEX_C2F(xxuuhi,_ga_xxuuhi, ndim);
-    wnga_step_bound_info_patch(xx, _ga_xxlo, _ga_xxhi, vv, _ga_vvlo, _ga_vvhi, xxll, _ga_xxlllo, _ga_xxllhi, xxuu, _ga_xxuulo, _ga_xxuuhi , 
+    wnga_step_bound_info_patch(xx, _ga_xxlo, _ga_xxhi, vv, _ga_vvlo, _ga_vvhi, xxll, _ga_xxlllo, _ga_xxllhi, xxuu, _ga_xxuulo, _ga_xxuuhi ,
     boundmin,wolfemin,boundmax);
 }
 
@@ -4299,7 +4340,7 @@ void GA_Step_bound_info_patch64(int g_xx, int64_t xxlo[], int64_t xxhi[],
     COPYINDEX_C2F(xxllhi,_ga_xxllhi, ndim);
     COPYINDEX_C2F(xxuulo,_ga_xxuulo, ndim);
     COPYINDEX_C2F(xxuuhi,_ga_xxuuhi, ndim);
-    wnga_step_bound_info_patch(xx, _ga_xxlo, _ga_xxhi, vv, _ga_vvlo, _ga_vvhi, xxll, _ga_xxlllo, _ga_xxllhi, xxuu, _ga_xxuulo, _ga_xxuuhi , 
+    wnga_step_bound_info_patch(xx, _ga_xxlo, _ga_xxhi, vv, _ga_vvlo, _ga_vvhi, xxll, _ga_xxlllo, _ga_xxllhi, xxuu, _ga_xxuulo, _ga_xxuuhi ,
     boundmin,wolfemin,boundmax);
 }
 
@@ -4351,7 +4392,6 @@ void GA_Add_constant(int g_a, void *alpha)
     wnga_add_constant(a, alpha);
 }
 
-
 void GA_Recip(int g_a)
 {
     Integer a = (Integer)g_a;
@@ -4382,7 +4422,6 @@ void GA_Elem_maximum(int g_a, int g_b, int g_c)
     wnga_elem_maximum(a, b, c);
 }
 
-
 void GA_Elem_minimum(int g_a, int g_b, int g_c)
 {
     Integer a = (Integer)g_a;
@@ -4390,7 +4429,6 @@ void GA_Elem_minimum(int g_a, int g_b, int g_c)
     Integer c = (Integer)g_c;
     wnga_elem_minimum(a, b, c);
 }
-
 
 void GA_Abs_value_patch(int g_a, int *lo, int *hi)
 {
@@ -4540,7 +4578,6 @@ void GA_Elem_divide_patch64(int g_a, int64_t alo[], int64_t ahi[],
     wnga_elem_divide_patch(a, _ga_alo, _ga_ahi, b, _ga_blo, _ga_bhi, c, _ga_clo, _ga_chi);
 }
 
-
 void GA_Elem_maximum_patch(int g_a, int alo[], int ahi[],
                            int g_b, int blo[], int bhi[],
                            int g_c, int clo[], int chi[])
@@ -4677,7 +4714,6 @@ void GA_Norm_infinity(int g_a, double *nm){
  wnga_norm_infinity(a, nm);
 }
 
-
 void GA_Median(int g_a, int g_b, int g_c, int g_m){
  Integer a = (Integer )g_a;
  Integer b = (Integer )g_b;
@@ -4746,10 +4782,10 @@ void GA_Median_patch64(int g_a, int64_t *alo, int64_t *ahi,
 int GA_Cluster_nnodes()
 {
     return wnga_cluster_nnodes();
-} 
+}
 
 /* returns ClusterNode id of the calling process */
-int GA_Cluster_nodeid() 
+int GA_Cluster_nodeid()
 {
     return wnga_cluster_nodeid();
 }
@@ -4762,7 +4798,7 @@ int GA_Cluster_proc_nodeid(int proc)
 }
 
 /* return number of processes being used on the specified node */
-int GA_Cluster_nprocs(int x) 
+int GA_Cluster_nprocs(int x)
 {
     Integer ax = x;
     return wnga_cluster_nprocs(ax);
@@ -4973,7 +5009,6 @@ int NGA_Deregister_type(int type) {
   return wnga_deregister_type(type);
 }
 
-
 void NGA_Get_field(int g_a, int *lo, int *hi, int foff, int fsize,
 		   void *buf, int *ld) {
   Integer a = (Integer)g_a;
@@ -5025,6 +5060,3 @@ void NGA_Put_field(int g_a, int *lo, int *hi, int foff, int fsize,
 
   wnga_put_field(a, _alo, _ahi, foff, fsize, buf, _ld);
 }
-
-
-

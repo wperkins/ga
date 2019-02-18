@@ -28,6 +28,31 @@
 #include <cuda_runtime.h>
 #endif
 
+// #ifdef USE_FAPI
+// #  define COPYC2F(carr, farr, n){\
+//    int i; for(i=0; i< (n); i++)(farr)[i]=(Integer)(carr)[i];}
+// #  define COPYF2C(farr, carr, n){\
+//    int i; for(i=0; i< (n); i++)(carr)[i]=(int)(farr)[i];}
+// #  define COPYF2C_64(farr, carr, n){\
+//    int i; for(i=0; i< (n); i++)(carr)[i]=(int64_t)(farr)[i];}
+// #  define COPYINDEX_F2C     COPYF2C
+// #  define COPYINDEX_F2C_64  COPYF2C_64
+// #else
+// #  define COPYC2F(carr, farr, n){\
+//    int i; for(i=0; i< (n); i++)(farr)[n-i-1]=(Integer)(carr)[i];}
+// #  define COPYF2C(farr, carr, n){\
+//    int i; for(i=0; i< (n); i++)(carr)[n-i-1]=(int)(farr)[i];}
+// #  define COPYF2C_64(farr, carr, n){\
+//    int i; for(i=0; i< (n); i++)(carr)[n-i-1]=(int64_t)(farr)[i];}
+// #  define COPYINDEX_C2F(carr, farr, n){\
+//    int i; for(i=0; i< (n); i++)(farr)[n-i-1]=(Integer)(carr)[i]+1;}
+// #  define COPYINDEX_F2C(farr, carr, n){\
+//    int i; for(i=0; i< (n); i++)(carr)[n-i-1]=(int)(farr)[i] -1;}
+// #  define COPYINDEX_F2C_64(farr, carr, n){\
+//    int i; for(i=0; i< (n); i++)(carr)[n-i-1]=(int64_t)(farr)[i] -1;}
+// #define BASE_0
+// #endif
+
 #ifdef MSG_COMMS_MPI
 extern ARMCI_Group* ga_get_armci_group_(int);
 #endif
@@ -89,7 +114,16 @@ void pnga_zero(Integer g_a)
         pnga_zero_patch(g_a,_lo,_hi);
         return;
       }
+      Integer _ga_lo[MAXDIM], _ga_hi[MAXDIM];
+      Integer _ga_work[MAXDIM];
+
+      // COPYINDEX_C2F(_lo,_ga_lo,ndim);
+      // COPYINDEX_C2F(_hi,_ga_hi,ndim);
+      if(MY_DEBUG) {
+        printf(" {%d} GA_ZERO : _lo[0]:%d _hi[0]:%d , _lo[1]:%d _hi[1]:%d\n",_my_node_id, _lo[0],_hi[0],_lo[1], _hi[1]);
+      }
       pnga_access_ptr(g_a, _lo, _hi, &ptr, _ld);
+      // pnga_access_ptr(g_a, _ga_lo, _ga_hi, &ptr, _ld);
       GET_ELEMS(ndim,_lo,_hi,_ld,&elems);
 
       /* switch (type){ */
@@ -124,7 +158,57 @@ void pnga_zero(Integer g_a)
 /*         break; */
 /*         default: pnga_error(" wrong data type ",type); */
 /*       } */
+#ifdef USE_DEVICE_MEM
+      int  ga_handle = g_a + GA_OFFSET;
+      device_info_t dev_info;
+      dev_info.count = GA[ga_handle].dev_count;
+      dev_info.on_device = GA[ga_handle].on_device[_my_local_rank];
+      // TODO Check if device is active in GA
+      // int rank_local = -1;
+      if((_my_local_rank < dev_info.count) && (dev_info.on_device)) {
+        // cudaError_t c_flag;
+        int i;
+        if(MY_DEBUG && _my_node_id == 0) {
+            printf("@@ pnga_zero &ptr:%p, ptr:%p\n", &ptr, ptr);
+        }
+        void *t_buf = (void*) malloc(GAsizeof(type)*elems);
+        for(i = 0; i< elems; i++)
+            // ((double*)t_buf)[i] = 10.0;
+            ((double*)t_buf)[i] = 0.0;
+        /*for(i = 0; i< elems; i++)
+            printf("%lf, ", ((double*)t_buf)[i]);
+        printf("\n");*/
+        // c_flag = cudaMemcpy(ptr, t_buf, GAsizeof(type)*elems, cudaMemcpyHostToDevice);
+        ARMCI_HostDevCopy(ptr, t_buf, GAsizeof(type)*elems);
+        // c_flag = cudaMemset(ptr, 5, GAsizeofM(type)*elems);
+        if(MY_DEBUG) {
+            printf("MEMSET (memcpy) DEVICE, value 10. Base index > 0. Device Count: %d, on Device: %d\n", dev_info.count, dev_info.on_device);
+            fflush(stdout);
+        }
+
+        // if(MY_DEBUG && _my_node_id == 0) {
+            // Local Test if memory is set:
+            // void *ptr_test = (void*)malloc(GAsizeofM(type)*elems);
+            // // cudaMemcpy(ptr_test, ptr, GAsizeofM(type)*elems, cudaMemcpyDeviceToHost);
+            // ARMCI_DevHostCopy(ptr_test, ptr, GAsizeofM(type)*elems);
+            // // double* cpy_ptr = (double*)ptr_test;
+            // // int i = 0;
+            // fflush(stdout);
+            // for(i= 0;i < elems; ++i) {
+            //     printf("pnga_zero {%d} Test Memset(II) Val [%d]: %lf",_my_node_id, i, ((double*)ptr_test)[i]);
+            // }
+            // printf("\n");
+            // free(ptr_test);
+            // printf("+++++++++++++++++++++++++++++++++++++\n");
+        // }
+        free(t_buf);
+      }
+      else {
+        memset(ptr, 0, GAsizeofM(type)*elems);
+      }
+#else
       memset(ptr, 0, GAsizeofM(type)*elems);
+#endif
 
       /* release access to the data */
       pnga_release_update(g_a, _lo, _hi);

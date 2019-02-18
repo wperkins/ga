@@ -73,8 +73,23 @@ static int   _my_isend(void *buf, int count, MPI_Datatype datatype, int dest,
 static void  _my_free(void *ptr);
 static void* _my_malloc(size_t size);
 static void* _my_memcpy(void *dest, const void *src, size_t n);
-static int   _get_nbi(void *src, void *dst, int bytes, int proc);
-static int   _put_nbi(void *src, void *dst, int bytes, int proc);
+#ifdef USE_DEVICE_MEM
+static void _device_free(void *ptr);
+static void _host_dev_memcpy(void *dest, const void *src, size_t n);
+static void _dev_host_memcpy(void *dest, const void *src, size_t n);
+#endif
+static int   _get_nbi(void *src, void *dst, int bytes, int proc
+#ifdef USE_DEVICE_MEM
+                      , device_info_t dev_info);
+#else
+                    );
+#endif
+static int   _put_nbi(void *src, void *dst, int bytes, int proc
+#ifdef USE_DEVICE_MEM
+                      , device_info_t dev_info);
+#else
+                    );
+#endif
 static void  _put_handler(header_t *header, char *payload);
 static void  _get_request_handler(header_t *header, int proc);
 static void  _get_response_handler(header_t *header, char *payload);
@@ -175,6 +190,71 @@ static void _my_free(void *ptr)
 #   define _my_free(ARG) _my_free(ARG); printf(#ARG)
 #endif
 
+#ifdef USE_DEVICE_MEM
+static void _device_free(void *ptr)
+{
+  cudaFree(ptr);
+}
+
+//TODO: DeviceId
+static void _host_dev_memcpy(void *dest, const void *src, size_t n)
+{
+    cudaError_t c_flag;
+    if(MY_DEBUG)
+      printf("Host Device Memcopy called; dest_ptr:%p , src_ptr:%p \n", dest, src);
+    // if (src != NULL && dest != NULL) {
+        c_flag = cudaMemcpy(dest, src, n, cudaMemcpyHostToDevice);
+        if(c_flag != cudaSuccess) {
+            fprintf(stderr, "CudaMemcpy Failed!\n");
+            exit(EXIT_FAILURE);
+        }
+        // if (MY_DEBUG && (n==80) || (n==88)) {
+        // if (MY_DEBUG && (_my_node_id == 0)) {
+        // if (MY_DEBUG && _my_node_id == 1) {
+        if (MY_DEBUG) {
+            void *temp_ptr = (void*)malloc(n);
+            cudaMemcpy(temp_ptr, dest, n, cudaMemcpyDeviceToHost);
+            int i;
+            int c_temp;
+            c_temp = n/8;
+            if(c_temp == 0 || c_temp < 0)
+              c_temp = 8;
+            printf("** {%d} _host_dev_memcpy H-D-Memcpy -- devPointer:%p \n", _my_node_id, dest);
+            // for(i = 0; i < 8; i++)
+            for(i = 0; i < c_temp; i++)
+                printf("{%d}val[%d]:%lf, ", _my_node_id, i, ((double*)temp_ptr)[i]);
+            printf("** \n");
+            fflush(stdout);
+            free(temp_ptr);
+            if(_my_node_id%2 == 0)
+              printf("=======================================\n");
+            else
+              printf("+++++++++++++++++++++++++++++++++++++++\n");
+        }
+    // }
+    // else {
+    //     fprintf(stderr, "src or destination pointer needs to be allocated!\n");
+    //     exit(EXIT_FAILURE);
+    // }
+}
+
+static void _dev_host_memcpy(void *dest, const void *src, size_t n)
+{
+    cudaError_t c_flag;
+    if(MY_DEBUG)
+      printf("{%d} Device Host Memcopy called; dest_ptr:%p , src_ptr:%p \n", _my_node_id, dest, src);
+    if (src != NULL && dest != NULL) {
+        c_flag = cudaMemcpy(dest, src, n, cudaMemcpyDeviceToHost);
+        if(c_flag != cudaSuccess) {
+            fprintf(stderr, "CudaMemcpy Failed!\n");
+            exit(EXIT_FAILURE);
+        }
+    } else {
+        fprintf(stderr, "src or destination pointer needs to be allocated!\n");
+        exit(EXIT_FAILURE);
+    }
+}
+#endif
 static void _mq_push(int dest, char *message, int count)
 {
     message_t *mq = NULL;
@@ -434,7 +514,18 @@ static void _put_handler(header_t *header, char *payload)
 #endif
 
     assert(OP_PUT == header->operation);
+#ifdef USE_DEVICE_MEM
+           if((header->is_ga == 1)
+                && (header->device_count > 0)
+                && (_my_local_rank < header->device_count)) {
+             _host_dev_memcpy(header->remote_address, payload, header->length);
+           }
+           else {
+             _my_memcpy(header->remote_address, payload, header->length);
+           }
+#else
     _my_memcpy(header->remote_address, payload, header->length);
+#endif
 }
 
 static void _get_request_handler(header_t *request_header, int proc)
@@ -461,8 +552,25 @@ static void _get_request_handler(header_t *request_header, int proc)
 
     message = _my_malloc(sizeof(header_t) + request_header->length);
     _my_memcpy(message, request_header, sizeof(header_t));
+#ifdef USE_DEVICE_MEM
+    if((request_header->is_ga == 1)
+        && (request_header->device_count > 0)
+        && (_my_local_rank < request_header->device_count))
+    {
+        // _dev_host_memcpy(message, request_header, sizeof(header_t));
+        _dev_host_memcpy(message+sizeof(header_t), request_header->remote_address,
+            request_header->length);
+    }
+    else {
+        // _my_memcpy(message, request_header, sizeof(header_t));
+        _my_memcpy(message+sizeof(header_t), request_header->remote_address,
+            request_header->length);
+    }
+#else
+    // _my_memcpy(message, request_header, sizeof(header_t));
     _my_memcpy(message+sizeof(header_t), request_header->remote_address,
             request_header->length);
+#endif
 
     _mq_push(proc, message, sizeof(header_t) + request_header->length);
 }
@@ -479,7 +587,18 @@ static void _get_response_handler(header_t *header, char *payload)
 #endif
 
     assert(OP_GET_RESPONSE == header->operation);
+#ifdef USE_DEVICE_MEM
+    // if((header->is_ga == 1)
+    //     && (header->device_count > 0)
+    //    && (_my_local_rank < header->device_count)) {
+    //    _dev_host_memcpy(header->local_address, payload, header->length);
+    ///}
+    // else {
+        _my_memcpy(header->local_address, payload, header->length);
+    // }
+#else
     _my_memcpy(header->local_address, payload, header->length);
+#endif
     *((char*)(header->notify_address)) = 0;
 }
 
@@ -593,7 +712,19 @@ int comex_put(void *src, void *dst, int bytes, int proc, comex_group_t group)
     printf("[%d] comex_put(src=%p, dst=%p, bytes=%d, proc=%d, group=%d)\n",
             l_state.rank, src, dst, bytes, proc, group);
 #endif
-    _put_nbi(src, dst, bytes, proc);
+// TODO: Device info for local node for comex_put
+#ifdef USE_DEVICE_MEM
+    device_info_t dev_info;
+    dev_info.on_device = -1;
+    dev_info.is_ga = -1;
+    dev_info.count = -1;
+#endif
+    _put_nbi(src, dst, bytes, proc
+#ifdef USE_DEVICE_MEM
+            , dev_info);
+#else
+            );
+#endif
     comex_wait_proc(proc, group);
     return COMEX_SUCCESS;
 }
@@ -605,12 +736,30 @@ int comex_get(void *src, void *dst, int bytes, int proc, comex_group_t group)
     printf("[%d] comex_get(src=%p, dst=%p, bytes=%d, proc=%d)\n",
             l_state.rank, src, dst, bytes, proc);
 #endif
-    _get_nbi(src, dst, bytes, proc);
+// TODO: Correct this Temporary Fix.
+#ifdef USE_DEVICE_MEM
+    device_info_t dev_info;
+    dev_info.on_device = -1;
+    dev_info.is_ga = -1;
+    dev_info.count = -1;
+#endif
+
+    _get_nbi(src, dst, bytes, proc
+#ifdef USE_DEVICE_MEM
+            , dev_info);
+#else
+            );
+#endif
     comex_wait_proc(proc, group);
     return COMEX_SUCCESS;
 }
 
-static int _put_nbi(void *src, void *dst, int bytes, int proc)
+static int _put_nbi(void *src, void *dst, int bytes, int proc
+#ifdef USE_DEVICE_MEM
+                    , device_info_t dev_info)
+#else
+)
+#endif
 {
     header_t header;
     char *message;
@@ -622,8 +771,31 @@ static int _put_nbi(void *src, void *dst, int bytes, int proc)
 
     /* Corner case */
     if (proc == l_state.rank) {
+#ifdef USE_DEVICE_MEM
+        // TODO: Do Sanity Check
+        //     : Check if data is in memory (GA_handle)?
+        //    :Check Device Count/Availability
+        // if(_my_local_rank == 0)
+        if((dev_info.is_ga == 1)
+            && (dev_info.on_device == 1)
+            && (_my_local_rank < dev_info.count))
+        {
+            //TODO: (dst, src, bytes, devID)
+            _host_dev_memcpy(dst, src, bytes);
+        }
+        else
+        {
+            _my_memcpy(dst, src, bytes);
+        }
+#else
         _my_memcpy(dst, src, bytes);
+#endif
         return COMEX_SUCCESS;
+    }
+
+    if(MY_DEBUG) {
+      printf("PUT_NBI on REMOTE NODE/RANK!\n");
+      fflush(stdout);
     }
 
     header.operation = OP_PUT;
@@ -631,6 +803,11 @@ static int _put_nbi(void *src, void *dst, int bytes, int proc)
     header.local_address = src;
     header.length = bytes;
     header.notify_address = NULL;
+#ifdef USE_DEVICE_MEM
+    header.is_ga = dev_info.is_ga;
+    header.on_device = dev_info.on_device;
+    header.device_count = dev_info.count;
+#endif
 
     message = _my_malloc(sizeof(header_t) + bytes);
     _my_memcpy(message, &header, sizeof(header_t));
@@ -711,7 +888,13 @@ static int _acc_nbi(void *src, void *dst, int bytes, int proc,
     return COMEX_SUCCESS;
 }
 
-static int _get_nbi(void *src, void *dst, int bytes, int proc)
+static int _get_nbi(void *src, void *dst, int bytes, int proc
+#ifdef USE_DEVICE_MEM
+                   , device_info_t dev_info
+                   )
+#else
+                   )
+#endif
 {
     header_t *header = NULL;
 
@@ -722,7 +905,23 @@ static int _get_nbi(void *src, void *dst, int bytes, int proc)
 
     /* Corner case */
     if (proc == l_state.rank) {
+#ifdef USE_DEVICE_MEM
+        // if(_my_node_id == 0)
+        if((dev_info.is_ga == 1)
+            && (dev_info.on_device == 1)
+            && (_my_local_rank < dev_info.count))
+        {
+            // TODO: (dest, src, n, devId);
+	     // Device count
+            _dev_host_memcpy(dst, src, bytes);
+        }
+        else
+        {
+            _my_memcpy(dst, src, bytes);
+        }
+#else
         _my_memcpy(dst, src, bytes);
+#endif
         return COMEX_SUCCESS;
     }
 
@@ -733,6 +932,11 @@ static int _get_nbi(void *src, void *dst, int bytes, int proc)
     header->local_address = dst;
     header->length = bytes;
     header->notify_address = _my_malloc(sizeof(char));
+#ifdef USE_DEVICE_MEM
+    header->is_ga = dev_info.is_ga;
+    header->on_device = dev_info.on_device;
+    header->device_count = dev_info.count;
+#endif
 
     /* set the value to wait on for a get response */
     *((char*)(header->notify_address)) = 1;
@@ -749,7 +953,12 @@ int comex_puts(
         void *src_ptr, int *src_stride_ar,
         void *dst_ptr, int *dst_stride_ar,
         int *count, int stride_levels,
-        int proc, comex_group_t group)
+        int proc, comex_group_t group
+#ifdef USE_DEVICE_MEM
+        , device_info_t dev_info)
+#else
+)
+#endif
 {
     int i, j;
     long src_idx, dst_idx;  /* index offset of current block position to ptr */
@@ -810,8 +1019,18 @@ int comex_puts(
             }
         }
 
+        if(MY_DEBUG && _my_node_id == 0) {
+        // if(MY_DEBUG) {
+            printf("|| {%d} comex_puts src_ptr:%p, dest_ptr:%p\n", _my_node_id, src_ptr, dst_ptr);
+            fflush(stdout);
+        }
         _put_nbi((char *)src_ptr + src_idx,
-                (char *)dst_ptr + dst_idx, count[0], proc);
+                (char *)dst_ptr + dst_idx, count[0], proc
+#ifdef USE_DEVICE_MEM
+                , dev_info);
+#else
+);
+#endif
     }
 
     comex_wait_proc(proc, group);
@@ -823,7 +1042,13 @@ int comex_gets(
         void *src_ptr, int *src_stride_ar,
         void *dst_ptr, int *dst_stride_ar,
         int *count, int stride_levels,
-        int proc, comex_group_t group)
+        int proc, comex_group_t group
+#ifdef USE_DEVICE_MEM
+        , device_info_t dev_info
+        )
+#else
+        )
+#endif
 {
     int i, j;
     long src_idx, dst_idx;  /* index offset of current block position to ptr */
@@ -885,7 +1110,12 @@ int comex_gets(
         }
 
         _get_nbi((char *)src_ptr + src_idx,
-                (char *)dst_ptr + dst_idx, count[0], proc);
+                (char *)dst_ptr + dst_idx, count[0], proc
+#ifdef USE_DEVICE_MEM
+                , dev_info);
+#else
+                );
+#endif
     }
 
     comex_wait_proc(proc, group);
@@ -1313,6 +1543,49 @@ void *comex_malloc_local(size_t size)
     return ptr;
 }
 
+#ifdef USE_DEVICE_MEM
+// void *comex_device_malloc_local(size_t size, int deviceId)
+void *comex_device_malloc_local(size_t size)
+{
+    cudaError_t rc;
+    void *ptr = NULL;
+    rc = cudaMalloc((void**)&ptr, size);
+    if (rc != 0) {
+        fprintf(stderr, "Device allocation failure!\n");
+        exit(EXIT_FAILURE);
+    }
+    // if(MY_DEBUG && _my_node_id == 0) {
+        //printf(" %% comex_device_malloc_local ptr_[0]:%p, *(ptr_[0]):%p\n", ptr, *ptr);
+        printf(" \%% {%d} comex_device_malloc_local ptr_[0]:%p\n", _my_node_id, ptr);
+        if(ptr==NULL){
+            printf("allocated device pointer is null\n");
+        }
+    // }
+    return ptr;
+}
+
+void comex_device_host_memcpy(void* dest, void* src, size_t size)
+{
+    _dev_host_memcpy(dest, src, size);
+}
+
+void comex_host_device_memcpy(void* dest, void* src, size_t size)
+{
+    _host_dev_memcpy(dest, src, size);
+}
+
+int comex_free_device_local(void *ptr)
+{
+    /* preconditions */
+    assert(NULL != ptr);
+
+    /* free the device memory */
+    _device_free(ptr);
+
+    return COMEX_SUCCESS;
+}
+#endif
+
 int comex_free_local(void *ptr)
 {
     /* preconditions */
@@ -1485,11 +1758,24 @@ int comex_nbputs(
         void *dst_ptr, int *dst_stride_ar,
         int *count, int stride_levels,
         int proc, comex_group_t group,
-        comex_request_t *hdl)
+        comex_request_t *hdl
+        )
 {
     int rc;
+// TODO: Correct this Temporary Fix.
+#ifdef USE_DEVICE_MEM
+    device_info_t dev_info;
+    dev_info.on_device = -1;
+    dev_info.is_ga = -1;
+    dev_info.count = -1;
+#endif
     rc = comex_puts(src_ptr, src_stride_ar, dst_ptr,
-            dst_stride_ar, count, stride_levels, proc, group);
+            dst_stride_ar, count, stride_levels, proc, group
+#ifdef USE_DEVICE_MEM
+        , dev_info);
+#else
+);
+#endif
     return rc;
 
 }
@@ -1499,11 +1785,21 @@ int comex_nbgets(
         void *dst_ptr, int *dst_stride_ar,
         int *count, int stride_levels,
         int proc, comex_group_t group,
-        comex_request_t *hdl)
+        comex_request_t *hdl
+#ifdef USE_DEVICE_MEM
+        , device_info_t dev_info
+        )
+#else
+        )
+#endif
 {
     int rc;
     rc = comex_gets(src_ptr, src_stride_ar, dst_ptr,
+#ifdef USE_DEVICE_MEM
+            dst_stride_ar, count,stride_levels, proc, group, dev_info);
+#else
             dst_stride_ar, count,stride_levels, proc, group);
+#endif
     return rc;
 }
 
@@ -2055,7 +2351,12 @@ int comex_unlock(int mutex, int proc)
     return COMEX_SUCCESS;
 }
 
+#ifdef USE_DEVICE_MEM
+int comex_malloc(void **ptrs, size_t size, device_info_t dev_info, comex_group_t group)
+// int comex_malloc(void **ptrs, size_t size, int onDevice, comex_group_t group)
+#else
 int comex_malloc(void **ptrs, size_t size, comex_group_t group)
+#endif
 {
     comex_igroup_t *igroup = NULL;
     MPI_Comm comm = MPI_COMM_NULL;
@@ -2076,8 +2377,66 @@ int comex_malloc(void **ptrs, size_t size, comex_group_t group)
     assert(comm != MPI_COMM_NULL);
     MPI_Comm_rank(comm, &comm_rank);
 
+#ifdef USE_DEVICE_MEM
+    /* allocate and register segment */
+    if(dev_info.count > 0
+        && _my_local_rank < dev_info.count
+        && dev_info.on_device == 1) {
+      ptrs[comm_rank] = comex_device_malloc_local(sizeof(char)*size);
+      /* if(MY_DEBUG) {
+        if((size%400 == 0) || (size%408 == 0)) {
+            int i;
+            printf("TESTING GA_A allocation on two devices on two nodes\n");
+            double* temp_buf = (double*)malloc(sizeof(double)*50);
+            for(i = 0; i < 50; ++i) {
+                temp_buf[i] = 5;
+            }
+            cudaMemcpy(ptrs[comm_rank], temp_buf, sizeof(double)*50, cudaMemcpyHostToDevice);
+            // cudaMemset(ptrs[comm_rank], 5, sizeof(double)*50);
+
+            void *ptr_test = (void*)malloc(sizeof(double)*50);
+            cudaMemcpy(ptr_test, ptrs[comm_rank], sizeof(double) * 50, cudaMemcpyDeviceToHost);
+            fflush(stdout);
+            for( i = 0;i < 50; ++i) {
+                printf("Test Memset Val [%d]: %lf ",i, ((double*)ptr_test)[i]);
+            }
+            printf("\n");
+            fflush(stdout);
+            free(ptr_test);
+        }
+      }*/
+      if(MY_DEBUG && _my_node_id == 0) {
+        printf("++ comex_malloc ptr_c: %p, ptr_[0]: %p\n", ptrs, ptrs[comm_rank]);
+        // void *t_buf = (void*) malloc(GAsizeof(type)*elems);
+
+        // int i;
+        // void *t_buf = (void*) malloc(size);
+        // // void *t_buf = (void*) malloc(sizeof(double)*elems);
+        // for(i = 0; i< 32; i++)
+        //     ((double*)t_buf)[i] = 10.0;
+        // cudaMemcpy(ptrs[comm_rank], t_buf, sizeof(double)*32, cudaMemcpyHostToDevice);
+        // // void *ptr_test = (void*)malloc(GAsizeofM(type)*elems);
+        // void *ptr_test = (void*)malloc(size);
+        // cudaMemcpy(ptr_test, ptrs[comm_rank], sizeof(double)*32, cudaMemcpyDeviceToHost);
+        // // double* cpy_ptr = (double*)ptr_test;
+        // // int i = 0;
+        // fflush(stdout);
+        // for(i= 0;i < 32; ++i) {
+        //     printf("ptr_test: Test Memset(II) Val [%d]: %lf",i, ((double*)ptr_test)[i]);
+        // }
+        // printf("\n");
+        // free(t_buf);
+        // free(ptr_test);
+
+      }
+    }
+    else
+      ptrs[comm_rank] = comex_malloc_local(sizeof(char)*size);
+
+#else
     /* allocate and register segment */
     ptrs[comm_rank] = comex_malloc_local(sizeof(char)*size);
+#endif
 
     /* exchange buffer address */
     comex_barrier(group); /* end ARMCI epoch, enter MPI epoch */
@@ -2120,3 +2479,26 @@ int comex_free(void *ptr, comex_group_t group)
 
     return COMEX_SUCCESS;
 }
+
+#ifdef USE_DEVICE_MEM
+int comex_free_device(void *ptr, comex_group_t group)
+{
+    comex_igroup_t *igroup = NULL;
+    MPI_Comm comm = MPI_COMM_NULL;
+
+    /* preconditions */
+    assert(NULL != ptr);
+    assert(group >= 0);
+
+    igroup = comex_get_igroup_from_group(group);
+    comm = igroup->comm;
+
+    /* remove my ptr from reg cache and free ptr */
+    comex_free_device_local(ptr);
+
+    /* Synchronize: required by ARMCI semantics */
+    comex_barrier(group);
+
+    return COMEX_SUCCESS;
+}
+#endif

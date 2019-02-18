@@ -45,6 +45,9 @@ extern int ARMCI_PutS(          /* strided put */
 		int count[],          /* number of units at each stride level count[0]=bytes */
 		int stride_levels,    /* number of stride levels */
                 int proc	      /* remote process(or) ID */
+#ifdef USE_DEVICE_MEM
+        , device_info_t dev_info    /* information on device */
+#endif
                 );
 
 extern int ARMCI_PutS_flag_dir(       /* put with flag that uses direct put */
@@ -143,7 +146,14 @@ extern long ARMCI_GetValueLong(void *src, int proc);
 extern float ARMCI_GetValueFloat(void *src, int proc);
 extern double ARMCI_GetValueDouble(void *src, int proc);
 
+#ifdef USE_DEVICE_MEM
+extern int ARMCI_Malloc(void* ptr_arr[], armci_size_t bytes, device_info_t dev_info);
+extern void ARMCI_DevHostCopy(void* dest, void* src, size_t size);
+extern void ARMCI_HostDevCopy(void* dest, void* src, size_t size);
+extern int ARMCI_Free_Device(void *ptr);
+#else
 extern int ARMCI_Malloc(void* ptr_arr[], armci_size_t bytes);
+#endif
 extern int ARMCI_Free(void *ptr);
 extern void* ARMCI_Malloc_local(armci_size_t bytes);
 extern int ARMCI_Free_local(void *ptr);
@@ -310,7 +320,12 @@ extern int ARMCI_NbGetS(          /* strided get */
 		int stride_levels,    /* number of stride levels */
                 int proc,	      /* remote process(or) ID */
                 armci_hdl_t* nb_handler/*armci_non-blocking request handle*/
+#ifdef USE_DEVICE_MEM
+                , device_info_t dev_info    /*devie info for memory access/usage*/
                 );
+#else
+                );
+#endif
 
 extern int ARMCI_NbGetV( armci_giov_t darr[], /* descriptor array */
                 int len,  /* length of descriptor array */

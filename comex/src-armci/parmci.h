@@ -26,14 +26,27 @@ extern int    PARMCI_Init();
 extern int    PARMCI_Init_args(int *argc, char ***argv);
 extern int    PARMCI_Initialized();
 extern void   PARMCI_Lock(int mutex, int proc);
-extern void*  PARMCI_Malloc_local(armci_size_t bytes);
+#ifdef USE_DEVICE_MEM
+extern int    PARMCI_Malloc(void **ptr_arr, armci_size_t bytes, device_info_t dev_info);
+extern void   PARMCI_DevHostCopy(void* dest, void* host, size_t size);
+extern void   PARMCI_HostDevCopy(void* dest, void* host, size_t size);
+extern int    PARMCI_Free_Device(void *ptr);
+#else
 extern int    PARMCI_Malloc(void **ptr_arr, armci_size_t bytes);
+#endif
+extern void*  PARMCI_Malloc_local(armci_size_t bytes);
 extern void*  PARMCI_Memat(armci_meminfo_t * meminfo, long offset);
 extern void   PARMCI_Memctl(armci_meminfo_t *meminfo);
 extern void   PARMCI_Memget(size_t bytes, armci_meminfo_t * meminfo, int memflg);
 extern int    PARMCI_NbAccS(int optype, void *scale, void *src_ptr, int *src_stride_arr, void *dst_ptr, int *dst_stride_arr, int *count, int stride_levels, int proc, armci_hdl_t * nb_handle);
 extern int    PARMCI_NbAccV(int op, void *scale, armci_giov_t * darr, int len, int proc, armci_hdl_t * nb_handle);
-extern int    PARMCI_NbGetS(void *src_ptr, int *src_stride_arr, void *dst_ptr, int *dst_stride_arr, int *count, int stride_levels, int proc, armci_hdl_t * nb_handle);
+extern int    PARMCI_NbGetS(void *src_ptr, int *src_stride_arr, void *dst_ptr
+                    , int *dst_stride_arr, int *count, int stride_levels, int proc
+#ifdef USE_DEVICE_MEM
+                    , armci_hdl_t * nb_handle, device_info_t dev_info);
+#else
+                    , armci_hdl_t * nb_handle);
+#endif
 extern int    PARMCI_NbGetV(armci_giov_t * darr, int len, int proc, armci_hdl_t * nb_handle);
 extern int    PARMCI_NbGet(void *src, void *dst, int bytes, int proc, armci_hdl_t * nb_handle);
 extern int    PARMCI_NbPutS(void *src_ptr, int *src_stride_arr, void *dst_ptr, int *dst_stride_arr, int *count, int stride_levels, int proc, armci_hdl_t * nb_handle);
@@ -46,7 +59,12 @@ extern int    PARMCI_NbPut(void *src, void *dst, int bytes, int proc, armci_hdl_
 extern int    PARMCI_Put_flag(void *src, void *dst, int bytes, int *f, int v, int proc);
 extern int    PARMCI_PutS_flag_dir(void *src_ptr, int *src_stride_arr, void *dst_ptr, int *dst_stride_arr, int *count, int stride_levels, int *flag, int val, int proc);
 extern int    PARMCI_PutS_flag(void *src_ptr, int *src_stride_arr, void *dst_ptr, int *dst_stride_arr, int *count, int stride_levels, int *flag, int val, int proc);
-extern int    PARMCI_PutS(void *src_ptr, int *src_stride_arr, void *dst_ptr, int *dst_stride_arr, int *count, int stride_levels, int proc);
+extern int    PARMCI_PutS(void *src_ptr, int *src_stride_arr, void *dst_ptr, int *dst_stride_arr, int *count, int stride_levels, int proc
+#ifdef USE_DEVICE_MEM
+, device_info_t dev_info);
+#else
+);
+#endif
 extern int    PARMCI_PutValueDouble(double src, void *dst, int proc);
 extern int    PARMCI_PutValueFloat(float src, void *dst, int proc);
 extern int    PARMCI_PutValueInt(int src, void *dst, int proc);

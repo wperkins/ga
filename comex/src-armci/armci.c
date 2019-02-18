@@ -239,6 +239,13 @@ int PARMCI_Free(void *ptr)
     return comex_free(ptr, ARMCI_Default_Proc_Group);
 }
 
+#ifdef USE_DEVICE_MEM
+int PARMCI_Free_Device(void *ptr)
+{
+    return comex_free_device(ptr, ARMCI_Default_Proc_Group);
+}
+#endif
+
 int ARMCI_Free_group(void *ptr, ARMCI_Group *group)
 {
     return comex_free(ptr, *group);
@@ -257,6 +264,13 @@ int PARMCI_Get(void *src, void *dst, int bytes, int proc)
 int PARMCI_GetS(void *src_ptr, int *src_stride_arr, void *dst_ptr, int *dst_stride_arr, int *count, int stride_levels, int proc)
 {
   int iret;
+// TODO: Correct this Temporary Fix.
+#ifdef USE_DEVICE_MEM
+    device_info_t dev_info;
+    dev_info.on_device = -1;
+    dev_info.is_ga = -1;
+    dev_info.count = -1;
+#endif
   /* check if data is contiguous */
   if (armci_checkt_contiguous(src_stride_arr, dst_stride_arr, count, stride_levels)) {
     int i;
@@ -265,7 +279,11 @@ int PARMCI_GetS(void *src_ptr, int *src_stride_arr, void *dst_ptr, int *dst_stri
     iret = comex_get(src_ptr, dst_ptr, lcount, proc, COMEX_GROUP_WORLD);
   } else {
     iret = comex_gets(src_ptr, src_stride_arr, dst_ptr, dst_stride_arr,
+#ifdef USE_DEVICE_MEM
+        count, stride_levels, proc, COMEX_GROUP_WORLD, dev_info);
+#else
         count, stride_levels, proc, COMEX_GROUP_WORLD);
+#endif
   }
   return iret;
 }
@@ -348,14 +366,41 @@ void PARMCI_Lock(int mutex, int proc)
     comex_lock(mutex, proc);
 }
 
+#ifdef USE_DEVICE_MEM
+int PARMCI_Malloc(void **ptr_arr, armci_size_t bytes, device_info_t dev_info)
+{
+    return comex_malloc(ptr_arr, bytes, dev_info, ARMCI_Default_Proc_Group);
+}
+#else
 int PARMCI_Malloc(void **ptr_arr, armci_size_t bytes)
 {
     return comex_malloc(ptr_arr, bytes, ARMCI_Default_Proc_Group);
 }
+#endif
+
+#ifdef USE_DEVICE_MEM
+void PARMCI_DevHostCopy(void *dest, void *src, size_t size)
+{
+  comex_device_host_memcpy(dest, src, size);
+}
+
+void PARMCI_HostDevCopy(void *dest, void *src, size_t size)
+{
+  comex_host_device_memcpy(dest, src, size);
+}
+#endif
 
 int ARMCI_Malloc_group(void **ptr_arr, armci_size_t bytes, ARMCI_Group *group)
 {
+#ifdef USE_DEVICE_MEM
+    device_info_t dev_info;
+    dev_info.on_device = -1;
+    dev_info.is_ga = -1;
+    dev_info.count = -1;
+    return comex_malloc(ptr_arr, bytes, dev_info, *group);
+#else
     return comex_malloc(ptr_arr, bytes, *group);
+#endif
 }
 
 void* PARMCI_Malloc_local(armci_size_t bytes)
@@ -459,7 +504,13 @@ int PARMCI_NbGet(void *src, void *dst, int bytes, int proc, armci_hdl_t *nb_hand
     return comex_nbget(src, dst, bytes, proc, COMEX_GROUP_WORLD, nb_handle);
 }
 
-int PARMCI_NbGetS(void *src_ptr, int *src_stride_arr, void *dst_ptr, int *dst_stride_arr, int *count, int stride_levels, int proc, armci_hdl_t *nb_handle)
+int PARMCI_NbGetS(void *src_ptr, int *src_stride_arr, void *dst_ptr
+                    , int *dst_stride_arr, int *count, int stride_levels, int proc
+#ifdef USE_DEVICE_MEM
+                    , armci_hdl_t *nb_handle, device_info_t dev_info)
+#else
+                    , armci_hdl_t *nb_handle)
+#endif
 {
   int iret;
   /* check if data is contiguous */
@@ -471,7 +522,11 @@ int PARMCI_NbGetS(void *src_ptr, int *src_stride_arr, void *dst_ptr, int *dst_st
         COMEX_GROUP_WORLD, nb_handle);
   } else {
     iret = comex_nbgets(src_ptr, src_stride_arr, dst_ptr, dst_stride_arr,
+#ifdef USE_DEVICE_MEM
+        count, stride_levels, proc, COMEX_GROUP_WORLD, nb_handle, dev_info);
+#else
         count, stride_levels, proc, COMEX_GROUP_WORLD, nb_handle);
+#endif
   }
   return iret;
 }
@@ -543,7 +598,12 @@ int PARMCI_Put(void *src, void *dst, int bytes, int proc)
     return comex_put(src, dst, bytes, proc, COMEX_GROUP_WORLD);
 }
 
-int PARMCI_PutS(void *src_ptr, int *src_stride_arr, void *dst_ptr, int *dst_stride_arr, int *count, int stride_levels, int proc)
+int PARMCI_PutS(void *src_ptr, int *src_stride_arr, void *dst_ptr, int *dst_stride_arr, int *count, int stride_levels, int proc
+#ifdef USE_DEVICE_MEM
+, device_info_t dev_info)
+#else
+)
+#endif
 {
   int iret;
   /* check if data is contiguous */
@@ -554,7 +614,12 @@ int PARMCI_PutS(void *src_ptr, int *src_stride_arr, void *dst_ptr, int *dst_stri
     iret = comex_put(src_ptr, dst_ptr, lcount, proc, COMEX_GROUP_WORLD);
   } else {
     iret = comex_puts(src_ptr, src_stride_arr, dst_ptr, dst_stride_arr,
-        count, stride_levels, proc, COMEX_GROUP_WORLD);
+        count, stride_levels, proc, COMEX_GROUP_WORLD
+#ifdef USE_DEVICE_MEM
+        , dev_info);
+#else
+);
+#endif
   }
   return iret;
 }

@@ -36,6 +36,11 @@ typedef struct {
     void *local_address;
     int length; /**< length of message/payload not including header */
     void *notify_address;
+#ifdef USE_DEVICE_MEM
+    int is_ga;
+    int device_count;
+    int on_device;
+#endif
 } header_t;
 
 typedef struct message_link {

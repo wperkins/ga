@@ -3697,6 +3697,17 @@ fn_fail:
     return COMEX_FAILURE;
 }
 
+/* Not implemented */
+int comex_attach(void **ptr_arr, void *ptr, size_t size, comex_group_t group)
+{
+    comex_error("comex_attach not implemented\n",0);
+}
+
+int comex_detach(void *ptr, comex_group_t group)
+{
+    comex_error("comex_detach not implemented\n",0);
+}
+
 static inline int destroy_all_windows()
 {
     local_window_t* local = local_wnd;

@@ -2206,6 +2206,16 @@ int comex_free(void *ptr, comex_group_t group)
     return COMEX_SUCCESS;
 }
 
+/* Not implemented */
+int comex_attach(void **ptr_arr, void *ptr, size_t size, comex_group_t group)
+{
+    comex_error("comex_attach not implemented\n",0);
+}
+
+int comex_detach(void *ptr, comex_group_t group)
+{
+    comex_error("comex_detach not implemented\n",0);
+}
 
 STATIC void* _progress_server(void *arg)
 {

@@ -81,6 +81,7 @@ typedef struct {
        int old_handle;              /* original group handle                */
        int old_lo[MAXDIM];          /* original lo array                    */
        int old_chunk[MAXDIM];       /* original chunk array                 */
+       int attached;                /* data is from external source         */
 #ifdef ENABLE_CHECKPOINT
        int record_id;               /* record id for writing ga to disk     */
 #endif
@@ -118,7 +119,7 @@ extern proc_list_t *PGRP_LIST;
       sprintf(err_string, "%s: INVALID ARRAY HANDLE", string);         \
       pnga_error(err_string, (g_a));                                   \
     }                                                                  \
-    if( ! (GA[GA_OFFSET+(g_a)].actv) ){                                \
+    if( ! (GA[GA_OFFSET+(g_a)].actv_handle) ){                         \
       char err_string[ERR_STR_LEN];                                    \
       sprintf(err_string, "%s: ARRAY NOT ACTIVE", string);             \
       pnga_error(err_string, (g_a));                                   \

@@ -314,6 +314,11 @@ int ARMCI_Free_group(void *ptr, ARMCI_Group *group)
     return comex_free(ptr, *group);
 }
 
+int ARMCI_Detach_group(void *ptr, ARMCI_Group *group)
+{
+    return comex_detach(ptr, *group);
+}
+
 
 int PARMCI_Free_local(void *ptr)
 {
@@ -440,6 +445,12 @@ int PARMCI_Malloc(void **ptr_arr, armci_size_t bytes)
 int ARMCI_Malloc_group(void **ptr_arr, armci_size_t bytes, ARMCI_Group *group)
 {
     return comex_malloc(ptr_arr, bytes, *group);
+}
+
+int ARMCI_Attach_group(void **ptr_arr, void *ptr, armci_size_t bytes,
+    ARMCI_Group *group)
+{
+    return comex_attach(ptr_arr, ptr, bytes, *group);
 }
 
 

@@ -43,6 +43,12 @@ logical FATR nga_allocate_(Integer *g_a)
   return wnga_allocate(*g_a);
 }
 
+logical FATR nga_attach_(Integer *g_a, Integer *lo, Integer *hi, void *ptr)
+{
+  return wnga_attach(*g_a,lo,hi,ptr);
+}
+
+
 logical FATR ga_compare_distr_(Integer *g_a, Integer *g_b)
 {
   return wnga_compare_distr(*g_a, *g_b);

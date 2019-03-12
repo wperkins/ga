@@ -3346,6 +3346,133 @@ int comex_free(void *ptr, comex_group_t group)
 #endif
 }
 
+int comex_attach(void **ptrs, void *ptr, size_t size, comex_group_t group)
+{
+    comex_igroup_t *igroup = NULL;
+    reg_entry_t *reg_entries = NULL;
+    MPI_Comm comm = MPI_COMM_NULL;
+    int i, ierr;
+    int comm_rank = -1;
+    int comm_size = -1;
+    int tsize = size;
+    reg_entry_t src;
+
+    igroup = comex_get_igroup_from_group(group);
+
+    /* preconditions */
+    COMEX_ASSERT(ptrs);
+    COMEX_ASSERT(ptr);
+
+    comm = igroup->comm;
+    assert(comm != MPI_COMM_NULL);
+    MPI_Comm_rank(comm, &comm_rank);
+    MPI_Comm_size(comm, &comm_size);
+
+    /* is this needed? */
+
+    /* allocate ret_entry_t object for this process */
+    reg_entries = malloc(sizeof(reg_entry_t)*comm_size);
+    /*assert(reg_entries) */
+    reg_entries[comm_rank].rank = comm_rank;
+    reg_entries[comm_rank].len = size;
+    reg_entries[comm_rank].buf = ptr;
+
+    MPI_Win_create(reg_entries[comm_rank].buf,size,1,MPI_INFO_NULL,comm,
+        &reg_entries[comm_rank].win);
+#ifdef USE_MPI_REQUESTS
+    MPI_Win_lock_all(0,reg_entries[comm_rank].win);
+    /* Use MPI_MODE_NOCHECK instead of 0 */
+#endif
+
+
+    /* exchange buffer address */
+    /* @TODO: Consider using MPI_IN_PLACE? */
+    memcpy(&src, &reg_entries[comm_rank], sizeof(reg_entry_t));
+    MPI_Allgather(&src, sizeof(reg_entry_t), MPI_BYTE, reg_entries,
+            sizeof(reg_entry_t), MPI_BYTE, comm);
+
+    /* assign the ptr array to return to caller */
+    for (i=0; i<comm_size; ++i) {
+      ptrs[i] = reg_entries[i].buf;
+      int world_rank;
+      ierr = comex_group_translate_world(group,i,&world_rank);
+      assert(COMEX_SUCCESS == ierr);
+      if (i != comm_rank) {
+        reg_entries[i].win = reg_entries[comm_rank].win;
+      }
+      /* probably want to use commicator rank instead of world rank*/
+      reg_win_insert(world_rank,  reg_entries[i].buf, reg_entries[i].len,
+          reg_entries[i].win, igroup);
+    }
+    comex_igroup_add_win(group,reg_entries[comm_rank].win);
+
+    comex_wait_all(group);
+    /* MPI_Win_fence(0,reg_entries[comm_rank].win); */
+    MPI_Barrier(comm);
+
+    return COMEX_SUCCESS;
+}
+
+int comex_detach(void *ptr, comex_group_t group)
+{
+    comex_igroup_t *igroup = NULL;
+    MPI_Comm comm = MPI_COMM_NULL;
+    MPI_Win window;
+    int comm_rank, world_rank;
+    int comm_size;
+    void **allgather_ptrs = NULL;
+    int i, ierr;
+    reg_entry_t *reg_win;
+
+    /* preconditions */
+    assert(ptr != NULL);
+
+    igroup = comex_get_igroup_from_group(group);
+    comm = igroup->comm;
+    assert(comm != MPI_COMM_NULL);
+    MPI_Comm_rank(comm, &comm_rank);
+    MPI_Comm_size(comm, &comm_size);
+    
+    /* Find the window that this buffer belongs to */
+    comex_group_translate_world(group,comm_rank,&world_rank);
+    reg_win = reg_win_find(world_rank, ptr, 0);
+    window = reg_win->win;
+
+    /* allocate receive buffer for exchange of pointers */
+    allgather_ptrs = (void **)malloc(sizeof(void *) * comm_size);
+    assert(allgather_ptrs);
+
+    /* exchange of pointers */
+    MPI_Allgather(&ptr, sizeof(void *), MPI_BYTE,
+            allgather_ptrs, sizeof(void *), MPI_BYTE, comm);
+
+    /* Get rid of pointers for this window */
+    for (i=0; i < comm_size; i++) {
+      int world_rank;
+      ierr = comex_group_translate_world(group, i, &world_rank);
+      assert(COMEX_SUCCESS == ierr);
+      /* probably should use rank for communicator, not world rank*/
+      reg_win_delete(world_rank,allgather_ptrs[i]);
+    }
+
+    /* Remove window from group list */
+    comex_igroup_delete_win(group, window);
+
+    /* remove my ptr from reg cache and free ptr */
+    /* comex_free_local(ptr); */
+    free(allgather_ptrs);
+
+    /* free up window */
+#ifdef USE_MPI_REQUESTS
+    MPI_Win_unlock_all(window);
+#endif
+    MPI_Win_free(&window);
+
+    /* Is this needed? */
+    MPI_Barrier(comm);
+
+    return COMEX_SUCCESS;
+}
 
 static void acquire_remote_lock(int proc)
 {

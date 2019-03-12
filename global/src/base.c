@@ -367,6 +367,8 @@ int bytes;
        GA[i].record_id = 0;
 #endif
        GA[i].actv = 0;
+       GA[i].actv_handle = 0;
+       GA[i].attached = 0;
        GA[i].p_handle = GA_Init_Proc_Group;
        PGRP_LIST[i].map_proc_list = (int*)0;
        PGRP_LIST[i].inv_map_proc_list = (int*)0;
@@ -2451,6 +2453,193 @@ logical pnga_allocate(Integer g_a)
 }
 
 /**
+ *  Attach memory from another source and complete setup of global array
+ *  lo: lower indices of block of data located on this processor
+ *  hi: upper indices of block of data located on this processor
+ *  ptr: pointer to locally allocated data
+ */
+#if HAVE_SYS_WEAK_ALIAS_PRAGMA
+#   pragma weak wnga_attach = pnga_attach
+#endif
+
+logical pnga_attach(Integer g_a, Integer *lo, Integer *hi, void *ptr)
+{
+  Integer ga_handle = g_a + GA_OFFSET;
+  Integer p_handle;
+  Integer ndim;
+  Integer grp_me=GAme, grp_nproc=GAnproc;
+  Integer *map, *dims;
+  int *pgrid;
+  Integer lochk[MAXDIM], hichk[MAXDIM], chk;
+  Integer idxlo[MAXDIM], idxhi[MAXDIM];
+  Integer i, j, idx, ld, offset, ptot, grp;
+  int *grid;
+  int use_rstrctd, has_data;
+  int group;
+  Integer stride;
+  Integer nelem, mem_size;
+  /* TODO: reconstruct processor grid from just lo and hi indices on all
+   * processors instead of relying on using an irregular distribution call.
+   */
+  _ga_sync_begin = 1; _ga_sync_end=1; /*remove any previous sync masking*/
+  if (GA[ga_handle].ndim == -1)
+    pnga_error("Insufficient data to create global array",0);
+
+  p_handle = (Integer)GA[ga_handle].p_handle;
+  if (p_handle == 0) {
+    pnga_error("Cannot attach data for mirrored arrays",0);
+  }
+  if (p_handle == (Integer)GA_Init_Proc_Group) {
+    GA[ga_handle].p_handle = GA_Default_Proc_Group;
+    p_handle = GA_Default_Proc_Group;
+  }
+  pnga_pgroup_sync(p_handle);
+
+  if (p_handle > 0) {
+     grp_nproc  = PGRP_LIST[p_handle].map_nproc;
+     grp_me = PGRP_LIST[p_handle].map_proc_list[GAme];
+  }
+
+  if(!GAinitialized) pnga_error("GA not initialized ", 0);
+  if(!ma_address_init) gai_ma_address_init();
+
+  ndim = GA[ga_handle].ndim;
+  dims = GA[ga_handle].dims;
+  has_data = 1;
+  for (i=0; i<ndim; i++) {
+    if (hi[i]<lo[i]) has_data = 0;
+  }
+  pnga_pgroup_gop(p_handle,C_INT,&has_data,1,"*");
+  if (!has_data) {
+    pnga_error("Cannot attach data for processors with no data",0);
+  }
+
+
+  /* Assume that a map and processor grid has already been specified using
+   * the irregular distribution function. Check to find out if the input for the
+   * global array is consistent (GA is completely covered with data and no data
+   * duplications). Start by making sure that lo and hi indices are consistent
+   * with contents of map array.
+   */
+  map = GA[ga_handle].mapc;
+  pgrid = GA[ga_handle].nblock;
+  
+  for (i=0; i<ndim; i++) {
+    lochk[i] = 0;
+    hichk[i] = 0;
+  }
+  offset = 0;
+  for (i=0; i<ndim; i++) {
+    chk = 0;
+    for (j=0; j<pgrid[i]; j++) {
+      if (map[j+offset] == lo[i]) {
+        chk = 1;
+        idxlo[i] = j;
+        break;
+      }
+    }
+    lochk[i] = chk;
+    chk = 0;
+    for (j=0; j<pgrid[i]-1; j++) {
+      if (map[j+1+offset]-1 == hi[i]) {
+        chk = 1;
+        idxhi[i] = j;
+        break;
+      }
+    }
+    if (!chk) {
+      /* using unit-based indexing here */
+      if (dims[i] == hi[i]) {
+        chk = 1;
+        idxhi[i] = pgrid[i]-1;
+      }
+    }
+    hichk[i] = chk;
+    offset += pgrid[i];
+  }
+  chk = 1;
+  ptot = 1;
+  for (i=0; i<ndim; i++) {
+    if (!lochk[i]) chk = 0;
+    if (!hichk[i]) chk = 0;
+    if (idxhi[i] != idxlo[i]) chk = 0;
+    ptot *= pgrid[i];
+  }
+  if (ptot != grp_nproc) {
+    pnga_error("Cannot attach data unless all processors have data",0);
+  }
+    
+  pnga_pgroup_gop(p_handle,C_INT,&chk,1,"*");
+  if (!chk) {
+    pnga_error("Block indices incompatible with map array",0);
+  }
+  /* Now check to make sure that entire array is covered by data */
+  grid = (int*)malloc(ptot*sizeof(int));
+  for (i=0; i<ptot; i++) grid[i] = 0;
+  /* calculate location of this data in processor grid */
+  stride = 1;
+  idx = 0;
+  for (i=0; i<ndim; i++) {
+    idx += idxlo[i]*stride;
+    stride *= pgrid[i];
+  }
+  grid[idx] = 1;
+  pnga_pgroup_gop(p_handle,C_INT,grid,ptot,"+");
+  chk = 1;
+  for (i=0; i<ptot; i++) {
+    if (grid[i] != 1) chk=0;
+  }
+  if (!chk) {
+    pnga_error("Blocks do not cover array",0);
+  }
+  /* Figure out if array needs to use restricted distribution */
+  idx = 0;
+  ld = 1;
+  for (i=0; i<ndim; i++) {
+    idx += ld*idxlo[i];
+    ld *= pgrid[i];
+  }
+  chk = 1;
+  if (idx != grp_me) chk = 0;
+  pnga_pgroup_gop(p_handle,C_INT,&chk,1,"*");
+  use_rstrctd = 1;
+  if (chk == 1) {
+    use_rstrctd = 0;
+  }
+  /* Array looks good. Start filling in GA metadata. */
+  GA[ga_handle].actv = 1;
+  GA[ga_handle].distr_type = REGULAR;
+  for (i=0; i<ndim; i++) {
+    GA[ga_handle].lo[i] = lo[i];
+  }
+  /* Set up restricted array parameters, if necessary */
+  if (use_rstrctd) {
+    int *list = (int*)malloc(grp_nproc*sizeof(int));
+    Integer *ilist = (Integer*)malloc(grp_nproc*sizeof(Integer));
+    for (i=0; i<grp_nproc; i++) list[i] = 0;
+    list[grp_me] = idx;
+    pnga_pgroup_gop(p_handle,C_INT,list,grp_nproc,"+");
+    for (i=0; i<grp_nproc; i++) ilist[i] = (Integer)list[i];
+    pnga_set_restricted(g_a, ilist, ptot);
+  }
+  GA[ga_handle].id = INVALID_MA_HANDLE;
+  nelem = 1;
+  for (i=0; i<ndim; i++) nelem *= (hi[i]-lo[i]+1);
+  mem_size = nelem*GA[ga_handle].elemsize;
+  GA[ga_handle].size = (C_Long)mem_size;
+  /* Attach data */
+  if (p_handle < 0) {
+    group = 0;
+  } else {
+    group = PGRP_LIST[p_handle].group;
+  }
+  ARMCI_Attach_group((void**)GA[ga_handle].ptr, ptr, mem_size,
+      &group);
+  GA[ga_handle].attached = 1;
+  pnga_pgroup_sync(p_handle);
+}
+
+/**
  *  Create an N-dimensional Global Array with ghost cells using an
  *  irregular distribution on a user-specified process group.
  *  This is the master routine. All other creation routines are derived
@@ -3212,6 +3401,7 @@ int local_sync_begin,local_sync_end;
     if(GA[ga_handle].ptr[grp_me]==NULL){
        return TRUE;
     } 
+    if (!GA[ga_handle].attached) {
 #ifndef AVOID_MA_STORAGE
     if(gai_uses_shm((int)grp_id)){
 #endif
@@ -3229,10 +3419,20 @@ int local_sync_begin,local_sync_end;
       if(GA[ga_handle].id != INVALID_MA_HANDLE) MA_free_heap(GA[ga_handle].id);
     }
 #endif
+    } else {
+      int grp;
+      if (grp_id <= 0) {
+        grp = 0;
+      } else {
+        grp = PGRP_LIST[grp_id].group;
+      }
+      ARMCI_Detach_group(GA[ga_handle].ptr[grp_me], &grp);
+    }
 
     if(GA_memory_limited) GA_total_memory += GA[ga_handle].size;
     GAstat.curmem -= GA[ga_handle].size;
 
+    GA[ga_handle].attached = 0;     
     if(local_sync_end)pnga_pgroup_sync(grp_id);
     return(TRUE);
 }

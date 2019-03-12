@@ -530,6 +530,28 @@ extern int comex_malloc(
 extern int comex_free(void *ptr, comex_group_t group);
 
 /**
+ * Collective operation to register externally allocated memory and exchange
+ * addresses.
+ *
+ * @param[out] ptr_arr array of memory addresses w.r.t each process's address
+ *                     space
+ * @param[in] ptr pointer to externally allocated memory
+ * @param[in] bytes how many bytes to allocate locally
+ * @param[in] group the group to which the calling process belongs
+ * @return COMEX_SUCCESS on success
+ */
+extern int comex_attach(void **ptr_arr, void *ptr, size_t bytes, comex_group_t group);
+
+/**
+ * Collective operation to dettach memory associated with pointer
+ *
+ * @param[in] ptr pointer to externally allocated memory
+ * @param[in] group the group to which the calling process belongs
+ * @return COMEX_SUCCESS on success
+ */
+extern int comex_detach(void *ptr, comex_group_t group);
+
+/**
  * Local (noncollective) allocation of registered memory.
  *
  * Using memory allocated here may have performance benefits when used as a

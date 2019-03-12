@@ -1106,6 +1106,18 @@ int NGA_Allocate(int g_a)
   return (int)wnga_allocate(aa);
 }
 
+int NGA_Attach(int g_a, int *lo, int *hi, void *ptr)
+{
+
+  Integer aa, nndim;
+  aa = (Integer)g_a;
+  Integer ndim = wnga_ndim(aa);
+  Integer _ga_lo[MAXDIM], _ga_hi[MAXDIM];
+  COPYINDEX_C2F(lo,_ga_lo, ndim);
+  COPYINDEX_C2F(hi,_ga_hi, ndim);
+  return (int)wnga_attach(aa, _ga_lo, _ga_hi, ptr);
+}
+
 int GA_Pgroup_nodeid(int grp_id)
 {
     Integer agrp_id = (Integer)grp_id;

@@ -885,6 +885,15 @@ int ARMCI_Malloc_group(void *ptr_arr[], armci_size_t bytes,
     return(0);
 }
 
+/*\ Not implemented. Including a stub to prevent compiler difficulties
+\*/
+int ARMCI_Attach_group(void **ptr_arr, void *ptr, armci_size_t bytes,
+            ARMCI_Group *group)
+{
+    ARMCI_Error("ARMCI_Attach_group is not implemented",0);
+}
+
+
 
 /*\ shared memory is released to kr_malloc only on process 0
  *  with data server malloc cannot be used
@@ -931,6 +940,15 @@ int ARMCI_Free_group(void *ptr, ARMCI_Group *group)
     ARMCI_PR_DBG("exit",0);
     return 0;
 }
+
+/*\ This function is not implemented. This is a stub to prevent compiler
+ *  problems.
+\*/
+int ARMCI_Detach_group(void *ptr, ARMCI_Group *group)
+{
+    ARMCI_Error("ARMCI_Detach_group is not implemented",0);
+}
+
 /* ***************** End Group Collective Memory Allocation ******************/
 
 /* ************** Begin Non-Collective Memory Allocation ******************

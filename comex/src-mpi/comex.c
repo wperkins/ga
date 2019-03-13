@@ -2193,10 +2193,63 @@ int comex_free(void *ptr, comex_group_t group)
 /* Not implemented */
 int comex_attach(void **ptr_arr, void *ptr, size_t bytes, comex_group_t group)
 {
-    comex_error("comex_attach not implemented\n",0);
+    comex_igroup_t *igroup = NULL;
+    MPI_Comm comm = MPI_COMM_NULL;
+    int comm_rank = -1;
+    int rc = MPI_SUCCESS; 
+
+#if DEBUG
+    printf("[%d] comex_attach_group(ptrs=%p, size=%ld, ...)\n",
+            l_state.rank, ptr_arr, bytes);
+#endif
+
+    /* preconditions */
+    assert(ptr_arr);
+    assert(group >= 0);
+   
+    igroup = comex_get_igroup_from_group(group);
+    comm = igroup->comm;
+    assert(comm != MPI_COMM_NULL);
+    MPI_Comm_rank(comm, &comm_rank);
+
+    /* allocate and register segment */
+    ptr_arr[comm_rank] = ptr;
+  
+    /* exchange buffer address */
+    comex_barrier(group); /* end ARMCI epoch, enter MPI epoch */
+    rc = MPI_Allgather(MPI_IN_PLACE, 0, MPI_CHAR, ptr_arr, SIZEOF_VOIDP, MPI_CHAR, comm);
+    assert(MPI_SUCCESS == rc);
+#if DEBUG
+    {
+        int i;
+        int size;
+        MPI_Comm_size(comm, &size);
+        for (i=0; i<size; ++i) {
+            printf("[%d] ptrs[%d]=%p\n", l_state.rank, i, ptr_arr[i]);
+        }
+    }
+#endif
+
+    /* TODO: This isn't needed! Right? The Allgather above is like a barrier */
+    /*comex_barrier();*/
+
+    return COMEX_SUCCESS;
 }
 
 int comex_detach(void *ptr, comex_group_t group)
 {
-    comex_error("comex_detach not implemented\n",0);
+    comex_igroup_t *igroup = NULL;
+    MPI_Comm comm = MPI_COMM_NULL;
+
+    /* preconditions */
+    assert(NULL != ptr);
+    assert(group >= 0);
+
+    igroup = comex_get_igroup_from_group(group);
+    comm = igroup->comm;
+
+    /* Synchronize: required by ARMCI semantics */
+    comex_barrier(group);
+
+    return COMEX_SUCCESS;
 }

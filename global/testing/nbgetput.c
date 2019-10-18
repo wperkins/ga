@@ -16,7 +16,7 @@
 
 #include <unistd.h>
 
-#define N 8192            /* dimension of matrices */
+#define N 4096            /* dimension of matrices */
 #define WINDOWSIZE 2
 #define min(a,b) (((a)<(b))?(a):(b))
 
@@ -90,29 +90,37 @@ int main( int argc, char **argv ) {
     //TODO: set this value
     //int alpha=1;
 
+    double start_time, end_time;
+
+    int m;
+for (m = 1; m < N; m*=2) {
+
     double nbput_timings = 0;
     double nbget_timings = 0;
     double nbacc_timings = 0;
     double wait_timings = 0;
-    double start_time, end_time;
 
     ptr_c = buf_c;
-
-    for (int i=0; i<nproc; i+=WINDOWSIZE) {
-        ld = N;
-        for(int j=i; j <min(nproc, i+WINDOWSIZE); j++)
+    int i; 
+    for (i=0; i<nproc; i+=WINDOWSIZE) {
+        // ld = N;
+        ld = m;
+        int j;
+        for(j=i; j <min(nproc, i+WINDOWSIZE); j++)
         {
             if(j==me) continue;
 
             NGA_Distribution(g_a, j, lo, hi);
-            ptr_a = buf_a + lo[1] + N*lo[0];
+            // ptr_a = buf_a + lo[1] + N*lo[0];
+            ptr_a = buf_a + lo[1] + m*lo[0];
             start_time = TIMER();
             NGA_NbGet(g_a, lo, hi, ptr_a, &ld, &nbhdl_a[j]);
             end_time = TIMER();
             nbget_timings += end_time - start_time;
 
             NGA_Distribution(g_b, j, lo, hi);
-            ptr_b = buf_b + lo[1] + N*lo[0];
+            // ptr_b = buf_b + lo[1] + N*lo[0];
+            ptr_b = buf_b + lo[1] + m*lo[0];
             start_time = TIMER();
             NGA_NbGet(g_b, lo, hi, ptr_b, &ld, &nbhdl_b[j]);
             end_time = TIMER();
@@ -120,7 +128,7 @@ int main( int argc, char **argv ) {
 
         }
 
-        for(int j=i; j <min(nproc, i+WINDOWSIZE); j++)
+        for(j=i; j <min(nproc, i+WINDOWSIZE); j++)
         {
             if(j==me) continue;
 
@@ -154,35 +162,38 @@ int main( int argc, char **argv ) {
             ptr_c += isize*jsize;
         }
     }
-
     printf("\n\n");
-    printf("NbGet timings: %lf sec\n", nbget_timings);
-    printf("NbPut timings: %lf sec\n", nbput_timings);
-    printf("NbAcc timings: %lf sec\n", nbacc_timings);
-    printf("NbWait timings: %lf sec\n", wait_timings);
+    printf("NbGet timings: size[%ld] byte [%lf] sec\n", m, nbget_timings);
+    printf("NbPut timings: size[%ld] byte [%lf] sec\n", m, nbput_timings);
+    printf("NbAcc timings: size[%ld] byte [%lf] sec\n", m, nbacc_timings);
+    printf("NbWait timings:size[%ld] byte [%lf] sec\n", m, wait_timings);
     printf("\n\n");
+}
 
+for (m = 1; m < N; m *= 2) {
     double put_timings = 0;
     double get_timings = 0;
     double acc_timings = 0;
 
     ptr_c = buf_c;
+    int i; 
 
-    for (int i=0; i<nproc; i+=WINDOWSIZE) {
-        ld = N;
-        for(int j=i; j <min(nproc, i+WINDOWSIZE); j++)
+    for (i=0; i<nproc; i+=WINDOWSIZE) {
+        ld = m;
+        int j; 
+        for(j=i; j <min(nproc, i+WINDOWSIZE); j++)
         {
             if(j==me) continue;
 
             NGA_Distribution(g_a, j, lo, hi);
-            ptr_a = buf_a + lo[1] + N*lo[0];
+            ptr_a = buf_a + lo[1] + m*lo[0];
             start_time = TIMER();
             NGA_Get(g_a, lo, hi, ptr_a, &ld);
             end_time = TIMER();
             get_timings += end_time - start_time;
 
             NGA_Distribution(g_b, j, lo, hi);
-            ptr_b = buf_b + lo[1] + N*lo[0];
+            ptr_b = buf_b + lo[1] + m*lo[0];
             start_time = TIMER();
             NGA_Get(g_b, lo, hi, ptr_b, &ld);
             end_time = TIMER();
@@ -190,7 +201,7 @@ int main( int argc, char **argv ) {
 
         }
 
-        for(int j=i; j <min(nproc, i+WINDOWSIZE); j++)
+        for(j=i; j <min(nproc, i+WINDOWSIZE); j++)
         {
             if(j==me) continue;
             NGA_Distribution(g_c, j, lo, hi);
@@ -207,11 +218,11 @@ int main( int argc, char **argv ) {
         }
     }
     printf("\n\n");
-    printf("Get timings: %lf sec\n", get_timings);
-    printf("Put timings: %lf sec\n", put_timings);
-    printf("Acc timings: %lf sec\n", acc_timings);
+    printf("Get timings: size[%ld] byte [%lf] sec\n", m, get_timings);
+    printf("Put timings: size[%ld] byte [%lf] sec\n", m, put_timings);
+    printf("Acc timings: size[%ld] byte [%lf] sec\n", m, acc_timings);
     printf("\n\n");
-
+}
 
     free(buf_a);
     free(buf_b);

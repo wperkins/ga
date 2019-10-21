@@ -25,10 +25,13 @@ int main( int argc, char **argv ) {
   int g_a;
   int g_b;
   int g_c;
-  int lo[1], hi[1];
-  int dims[1];
+  //int lo[1], hi[1];
+  int64_t lo[1], hi[1];
+  //int dims[1];
+  int64_t dims[1];
   int me, nproc;
-  int  ld, isize, jsize;
+  int64_t ld;
+  int isize, jsize;
   int type=MT_C_INT;
   int nelems, ok;
   int *buf_a, *ptr_a;
@@ -61,15 +64,16 @@ int main( int argc, char **argv ) {
   if(me==0)printf("\nCreating matrix B of size %d x %d\n",N,N);
   if(me==0)printf("\nCreating matrix C of size %d x %d\n",N,N);
   dims[0] = N;
-  
+  //dims = N;  
+
   int n;
-  g_a = NGA_Create(type, 1, dims, "A", NULL);
+  g_a = NGA_Create64(type, 1, dims, "A", NULL);
   if(!g_a) GA_Error("create failed: A",n); 
 
-  g_b = NGA_Create(type, 1, dims, "B", NULL);
+  g_b = NGA_Create64(type, 1, dims, "B", NULL);
   if(!g_b) GA_Error("create failed: B",n); 
 
-  g_c = NGA_Create(type, 1, dims, "C", NULL);
+  g_c = NGA_Create64(type, 1, dims, "C", NULL);
   if(!g_c) GA_Error("create failed: C",n); 
 
   /* Fill matrix from process 0 using non-blocking puts */
@@ -110,19 +114,23 @@ for (m = 1; m < NN; m*=2) {
         {
             if(j==me) continue;
 
-            NGA_Distribution(g_a, j, lo, hi);
+            NGA_Distribution64(g_a, j, lo, hi);
             // ptr_a = buf_a + lo[1] + N*lo[0];
             ptr_a = buf_a + lo[0] + m;
+            // ptr_a = buf_a + lo + m;
             start_time = TIMER();
-            NGA_NbGet(g_a, lo, hi, ptr_a, &ld, &nbhdl_a[j]);
+            NGA_NbGet64(g_a, lo, hi, ptr_a, &ld, &nbhdl_a[j]);
+            //NGA_NbGet64(g_a, lo, hi, ptr_a, ld, &nbhdl_a[j]);
             end_time = TIMER();
             nbget_timings += end_time - start_time;
 
-            NGA_Distribution(g_b, j, lo, hi);
+            NGA_Distribution64(g_b, j, lo, hi);
             // ptr_b = buf_b + lo[1] + N*lo[0];
             ptr_b = buf_b + lo[0] + m;
+            // ptr_b = buf_b + lo + m;
             start_time = TIMER();
-            NGA_NbGet(g_b, lo, hi, ptr_b, &ld, &nbhdl_b[j]);
+            NGA_NbGet64(g_b, lo, hi, ptr_b, &ld, &nbhdl_b[j]);
+            //NGA_NbGet64(g_b, lo, hi, ptr_b, ld, &nbhdl_b[j]);
             end_time = TIMER();
             nbget_timings += end_time - start_time;
 
@@ -145,14 +153,16 @@ for (m = 1; m < NN; m*=2) {
             //time for some computation
             sleep(2);
 
-            NGA_Distribution(g_c, j, lo, hi);
+            NGA_Distribution64(g_c, j, lo, hi);
             isize = (hi[0]-lo[0]+1);
+            // isize = (hi-lo+1);
             // jsize = (hi[1]-lo[1]+1);
             // ld = jsize;
             ld = 0;
 
             start_time = TIMER();
-            NGA_NbPut(g_c, lo, hi, ptr_c, &ld, &nbhdl_c[j]);  
+            NGA_NbPut64(g_c, lo, hi, ptr_c, &ld, &nbhdl_c[j]);  
+            //NGA_NbPut64(g_c, lo, hi, ptr_c, ld, &nbhdl_c[j]);
             end_time = TIMER();
             nbput_timings += end_time - start_time;
 
@@ -187,19 +197,23 @@ for (m = 1; m < NN; m *= 2) {
         {
             if(j==me) continue;
 
-            NGA_Distribution(g_a, j, lo, hi);
+            NGA_Distribution64(g_a, j, lo, hi);
             // ptr_a = buf_a + lo[1] + m*lo[0];
             ptr_a = buf_a + lo[0] + m;
+            //ptr_a = buf_a + lo + m;
             start_time = TIMER();
-            NGA_Get(g_a, lo, hi, ptr_a, &ld);
+            NGA_Get64(g_a, lo, hi, ptr_a, &ld);
+            //NGA_Get64(g_a, lo, hi, ptr_a, ld);
             end_time = TIMER();
             get_timings += end_time - start_time;
 
-            NGA_Distribution(g_b, j, lo, hi);
+            NGA_Distribution64(g_b, j, lo, hi);
             // ptr_b = buf_b + lo[1] + m*lo[0];
             ptr_b = buf_b + lo[0] + m;
+            //ptr_b = buf_b + lo + m;
             start_time = TIMER();
-            NGA_Get(g_b, lo, hi, ptr_b, &ld);
+            NGA_Get64(g_b, lo, hi, ptr_b, &ld);
+            //NGA_Get64(g_b, lo, hi, ptr_b, ld);
             end_time = TIMER();
             get_timings += end_time - start_time;
 
@@ -208,14 +222,15 @@ for (m = 1; m < NN; m *= 2) {
         for(j=i; j <min(nproc, i+WINDOWSIZE); j++)
         {
             if(j==me) continue;
-            NGA_Distribution(g_c, j, lo, hi);
-            // isize = (hi[0]-lo[0]+1);
+            NGA_Distribution64(g_c, j, lo, hi);
             isize = (hi[0]-lo[0]+1);
+            //isize = (hi-lo+1);
             // jsize = (hi[1]-lo[1]+1);
             ld = 0;
 
             start_time = TIMER();
-            NGA_Put(g_c, lo, hi, ptr_c, &ld);  
+            NGA_Put64(g_c, lo, hi, ptr_c, &ld);  
+            //NGA_Put64(g_c, lo, hi, ptr_c, ld);
             end_time = TIMER();
             put_timings += end_time - start_time;
 
@@ -237,6 +252,8 @@ for (m = 1; m < NN; m *= 2) {
     free(nbhdl_c);
   }
   GA_Sync();
+
+  if(me==0)printf("\nStart Destroy\n");
 
   GA_Destroy(g_a);
   GA_Destroy(g_b);

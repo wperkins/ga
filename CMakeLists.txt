@@ -41,7 +41,7 @@ project (GlobalArrays)
 # -------------------------------------------------------------
 if (UNIX)
   execute_process(
-    COMMAND "version.sh"
+    COMMAND "./version.sh"
     WORKING_DIRECTORY "${GlobalArrays_SOURCE_DIR}"
     OUTPUT_VARIABLE GlobalArrays_VERSION
     )

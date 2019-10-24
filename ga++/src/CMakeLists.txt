@@ -68,7 +68,7 @@ add_library(ga++
   PGroup.cc
   services.cc
 )
-
+ga_shared_lib_settings(ga++)
 target_link_libraries(ga++ ga  ${MPI_C_LIBRARIES})
 
 install (TARGETS

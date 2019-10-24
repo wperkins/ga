@@ -124,7 +124,9 @@ endif()
 add_library(linalg OBJECT
   xgemm.c
   ${FORTRAN_FILES}
-)
+  )
+ga_shared_lib_settings(linalg)
+
 if (BUILD_SHARED_LIBS)
   set_target_properties(linalg PROPERTIES POSITION_INDEPENDENT_CODE True)
 endif()

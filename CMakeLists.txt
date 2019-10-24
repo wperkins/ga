@@ -35,8 +35,26 @@
 cmake_minimum_required (VERSION 2.8.8)
 project (GlobalArrays)
 
-#set (GlobalArrays_VERSION_MAJOR 5)
-#set (GlobalArrays_VERSION_MINOR 6)
+
+# -------------------------------------------------------------
+# Get the current GA version
+# -------------------------------------------------------------
+if (UNIX)
+  execute_process(
+    COMMAND "version.sh"
+    WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
+    OUTPUT_VARIABLE GlobalArrays_VERSION
+    )
+  message(STATUS "Global Arrays version = ${GlobalArrays_VERSION}")
+  string(REPLACE "." ";" tmp "${GlobalArrays_VERSION}")
+  list(GET tmp 0 GlobalArrays_VERSION_MAJOR)
+  list(GET tmp 1 GlobalArrays_VERSION_MINOR)
+  unset(tmp)
+else()  
+  set (GlobalArrays_VERSION_MAJOR 5)
+  set (GlobalArrays_VERSION_MINOR 7)
+endif()
+
 
 # This project uses C,C++ and Fortran
 #enable_language(CC)
@@ -473,6 +491,23 @@ if (ENABLE_CRAY_BUILD)
   endif()
 endif()
 
+# -------------------------------------------------------------
+# ga_shared_lib_settings
+# Set things in shared libraries
+# -------------------------------------------------------------
+macro(ga_shared_lib_settings lname)
+  if(BUILD_SHARED_LIBS)
+    set_target_properties(${lname}
+      PROPERTIES
+      POSITION_INDEPENDENT_CODE True
+      SOVERSION "${GlobalArrays_VERSION_MAJOR}.${GlobalArrays_VERSION_MINOR}")
+  endif()
+endmacro()
+
+
+# -------------------------------------------------------------
+# ga library
+# -------------------------------------------------------------
 add_library(ga
   $<TARGET_OBJECTS:ma>
   $<TARGET_OBJECTS:dra>
@@ -483,7 +518,9 @@ add_library(ga
   $<TARGET_OBJECTS:armci_comex>
   $<TARGET_OBJECTS:ga_src>
   $<TARGET_OBJECTS:linalg>
-)
+  )
+ga_shared_lib_settings(ga)
+
 
 # -------------------------------------------------------------
 # Subdirectories

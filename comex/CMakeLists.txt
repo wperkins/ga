@@ -440,17 +440,13 @@ add_library(armci_comex OBJECT
   ${ARMCI_FILES}
   ${COMEX_DEVICE}
   )
-
-if (BUILD_SHARED_LIBS)
-  set_target_properties(armci_comex PROPERTIES POSITION_INDEPENDENT_CODE True)
-endif()
-
+ga_shared_lib_settings(armci_comex)
 
 add_library(armci
   ${ARMCI_FILES}
   ${COMEX_DEVICE}
 )
-
+ga_shared_lib_settings(armci)
 target_link_libraries(armci ${MPI_C_LIBRARIES})
 
 install (TARGETS
@@ -461,7 +457,7 @@ install (TARGETS
 add_library(comex
  ${COMEX_DEVICE}
 )
-
+ga_shared_lib_settings(comex)
 target_link_libraries(comex ${MPI_C_LIBRARIES})
 
 install (TARGETS

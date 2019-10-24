@@ -42,7 +42,7 @@ project (GlobalArrays)
 if (UNIX)
   execute_process(
     COMMAND "version.sh"
-    WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
+    WORKING_DIRECTORY "${GlobalArrays_SOURCE_DIR}"
     OUTPUT_VARIABLE GlobalArrays_VERSION
     )
   message(STATUS "Global Arrays version = ${GlobalArrays_VERSION}")
@@ -62,9 +62,9 @@ endif()
 
 # where to look for special .cmake files
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake-modules")
-message(status " CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
+message(STATUS "CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
 include(GlobalArrays RESULT_VARIABLE result)
-message(status " RESULT_VARIABLE: ${result}")
+message(STATUS "RESULT_VARIABLE: ${result}")
 
 option (ENABLE_FORTRAN "Build Fortran interface" OFF)
 option (ENABLE_F77 "Build Fortran interface" OFF)

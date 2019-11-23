@@ -16,7 +16,8 @@
 
 #include <unistd.h>
 
-#define N 16777216            /* dimension of matrices */
+// #define N 16777216            /* dimension of matrices */
+#define N 536870912            /* dimension of matrices */
 #define WINDOWSIZE 2
 #define min(a,b) (((a)<(b))?(a):(b))
 
@@ -114,6 +115,9 @@ for (m = 1; m < NN; m*=2) {
         {
             if(j==me) continue;
 
+            //time for some computation
+            sleep(1);
+
             NGA_Distribution64(g_a, j, lo, hi);
             // ptr_a = buf_a + lo[1] + N*lo[0];
             ptr_a = buf_a + lo[0] + m;
@@ -123,6 +127,11 @@ for (m = 1; m < NN; m*=2) {
             //NGA_NbGet64(g_a, lo, hi, ptr_a, ld, &nbhdl_a[j]);
             end_time = TIMER();
             nbget_timings += end_time - start_time;
+
+            start_time = TIMER();
+            NGA_NbWait(&nbhdl_a[j]);
+            end_time = TIMER();
+            wait_timings += end_time - start_time;
 
             NGA_Distribution64(g_b, j, lo, hi);
             // ptr_b = buf_b + lo[1] + N*lo[0];
@@ -134,24 +143,18 @@ for (m = 1; m < NN; m*=2) {
             end_time = TIMER();
             nbget_timings += end_time - start_time;
 
+            start_time = TIMER();
+            NGA_NbWait(&nbhdl_b[j]);
+            end_time = TIMER();
+            wait_timings += end_time - start_time;
         }
 
         for(j=i; j <min(nproc, i+WINDOWSIZE); j++)
         {
             if(j==me) continue;
 
-            start_time = TIMER();
-            NGA_NbWait(&nbhdl_a[j]);
-            end_time = TIMER();
-            wait_timings += end_time - start_time;
-
-            start_time = TIMER();
-            NGA_NbWait(&nbhdl_b[j]);
-            end_time = TIMER();
-            wait_timings += end_time - start_time;
-
             //time for some computation
-            sleep(2);
+            sleep(1);
 
             NGA_Distribution64(g_c, j, lo, hi);
             isize = (hi[0]-lo[0]+1);

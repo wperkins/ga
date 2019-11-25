@@ -128,11 +128,6 @@ for (m = 1; m < NN; m*=2) {
             end_time = TIMER();
             nbget_timings += end_time - start_time;
 
-            start_time = TIMER();
-            NGA_NbWait(&nbhdl_a[j]);
-            end_time = TIMER();
-            wait_timings += end_time - start_time;
-
             NGA_Distribution64(g_b, j, lo, hi);
             // ptr_b = buf_b + lo[1] + N*lo[0];
             ptr_b = buf_b + lo[0] + m;
@@ -142,6 +137,11 @@ for (m = 1; m < NN; m*=2) {
             //NGA_NbGet64(g_b, lo, hi, ptr_b, ld, &nbhdl_b[j]);
             end_time = TIMER();
             nbget_timings += end_time - start_time;
+
+            start_time = TIMER();
+            NGA_NbWait(&nbhdl_a[j]);
+            end_time = TIMER();
+            wait_timings += end_time - start_time;
 
             start_time = TIMER();
             NGA_NbWait(&nbhdl_b[j]);

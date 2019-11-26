@@ -16,7 +16,8 @@
 
 #include <unistd.h>
 
-#define N 8192            /* dimension of matrices */
+// #define NN 8192            /* dimension of matrices */
+#define NN 32768            /* dimension of matrices */
 #define WINDOWSIZE 2
 #define min(a,b) (((a)<(b))?(a):(b))
 
@@ -56,6 +57,8 @@ int main( int argc, char **argv ) {
   if(! MA_init(MT_F_DBL, stack, heap)) 
     GA_Error("MA_init failed",stack+heap);  /* initialize memory allocator*/ 
 
+for (int N = 8; N < NN; N*=2) {
+
   /* Create a regular matrix. */
   if(me==0)printf("\nCreating matrix A of size %d x %d\n",N,N);
   if(me==0)printf("\nCreating matrix B of size %d x %d\n",N,N);
@@ -77,7 +80,7 @@ int main( int argc, char **argv ) {
   nelems = N*N;
   GA_Sync();
   /* Copy matrix to process 0 using non-blocking gets */
-  // if (me == 0) {
+  if (me == 0) {
 
     buf_a = (int*)malloc(nelems*sizeof(int));
     buf_b = (int*)malloc(nelems*sizeof(int));
@@ -118,6 +121,17 @@ int main( int argc, char **argv ) {
             end_time = TIMER();
             nbget_timings += end_time - start_time;
 
+
+            NGA_Distribution(g_c, j, lo, hi);
+            isize = (hi[0]-lo[0]+1);
+            jsize = (hi[1]-lo[1]+1);
+            ld = jsize;
+
+            start_time = TIMER();
+            NGA_NbPut(g_c, lo, hi, ptr_c, &ld, &nbhdl_c[j]);  
+            end_time = TIMER();
+            nbput_timings += end_time - start_time;
+            ptr_c += isize*jsize;
         }
 
         for(int j=i; j <min(nproc, i+WINDOWSIZE); j++)
@@ -133,25 +147,12 @@ int main( int argc, char **argv ) {
             NGA_NbWait(&nbhdl_b[j]);
             end_time = TIMER();
             wait_timings += end_time - start_time;
-
-            //time for some computation
-            sleep(2);
-
-            NGA_Distribution(g_c, j, lo, hi);
-            isize = (hi[0]-lo[0]+1);
-            jsize = (hi[1]-lo[1]+1);
-            ld = jsize;
-
-            start_time = TIMER();
-            NGA_NbPut(g_c, lo, hi, ptr_c, &ld, &nbhdl_c[j]);  
-            end_time = TIMER();
-            nbput_timings += end_time - start_time;
+            // if(j==me) continue;
 
             start_time = TIMER();
             NGA_NbWait(&nbhdl_c[j]);
             end_time = TIMER();
             wait_timings += end_time - start_time;
-            ptr_c += isize*jsize;
         }
     }
 
@@ -160,6 +161,10 @@ int main( int argc, char **argv ) {
     printf("NbPut timings: %lf sec\n", nbput_timings);
     printf("NbAcc timings: %lf sec\n", nbacc_timings);
     printf("NbWait timings: %lf sec\n", wait_timings);
+    printf("================================\n");
+    printf("NbTotal time: %lf sec\n", 
+       nbget_timings + nbput_timings + nbacc_timings + wait_timings);
+    printf("================================\n");
     printf("\n\n");
 
     double put_timings = 0;
@@ -188,11 +193,11 @@ int main( int argc, char **argv ) {
             end_time = TIMER();
             get_timings += end_time - start_time;
 
-        }
+        // }
 
-        for(int j=i; j <min(nproc, i+WINDOWSIZE); j++)
-        {
-            if(j==me) continue;
+        // for(int j=i; j <min(nproc, i+WINDOWSIZE); j++)
+        // {
+        //     if(j==me) continue;
             NGA_Distribution(g_c, j, lo, hi);
             isize = (hi[0]-lo[0]+1);
             jsize = (hi[1]-lo[1]+1);
@@ -210,6 +215,10 @@ int main( int argc, char **argv ) {
     printf("Get timings: %lf sec\n", get_timings);
     printf("Put timings: %lf sec\n", put_timings);
     printf("Acc timings: %lf sec\n", acc_timings);
+    printf("================================\n");
+    printf("Total time: %lf sec\n", 
+       get_timings + put_timings + acc_timings);
+    printf("================================\n");
     printf("\n\n");
 
 
@@ -219,12 +228,13 @@ int main( int argc, char **argv ) {
     free(nbhdl_a);
     free(nbhdl_b);
     free(nbhdl_c);
-  // }
+  }
   GA_Sync();
 
   GA_Destroy(g_a);
   GA_Destroy(g_b);
   GA_Destroy(g_c);
+}
   if(me==0)printf("\nSuccess\n");
   GA_Terminate();
 

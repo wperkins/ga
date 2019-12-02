@@ -56,8 +56,8 @@ int main( int argc, char **argv ) {
   stack /= nproc;
   if(! MA_init(MT_F_DBL, stack, heap)) 
     GA_Error("MA_init failed",stack+heap);  /* initialize memory allocator*/ 
-
-for (int N = 8; N < NN; N*=2) {
+  int N;
+for (N = 8; N < NN; N*=2) {
 
   /* Create a regular matrix. */
   if(me==0)printf("\nCreating matrix A of size %d x %d\n",N,N);
@@ -100,10 +100,11 @@ for (int N = 8; N < NN; N*=2) {
     double start_time, end_time;
 
     ptr_c = buf_c;
-
-    for (int i=0; i<nproc; i+=WINDOWSIZE) {
+    int i;
+    for (i=0; i<nproc; i+=WINDOWSIZE) {
         ld = N;
-        for(int j=i; j <min(nproc, i+WINDOWSIZE); j++)
+        int j;
+        for(j=i; j <min(nproc, i+WINDOWSIZE); j++)
         {
             if(j==me) continue;
 
@@ -134,7 +135,7 @@ for (int N = 8; N < NN; N*=2) {
             ptr_c += isize*jsize;
         }
 
-        for(int j=i; j <min(nproc, i+WINDOWSIZE); j++)
+        for(j=i; j <min(nproc, i+WINDOWSIZE); j++)
         {
             if(j==me) continue;
 
@@ -173,9 +174,10 @@ for (int N = 8; N < NN; N*=2) {
 
     ptr_c = buf_c;
 
-    for (int i=0; i<nproc; i+=WINDOWSIZE) {
+    for (i=0; i<nproc; i+=WINDOWSIZE) {
         ld = N;
-        for(int j=i; j <min(nproc, i+WINDOWSIZE); j++)
+        int j;
+        for(j=i; j <min(nproc, i+WINDOWSIZE); j++)
         {
             if(j==me) continue;
 

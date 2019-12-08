@@ -2476,6 +2476,7 @@ logical pnga_allocate(Integer g_a)
     double t1_e = (double)wnga_wtime(); 
     if (GAme==0) fprintf(stdout,"t1-time=%lf\n",(double)(t1_e-t1_s));
 
+    t1_s = (double)wnga_wtime(); 
     /* ddb(ndim, dims, GAnproc, blk, pe);*/
     if(p_handle == 0) /* for mirrored arrays */
 #if OLD_DISTRIBUTION
@@ -2499,6 +2500,9 @@ logical pnga_allocate(Integer g_a)
          ddb(ndim, dims, GA[ga_handle].num_rstrctd, blk, pe);
 #endif
        }
+
+       t1_e = (double)wnga_wtime(); 
+       if (GAme==0) fprintf(stdout,"dist-time=%lf\n",(double)(t1_e-t1_s));
 
     for(d=0, map=mapALL; d< ndim; d++){
       Integer nblock;

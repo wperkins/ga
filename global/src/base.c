@@ -2699,12 +2699,15 @@ logical pnga_allocate(Integer g_a)
      }
   }else status = 1;
 
+  double t2_s = (double)wnga_wtime(); 
   if (status) {
     status = !gai_getmem(GA[ga_handle].name, GA[ga_handle].ptr,mem_size,
                              GA[ga_handle].type, &GA[ga_handle].id, p_handle);
   } else {
      GA[ga_handle].ptr[grp_me]=NULL;
   }
+  double t2_e = (double)wnga_wtime(); 
+  if (GAme==0) fprintf(stdout,"gai_getmem=%lf\n",(double)(t2_e-t2_s));  
 
   if (GA[ga_handle].distr_type == REGULAR) {
     /* Finish setting up information for ghost cell updates */
@@ -2716,9 +2719,9 @@ logical pnga_allocate(Integer g_a)
     /* ngai_get_first_last_indices(&g_a); */
   }
 
-  double t2_s = (double)wnga_wtime(); 
+  t2_s = (double)wnga_wtime(); 
   pnga_pgroup_sync(p_handle);
-  double t2_e = (double)wnga_wtime(); 
+  t2_e = (double)wnga_wtime(); 
   if (GAme==0) fprintf(stdout,"t2-time=%lf\n",(double)(t2_e-t2_s));  
 
   if (status) {

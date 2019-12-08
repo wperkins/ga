@@ -2640,6 +2640,8 @@ logical pnga_allocate(Integer g_a)
     GA[ga_handle].p_handle = pnga_pgroup_get_world();
   }
 
+   t0_s = (double)wnga_wtime();
+
   /* Set remaining parameters and determine memory size if regular data
    * distribution is being used */
   if (GA[ga_handle].distr_type == REGULAR) {
@@ -2677,6 +2679,10 @@ logical pnga_allocate(Integer g_a)
   } else {
     mem_size = block_size * GA[ga_handle].elemsize;
   }
+
+  t0_e = (double)wnga_wtime(); 
+  if (GAme==0) fprintf(stdout,"remain params=%lf\n",(double)(t0_e-t0_s));
+
   GA[ga_handle].id = INVALID_MA_HANDLE;
   GA[ga_handle].size = (C_Long)mem_size;
   /* if requested, enforce limits on memory consumption */

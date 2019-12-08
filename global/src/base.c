@@ -2699,6 +2699,8 @@ logical pnga_allocate(Integer g_a)
      }
   }else status = 1;
 
+  //TODO:remove this sync
+  pnga_pgroup_sync(p_handle);
   double t2_s = (double)wnga_wtime(); 
   if (status) {
     status = !gai_getmem(GA[ga_handle].name, GA[ga_handle].ptr,mem_size,

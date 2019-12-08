@@ -2436,7 +2436,11 @@ logical pnga_allocate(Integer g_a)
     GA[ga_handle].p_handle = GA_Default_Proc_Group;
     p_handle = GA_Default_Proc_Group;
   }
+
+  double t0_s = (double)wnga_wtime();
   pnga_pgroup_sync(p_handle);
+  double t0_e = (double)wnga_wtime(); 
+  if (GAme==0) fprintf(stdout,"t0-time=%lf\n",(double)(t0_e-t0_s));
 
   if (p_handle > 0) {
      grp_nproc  = PGRP_LIST[p_handle].map_nproc;
@@ -2466,7 +2470,11 @@ logical pnga_allocate(Integer g_a)
  
     if (GAme==0 && DEBUG )
       for (d=0;d<ndim;d++) fprintf(stderr,"b[%ld]=%ld\n",(long)d,(long)blk[d]);
+    
+    double t1_s = (double)wnga_wtime(); 
     pnga_pgroup_sync(p_handle);
+    double t1_e = (double)wnga_wtime(); 
+    if (GAme==0) fprintf(stdout,"t1-time=%lf\n",(double)(t1_e-t1_s));
 
     /* ddb(ndim, dims, GAnproc, blk, pe);*/
     if(p_handle == 0) /* for mirrored arrays */
@@ -2698,14 +2706,22 @@ logical pnga_allocate(Integer g_a)
     /* ngai_get_first_last_indices(&g_a); */
   }
 
+  double t2_s = (double)wnga_wtime(); 
   pnga_pgroup_sync(p_handle);
+  double t2_e = (double)wnga_wtime(); 
+  if (GAme==0) fprintf(stdout,"t2-time=%lf\n",(double)(t2_e-t2_s));  
+
   if (status) {
     GAstat.curmem += (long)GA[ga_handle].size;
     GAstat.maxmem  = (long)GA_MAX(GAstat.maxmem, GAstat.curmem);
     status = TRUE;
   } else {
     if(GA_memory_limited) GA_total_memory += mem_size;
+    double t3_s = (double)wnga_wtime(); 
     pnga_destroy(g_a);
+    double t3_e = (double)wnga_wtime(); 
+    if (GAme==0) fprintf(stdout,"t3-destroy-time=%lf\n",(double)(t3_e-t3_s));  
+
     status = FALSE;
   }
   return status;

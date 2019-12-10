@@ -648,13 +648,13 @@ int comex_finalize()
       ierr = MPI_Allreduce(&src,&t_notify,1,MPI_DOUBLE,MPI_SUM,comm);
       rsize = (double)size;
       if (rank == 0) {
-        printf("Total time in comex_malloc: %12.6f\n",t_malloc);
-        printf("  Time configuring malloc:  %12.6f\n",t_config);
-        printf("  Time allocating memory:   %12.6f\n",t_memset);
-        printf("  Time in barrier:          %12.6f\n",t_bar1);
-        printf("  Time in MPI_Allgather:    %12.6f\n",t_allgather1);
-        printf("  Time in setting register: %12.6f\n",t_setreg);
-        printf("  Time notifying master:    %12.6f\n",t_notify);
+        printf("Total time in comex_malloc: %12.6f\n",t_malloc/rsize);
+        printf("  Time configuring malloc:  %12.6f\n",t_config/rsize);
+        printf("  Time allocating memory:   %12.6f\n",t_memset/rsize);
+        printf("  Time in barrier:          %12.6f\n",t_bar1/rsize);
+        printf("  Time in MPI_Allgather:    %12.6f\n",t_allgather1/rsize);
+        printf("  Time in setting register: %12.6f\n",t_setreg/rsize);
+        printf("  Time notifying master:    %12.6f\n",t_notify/rsize);
       }
     }
 

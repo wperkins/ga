@@ -2016,6 +2016,7 @@ int comex_malloc(void *ptrs[], size_t size, comex_group_t group)
             g_state.rank);
 #endif
 
+    MPI_Barrier(igroup->comm);
     /* exchange buffer address via reg entries */
     reg_entries[igroup->rank] = my_reg;
     status = MPI_Allgather(MPI_IN_PLACE, 0, MPI_DATATYPE_NULL,
@@ -3954,6 +3955,7 @@ STATIC int* _get_world_ranks(comex_igroup_t *igroup)
         world_ranks[i] = MPI_PROC_NULL;
     }
 
+    MPI_Barrier(igroup->comm);
     status = MPI_Group_translate_ranks(
             igroup->group, igroup->size, group_ranks,
             g_state.group, world_ranks);

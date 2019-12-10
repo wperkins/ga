@@ -173,6 +173,14 @@ static int COMEX_ENABLE_PUT_IOV = ENABLE_PUT_IOV;
 static int COMEX_ENABLE_GET_IOV = ENABLE_GET_IOV;
 static int COMEX_ENABLE_ACC_IOV = ENABLE_ACC_IOV;
 
+static double t_malloc;
+static double t_config;
+static double t_memset;
+static double t_bar1;
+static double t_allgather1;
+static double t_setreg;
+static double t_notify;
+
 #if PAUSE_ON_ERROR
 static int AR_caught_sig=0;
 static int AR_caught_sigsegv=0;
@@ -615,14 +623,53 @@ int comex_finalize()
     
     comex_barrier(COMEX_GROUP_WORLD);
 
+    {
+      int status = 0;
+      int ierr;
+      double src, rsize;
+      int size, rank;
+      MPI_Comm comm = MPI_COMM_NULL;
+      status = comex_group_comm(COMEX_GROUP_WORLD, &comm);
+      ierr = MPI_Comm_rank(comm,&rank);
+      ierr = MPI_Comm_size(comm,&size);
+      src = t_malloc;
+      ierr = MPI_Allreduce(&src,&t_malloc,1,MPI_DOUBLE,MPI_SUM,comm);
+      src = t_config;
+      ierr = MPI_Allreduce(&src,&t_config,1,MPI_DOUBLE,MPI_SUM,comm);
+      src = t_memset;
+      ierr = MPI_Allreduce(&src,&t_memset,1,MPI_DOUBLE,MPI_SUM,comm);
+      src = t_bar1;
+      ierr = MPI_Allreduce(&src,&t_bar1,1,MPI_DOUBLE,MPI_SUM,comm);
+      src = t_allgather1;
+      ierr = MPI_Allreduce(&src,&t_allgather1,1,MPI_DOUBLE,MPI_SUM,comm);
+      src = t_setreg;
+      ierr = MPI_Allreduce(&src,&t_setreg,1,MPI_DOUBLE,MPI_SUM,comm);
+      src = t_notify;
+      ierr = MPI_Allreduce(&src,&t_notify,1,MPI_DOUBLE,MPI_SUM,comm);
+      rsize = (double)size;
+      if (rank == 0) {
+        printf("Total time in comex_malloc: %12.6f\n",t_malloc);
+        printf("  Time configuring malloc:  %12.6f\n",t_config);
+        printf("  Time allocating memory:   %12.6f\n",t_memset);
+        printf("  Time in barrier:          %12.6f\n",t_bar1);
+        printf("  Time in MPI_Allgather:    %12.6f\n",t_allgather1);
+        printf("  Time in setting register: %12.6f\n",t_setreg);
+        printf("  Time notifying master:    %12.6f\n",t_notify);
+      }
+    }
+
     /* send quit message to thread */
     int smallest_rank_with_same_hostid, largest_rank_with_same_hostid; 
     int num_progress_ranks_per_node, is_node_ranks_packed;
     int my_rank_to_free;
     int is_notifier = 0; 
 
+    /*
     num_progress_ranks_per_node = get_num_progress_ranks_per_node();
     is_node_ranks_packed = get_progress_rank_distribution_on_node();
+    */
+    num_progress_ranks_per_node = 1;
+    is_node_ranks_packed = 1;
     smallest_rank_with_same_hostid = _smallest_world_rank_with_same_hostid(group_list);
     largest_rank_with_same_hostid = _largest_world_rank_with_same_hostid(group_list);
     my_rank_to_free = get_my_rank_to_free(g_state.rank,
@@ -1938,7 +1985,10 @@ int comex_malloc(void *ptrs[], size_t size, comex_group_t group)
     int reg_entries_local_count = 0;
     reg_entry_t *reg_entries_local = NULL;
     int status = 0;
+    double tbeg1, tbeg2;
 
+    tbeg1 = MPI_Wtime();
+    tbeg2 = MPI_Wtime();
     /* preconditions */
     COMEX_ASSERT(ptrs);
    
@@ -1967,6 +2017,8 @@ int comex_malloc(void *ptrs[], size_t size, comex_group_t group)
     is_notifier = g_state.rank == get_my_master_rank_with_same_hostid(g_state.rank,
         g_state.node_size, smallest_rank_with_same_hostid, largest_rank_with_same_hostid,
         num_progress_ranks_per_node, is_node_ranks_packed);
+    t_config += MPI_Wtime() - tbeg2;
+    tbeg2 = MPI_Wtime();
 #if 0
 #if MASTER_IS_SMALLEST_SMP_RANK
     // is_notifier = _smallest_world_rank_with_same_hostid(igroup) == g_state.rank;
@@ -2016,11 +2068,17 @@ int comex_malloc(void *ptrs[], size_t size, comex_group_t group)
             g_state.rank);
 #endif
 
+    t_memset += MPI_Wtime() - tbeg2;
+    tbeg2 = MPI_Wtime();
     MPI_Barrier(igroup->comm);
+    t_bar1 += MPI_Wtime() - tbeg2;
+    tbeg2 = MPI_Wtime();
     /* exchange buffer address via reg entries */
     reg_entries[igroup->rank] = my_reg;
     status = MPI_Allgather(MPI_IN_PLACE, 0, MPI_DATATYPE_NULL,
             reg_entries, sizeof(reg_entry_t), MPI_BYTE, igroup->comm);
+    t_allgather1 += MPI_Wtime() - tbeg2;
+    tbeg2 = MPI_Wtime();
 #if DEBUG
     fprintf(stderr, "[%d] comex_malloc allgather status [%d]\n",
             g_state.rank, status);
@@ -2113,6 +2171,8 @@ int comex_malloc(void *ptrs[], size_t size, comex_group_t group)
     for (i=0; i<igroup->size; ++i) {
         ptrs[i] = reg_entries[i].buf;
     }
+    t_setreg += MPI_Wtime() - tbeg2;
+    tbeg2 = MPI_Wtime();
 
     /* send reg entries to my master */
     /* first non-master rank in an SMP node sends the message to master */
@@ -2149,6 +2209,8 @@ int comex_malloc(void *ptrs[], size_t size, comex_group_t group)
 
     comex_barrier(group);
 
+    t_notify += MPI_Wtime() - tbeg2;
+    t_malloc += MPI_Wtime() - tbeg1;
     return COMEX_SUCCESS;
 }
 

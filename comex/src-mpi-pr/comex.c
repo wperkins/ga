@@ -2010,8 +2010,8 @@ int comex_malloc(void *ptrs[], size_t size, comex_group_t group)
 
     int smallest_rank_with_same_hostid, largest_rank_with_same_hostid; 
     int num_progress_ranks_per_node, is_node_ranks_packed;
-    num_progress_ranks_per_node = get_num_progress_ranks_per_node();
-    is_node_ranks_packed = get_progress_rank_distribution_on_node();
+    num_progress_ranks_per_node = 1;
+    is_node_ranks_packed = 1;
     smallest_rank_with_same_hostid = _smallest_world_rank_with_same_hostid(igroup);
     largest_rank_with_same_hostid = _largest_world_rank_with_same_hostid(igroup);
     is_notifier = g_state.rank == get_my_master_rank_with_same_hostid(g_state.rank,

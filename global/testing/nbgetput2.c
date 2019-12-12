@@ -21,6 +21,7 @@
 #define WINDOWSIZE 2
 #define min(a,b) (((a)<(b))?(a):(b))
 
+#define GET_PUT
 #define TIMER GA_Wtime
 int main( int argc, char **argv ) {
   int g_a;
@@ -98,6 +99,7 @@ for (N = 8; N < NN; N*=2) {
     double nbacc_timings = 0;
     double wait_timings = 0;
     double start_time, end_time;
+    long scale = 1;
 
     ptr_c = buf_c;
     int i;
@@ -129,10 +131,17 @@ for (N = 8; N < NN; N*=2) {
             ld = jsize;
 
             start_time = TIMER();
+#ifdef GET_PUT
             NGA_NbPut(g_c, lo, hi, ptr_c, &ld, &nbhdl_c[j]);  
             end_time = TIMER();
             nbput_timings += end_time - start_time;
             ptr_c += isize*jsize;
+#else
+            NGA_NbAcc(g_c, lo, hi, ptr_c, &ld, &scale, &nbhdl_c[j]);  
+            end_time = TIMER();
+            nbacc_timings += end_time - start_time;
+            ptr_c += isize*jsize;
+#endif
         }
 
         for(j=i; j <min(nproc, i+WINDOWSIZE); j++)
@@ -206,10 +215,15 @@ for (N = 8; N < NN; N*=2) {
             ld = jsize;
 
             start_time = TIMER();
+#ifdef GET_PUT
             NGA_Put(g_c, lo, hi, ptr_c, &ld);  
             end_time = TIMER();
             put_timings += end_time - start_time;
-
+#else
+            NGA_Put(g_c, lo, hi, ptr_c, &ld);  
+            end_time = TIMER();
+            acc_timings += end_time - start_time;
+#endif
             ptr_c += isize*jsize;
         }
     }

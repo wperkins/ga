@@ -21,21 +21,25 @@
 #define WINDOWSIZE 2
 #define min(a,b) (((a)<(b))?(a):(b))
 
+/// Comment following line to run get and accumulate tests
 #define GET_PUT
 #define TIMER GA_Wtime
 int main( int argc, char **argv ) {
-  int g_a;
-  int g_b;
-  int g_c;
+  int g_a_nb, g_a_b;
+  int g_b_nb, g_b_b;
+  int g_c_nb, g_c_b;
   int lo[2], hi[2];
   int dims[2];
   int me, nproc;
   int  ld, isize, jsize;
   int type=MT_C_INT;
   int nelems, ok;
-  int *buf_a, *ptr_a;
-  int *buf_b, *ptr_b;
-  int *buf_c, *ptr_c;
+  int *buf_a_nb, *buf_a_b; 
+  int *buf_b_nb, *buf_b_b; 
+  int *buf_c_nb, *buf_c_b; 
+  int *ptr_a;
+  int *ptr_b;
+  int *ptr_c;
   ga_nbhdl_t *nbhdl_a;
   ga_nbhdl_t *nbhdl_b;
   ga_nbhdl_t *nbhdl_c;
@@ -68,14 +72,20 @@ for (N = 8; N < NN; N*=2) {
   dims[1] = N;
   
   int n;
-  g_a = NGA_Create(type, 2, dims, "A", NULL);
-  if(!g_a) GA_Error("create failed: A",n); 
+  g_a_nb = NGA_Create(type, 2, dims, "A", NULL);
+  if(!g_a_nb) GA_Error("create failed: A",n); 
+  g_a_b = NGA_Create(type, 2, dims, "A", NULL);
+  if(!g_a_b) GA_Error("create failed: A",n); 
 
-  g_b = NGA_Create(type, 2, dims, "B", NULL);
-  if(!g_b) GA_Error("create failed: B",n); 
+  g_b_nb = NGA_Create(type, 2, dims, "B", NULL);
+  if(!g_b_nb) GA_Error("create failed: B",n); 
+  g_b_b = NGA_Create(type, 2, dims, "B", NULL);
+  if(!g_b_b) GA_Error("create failed: B",n); 
 
-  g_c = NGA_Create(type, 2, dims, "C", NULL);
-  if(!g_c) GA_Error("create failed: C",n); 
+  g_c_nb = NGA_Create(type, 2, dims, "C", NULL);
+  if(!g_c_nb) GA_Error("create failed: C",n); 
+  g_c_b = NGA_Create(type, 2, dims, "C", NULL);
+  if(!g_c_b) GA_Error("create failed: C",n); 
 
   /* Fill matrix from process 0 using non-blocking puts */
   nelems = N*N;
@@ -83,9 +93,12 @@ for (N = 8; N < NN; N*=2) {
   /* Copy matrix to process 0 using non-blocking gets */
   if (me == 0) {
 
-    buf_a = (int*)malloc(nelems*sizeof(int));
-    buf_b = (int*)malloc(nelems*sizeof(int));
-    buf_c = (int*)malloc(nelems*sizeof(int));
+    buf_a_nb = (int*)malloc(nelems*sizeof(int));
+    buf_b_nb = (int*)malloc(nelems*sizeof(int));
+    buf_c_nb = (int*)malloc(nelems*sizeof(int));
+    buf_a_b = (int*)malloc(nelems*sizeof(int));
+    buf_b_b = (int*)malloc(nelems*sizeof(int));
+    buf_c_b = (int*)malloc(nelems*sizeof(int));
 
     nbhdl_a = (ga_nbhdl_t*)malloc(nproc*sizeof(ga_nbhdl_t));
     nbhdl_b = (ga_nbhdl_t*)malloc(nproc*sizeof(ga_nbhdl_t));
@@ -100,9 +113,9 @@ for (N = 8; N < NN; N*=2) {
     double wait_timings = 0;
     double start_time, end_time;
     long scale = 1;
-
-    ptr_c = buf_c;
+    ptr_c = buf_c_nb;
     int i;
+#if 1
     for (i=0; i<nproc; i+=WINDOWSIZE) {
         ld = N;
         int j;
@@ -110,34 +123,34 @@ for (N = 8; N < NN; N*=2) {
         {
             if(j==me) continue;
 
-            NGA_Distribution(g_a, j, lo, hi);
-            ptr_a = buf_a + lo[1] + N*lo[0];
+            NGA_Distribution(g_a_nb, j, lo, hi);
+            ptr_a = buf_a_nb + lo[1] + N*lo[0];
             start_time = TIMER();
-            NGA_NbGet(g_a, lo, hi, ptr_a, &ld, &nbhdl_a[j]);
+            NGA_NbGet(g_a_nb, lo, hi, ptr_a, &ld, &nbhdl_a[j]);
             end_time = TIMER();
             nbget_timings += end_time - start_time;
 
-            NGA_Distribution(g_b, j, lo, hi);
-            ptr_b = buf_b + lo[1] + N*lo[0];
+            NGA_Distribution(g_b_nb, j, lo, hi);
+            ptr_b = buf_b_nb + lo[1] + N*lo[0];
             start_time = TIMER();
-            NGA_NbGet(g_b, lo, hi, ptr_b, &ld, &nbhdl_b[j]);
+            NGA_NbGet(g_b_nb, lo, hi, ptr_b, &ld, &nbhdl_b[j]);
             end_time = TIMER();
             nbget_timings += end_time - start_time;
 
 
-            NGA_Distribution(g_c, j, lo, hi);
+            NGA_Distribution(g_c_nb, j, lo, hi);
             isize = (hi[0]-lo[0]+1);
             jsize = (hi[1]-lo[1]+1);
             ld = jsize;
 
             start_time = TIMER();
 #ifdef GET_PUT
-            NGA_NbPut(g_c, lo, hi, ptr_c, &ld, &nbhdl_c[j]);  
+            NGA_NbPut(g_c_nb, lo, hi, ptr_c, &ld, &nbhdl_c[j]);  
             end_time = TIMER();
             nbput_timings += end_time - start_time;
             ptr_c += isize*jsize;
 #else
-            NGA_NbAcc(g_c, lo, hi, ptr_c, &ld, &scale, &nbhdl_c[j]);  
+            NGA_NbAcc(g_c_nb, lo, hi, ptr_c, &ld, &scale, &nbhdl_c[j]);  
             end_time = TIMER();
             nbacc_timings += end_time - start_time;
             ptr_c += isize*jsize;
@@ -168,20 +181,24 @@ for (N = 8; N < NN; N*=2) {
 
     printf("\n\n");
     printf("NbGet timings: %lf sec\n", nbget_timings);
+#ifdef GET_PUT
     printf("NbPut timings: %lf sec\n", nbput_timings);
+#else
     printf("NbAcc timings: %lf sec\n", nbacc_timings);
+#endif
     printf("NbWait timings: %lf sec\n", wait_timings);
     printf("================================\n");
     printf("NbTotal time: %lf sec\n", 
        nbget_timings + nbput_timings + nbacc_timings + wait_timings);
     printf("================================\n");
     printf("\n\n");
-
+#endif
+#if 1
     double put_timings = 0;
     double get_timings = 0;
     double acc_timings = 0;
 
-    ptr_c = buf_c;
+    ptr_c = buf_c_b;
 
     for (i=0; i<nproc; i+=WINDOWSIZE) {
         ld = N;
@@ -190,17 +207,17 @@ for (N = 8; N < NN; N*=2) {
         {
             if(j==me) continue;
 
-            NGA_Distribution(g_a, j, lo, hi);
-            ptr_a = buf_a + lo[1] + N*lo[0];
+            NGA_Distribution(g_a_b, j, lo, hi);
+            ptr_a = buf_a_b + lo[1] + N*lo[0];
             start_time = TIMER();
-            NGA_Get(g_a, lo, hi, ptr_a, &ld);
+            NGA_Get(g_a_b, lo, hi, ptr_a, &ld);
             end_time = TIMER();
             get_timings += end_time - start_time;
 
-            NGA_Distribution(g_b, j, lo, hi);
-            ptr_b = buf_b + lo[1] + N*lo[0];
+            NGA_Distribution(g_b_b, j, lo, hi);
+            ptr_b = buf_b_b + lo[1] + N*lo[0];
             start_time = TIMER();
-            NGA_Get(g_b, lo, hi, ptr_b, &ld);
+            NGA_Get(g_b_b, lo, hi, ptr_b, &ld);
             end_time = TIMER();
             get_timings += end_time - start_time;
 
@@ -209,18 +226,18 @@ for (N = 8; N < NN; N*=2) {
         // for(int j=i; j <min(nproc, i+WINDOWSIZE); j++)
         // {
         //     if(j==me) continue;
-            NGA_Distribution(g_c, j, lo, hi);
+            NGA_Distribution(g_c_b, j, lo, hi);
             isize = (hi[0]-lo[0]+1);
             jsize = (hi[1]-lo[1]+1);
             ld = jsize;
 
             start_time = TIMER();
 #ifdef GET_PUT
-            NGA_Put(g_c, lo, hi, ptr_c, &ld);  
+            NGA_Put(g_c_b, lo, hi, ptr_c, &ld);  
             end_time = TIMER();
             put_timings += end_time - start_time;
 #else
-            NGA_Put(g_c, lo, hi, ptr_c, &ld);  
+            NGA_Acc(g_c_b, lo, hi, ptr_c, &ld, &scale);  
             end_time = TIMER();
             acc_timings += end_time - start_time;
 #endif
@@ -229,27 +246,36 @@ for (N = 8; N < NN; N*=2) {
     }
     printf("\n\n");
     printf("Get timings: %lf sec\n", get_timings);
+#ifdef GET_PUT
     printf("Put timings: %lf sec\n", put_timings);
+#else
     printf("Acc timings: %lf sec\n", acc_timings);
+#endif
     printf("================================\n");
     printf("Total time: %lf sec\n", 
        get_timings + put_timings + acc_timings);
     printf("================================\n");
     printf("\n\n");
+#endif
 
-
-    free(buf_a);
-    free(buf_b);
-    free(buf_c);
+    free(buf_a_nb);
+    free(buf_b_nb);
+    free(buf_c_nb);
+    free(buf_a_b);
+    free(buf_b_b);
+    free(buf_c_b);
     free(nbhdl_a);
     free(nbhdl_b);
     free(nbhdl_c);
   }
   GA_Sync();
 
-  GA_Destroy(g_a);
-  GA_Destroy(g_b);
-  GA_Destroy(g_c);
+  GA_Destroy(g_a_nb);
+  GA_Destroy(g_b_nb);
+  GA_Destroy(g_c_nb);
+  GA_Destroy(g_a_b);
+  GA_Destroy(g_b_b);
+  GA_Destroy(g_c_b);
 }
   if(me==0)printf("\nSuccess\n");
   GA_Terminate();

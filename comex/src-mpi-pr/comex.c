@@ -2178,8 +2178,7 @@ int comex_malloc(void *ptrs[], size_t size, comex_group_t group)
     int status = 0;
     double tbeg1, tbeg2;
 
-    tbeg1 = MPI_Wtime();
-    tbeg2 = MPI_Wtime();
+
     /* preconditions */
     COMEX_ASSERT(ptrs);
    
@@ -2188,12 +2187,17 @@ int comex_malloc(void *ptrs[], size_t size, comex_group_t group)
             g_state.rank, ptrs, (long unsigned)size, group);
 #endif
 
+    tbeg1 = MPI_Wtime();
+
     /* is this needed? */
     comex_barrier(group);
 
     igroup = comex_get_igroup_from_group(group);
     my_world_rank = _get_world_rank(igroup, igroup->rank);
     my_master = g_state.master[my_world_rank];
+
+    tbeg2 = MPI_Wtime();
+    if (my_world_rank==0) fprintf(stdout,"<comex_malloc>:barrier,igroup time=%lf\n",(double)(tbeg2-tbeg1)); 
 
 #if DEBUG && DEBUG_VERBOSE
     fprintf(stderr, "[%d] comex_malloc my_master=%d\n", g_state.rank, my_master);
@@ -2203,6 +2207,7 @@ int comex_malloc(void *ptrs[], size_t size, comex_group_t group)
     int num_progress_ranks_per_node, is_node_ranks_packed;
     num_progress_ranks_per_node = 1;
     is_node_ranks_packed = 1;
+    tbeg1 = MPI_Wtime();
     smallest_rank_with_same_hostid = _smallest_world_rank_with_same_hostid(igroup);
     largest_rank_with_same_hostid = _largest_world_rank_with_same_hostid(igroup);
     is_notifier = g_state.rank == get_my_master_rank_with_same_hostid(g_state.rank,
@@ -2210,6 +2215,7 @@ int comex_malloc(void *ptrs[], size_t size, comex_group_t group)
         num_progress_ranks_per_node, is_node_ranks_packed);
     t_config += MPI_Wtime() - tbeg2;
     tbeg2 = MPI_Wtime();
+    if (my_world_rank==0) fprintf(stdout,"<comex_malloc>:smallest,largest world rank time=%lf\n",(double)(tbeg2-tbeg1));     
 #if 0
 #if MASTER_IS_SMALLEST_SMP_RANK
     // is_notifier = _smallest_world_rank_with_same_hostid(igroup) == g_state.rank;
@@ -2266,10 +2272,12 @@ int comex_malloc(void *ptrs[], size_t size, comex_group_t group)
     tbeg2 = MPI_Wtime();
     /* exchange buffer address via reg entries */
     reg_entries[igroup->rank] = my_reg;
+    tbeg1 = MPI_Wtime();
     status = MPI_Allgather(MPI_IN_PLACE, 0, MPI_DATATYPE_NULL,
             reg_entries, sizeof(reg_entry_t), MPI_BYTE, igroup->comm);
     t_allgather1 += MPI_Wtime() - tbeg2;
     tbeg2 = MPI_Wtime();
+    if (my_world_rank==0) fprintf(stdout,"<comex_malloc>:MPI_Allgather time=%lf\n",(double)(tbeg2-tbeg1));        
 #if DEBUG
     fprintf(stderr, "[%d] comex_malloc allgather status [%d]\n",
             g_state.rank, status);

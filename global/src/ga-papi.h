@@ -9,6 +9,7 @@
 typedef intp AccessIndex;
 
 /* Routines from base.c */
+extern void pnga_version(Integer *major, Integer *minor, Integer *patch);
 extern logical pnga_allocate(Integer g_a);
 extern logical pnga_compare_distr(Integer g_a, Integer g_b);
 extern logical pnga_create(Integer type, Integer ndim,
@@ -55,6 +56,7 @@ extern void pnga_get_block_info(Integer g_a, Integer *num_blocks,
                                 Integer *block_dims);
 extern logical pnga_get_debug();
 extern Integer pnga_get_dimension(Integer g_a);
+extern void pnga_get_distribution_type(Integer g_a, char *type);
 extern void pnga_get_proc_grid(Integer g_a, Integer *dims);
 extern void pnga_get_proc_index(Integer g_a, Integer iproc, Integer *index);
 extern logical pnga_has_ghosts(Integer g_a);
@@ -86,6 +88,8 @@ extern Integer pnga_nnodes();
 extern Integer pnga_nodeid();
 extern Integer pnga_pgroup_absolute_id(Integer grp, Integer pid);
 extern Integer pnga_pgroup_create(Integer *list, Integer count);
+extern Integer pnga_pgroup_duplicate(Integer grp);
+extern Integer pnga_pgroup_self();
 extern logical pnga_pgroup_destroy(Integer grp);
 extern Integer pnga_pgroup_get_default();
 extern Integer pnga_pgroup_get_mirror();
@@ -100,9 +104,11 @@ extern void pnga_randomize(Integer g_a, void* val);
 extern Integer pnga_get_pgroup(Integer g_a);
 extern Integer pnga_get_pgroup_size(Integer grp_id);
 extern void pnga_set_array_name(Integer g_a, char *array_name);
+extern void pnga_get_array_name(Integer g_a, char *array_name);
 extern void pnga_set_block_cyclic(Integer g_a, Integer *dims);
 extern void pnga_set_block_cyclic_proc_grid(Integer g_a, Integer *dims, Integer *proc_grid);
 extern void pnga_set_tiled_proc_grid(Integer g_a, Integer *dims, Integer *proc_grid);
+extern void pnga_set_tiled_irreg_proc_grid(Integer g_a, Integer *mapc, Integer *nblocks, Integer *proc_grid);
 extern void pnga_set_chunk(Integer g_a, Integer *chunk);
 extern void pnga_set_data(Integer g_a, Integer ndim, Integer *dims, Integer type);
 extern void pnga_set_debug(logical flag);
@@ -115,6 +121,7 @@ extern void pnga_set_restricted(Integer g_a, Integer *list, Integer size);
 extern void pnga_set_restricted_range(Integer g_a, Integer lo_proc, Integer hi_proc);
 extern void pnga_set_property(Integer g_a, char *property);
 extern void pnga_unset_property(Integer g_a);
+extern void pnga_set_memory_dev(Integer g_a, char *device);
 extern void pnga_terminate();
 extern Integer pnga_total_blocks(Integer g_a);
 extern void pnga_unlock(Integer mutex);

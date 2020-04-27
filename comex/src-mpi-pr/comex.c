@@ -173,6 +173,18 @@ static int COMEX_ENABLE_PUT_IOV = ENABLE_PUT_IOV;
 static int COMEX_ENABLE_GET_IOV = ENABLE_GET_IOV;
 static int COMEX_ENABLE_ACC_IOV = ENABLE_ACC_IOV;
 
+/* Profiling variables */
+int _comex_profile_instnc = 0;
+double _comex_profile_total = 0.0;
+double _comex_profile_set_ranks = 0.0;
+double _comex_profile_memset = 0.0;
+double _comex_profile_malloc_local = 0.0;
+double _comex_profile_nullify = 0.0;
+double _comex_profile_allgather = 0.0;
+double _comex_profile_insert = 0.0;
+double _comex_profile_notify = 0.0;
+double _comex_profile_barrier = 0.0;
+
 #if PAUSE_ON_ERROR
 static int AR_caught_sig=0;
 static int AR_caught_sigsegv=0;
@@ -594,9 +606,87 @@ int comex_initialized()
 
 int comex_finalize()
 {
+  double dst;
+  comex_igroup_t *igroup = NULL;
+  MPI_Comm comm;
+  int size, rank;
+  double total,set_ranks,memset,malloc_local,nullify,allgather,insert,notify,barrier;
 #if DEBUG
     fprintf(stderr, "[%d] comex_finalize()\n", g_state.rank);
 #endif
+    igroup = comex_get_igroup_from_group(COMEX_GROUP_WORLD);
+    comm = igroup->comm;
+    MPI_Comm_size(comm,&size);
+    MPI_Comm_rank(comm,&rank);
+    MPI_Allreduce(&_comex_profile_total,&dst,1,MPI_DOUBLE,MPI_SUM,comm);
+    total = dst;
+    _comex_profile_total = dst/((double)(_comex_profile_instnc*g_state.size));
+    MPI_Allreduce(&_comex_profile_set_ranks,&dst,1,MPI_DOUBLE,MPI_SUM,comm);
+    set_ranks = dst;
+    _comex_profile_set_ranks = dst/((double)(_comex_profile_instnc*g_state.size));
+    MPI_Allreduce(&_comex_profile_memset,&dst,1,MPI_DOUBLE,MPI_SUM,comm);
+    memset = dst;
+    _comex_profile_memset = dst/((double)(_comex_profile_instnc*g_state.size));
+    MPI_Allreduce(&_comex_profile_malloc_local,&dst,1,MPI_DOUBLE,MPI_SUM,comm);
+    malloc_local = dst;
+    _comex_profile_malloc_local = dst/((double)(_comex_profile_instnc*g_state.size));
+    MPI_Allreduce(&_comex_profile_nullify,&dst,1,MPI_DOUBLE,MPI_SUM,comm);
+    nullify = dst;
+    _comex_profile_nullify = dst/((double)(_comex_profile_instnc*g_state.size));
+    MPI_Allreduce(&_comex_profile_allgather,&dst,1,MPI_DOUBLE,MPI_SUM,comm);
+    allgather = dst;
+    _comex_profile_allgather = dst/((double)(_comex_profile_instnc*g_state.size));
+    MPI_Allreduce(&_comex_profile_insert,&dst,1,MPI_DOUBLE,MPI_SUM,comm);
+    insert = dst;
+    _comex_profile_insert = dst/((double)(_comex_profile_instnc*g_state.size));
+    MPI_Allreduce(&_comex_profile_notify,&dst,1,MPI_DOUBLE,MPI_SUM,comm);
+    notify = dst;
+    _comex_profile_notify = dst/((double)(_comex_profile_instnc*g_state.size));
+    MPI_Allreduce(&_comex_profile_barrier,&dst,1,MPI_DOUBLE,MPI_SUM,comm);
+    barrier = dst;
+    _comex_profile_barrier = dst/((double)(_comex_profile_instnc*g_state.size));
+    if (rank == 0) {
+      fprintf(stdout,"\nProfiling results for comex_malloc\n");
+      fprintf(stdout,"\nAverages\n\n");
+      fprintf(stdout,"Total time in comex_malloc:                 %16.6f\n",
+          _comex_profile_total);
+      fprintf(stdout,"Time setting ranks:                         %16.6f\n",
+          _comex_profile_set_ranks);
+      fprintf(stdout,"Time setting memory:                        %16.6f\n",
+          _comex_profile_memset);
+      fprintf(stdout,"Time allocating local memory:               %16.6f\n",
+          _comex_profile_malloc_local);
+      fprintf(stdout,"Time nullifying data:                       %16.6f\n",
+          _comex_profile_nullify);
+      fprintf(stdout,"Time in MPI_Allgather:                      %16.6f\n",
+          _comex_profile_allgather);
+      fprintf(stdout,"Time inserting data:                        %16.6f\n",
+          _comex_profile_insert);
+      fprintf(stdout,"Time notifying progress rank:               %16.6f\n",
+          _comex_profile_notify);
+      fprintf(stdout,"Time in barrier:                            %16.6f\n",
+          _comex_profile_barrier);
+      fprintf(stdout,"\nTotal times\n\n");
+      fprintf(stdout,"Total time in comex_malloc:                 %16.6f\n",
+          total);
+      fprintf(stdout,"Time setting ranks:                         %16.6f\n",
+          set_ranks);
+      fprintf(stdout,"Time setting memory:                        %16.6f\n",
+          memset);
+      fprintf(stdout,"Time allocating local memory:               %16.6f\n",
+          malloc_local);
+      fprintf(stdout,"Time nullifying data:                       %16.6f\n",
+          nullify);
+      fprintf(stdout,"Time in MPI_Allgather:                      %16.6f\n",
+          allgather);
+      fprintf(stdout,"Time inserting data:                        %16.6f\n",
+          insert);
+      fprintf(stdout,"Time notifying progress rank:               %16.6f\n",
+          notify);
+      fprintf(stdout,"Time in barrier:                            %16.6f\n",
+          barrier);
+    }
+
 
     /* it's okay to call multiple times -- extra calls are no-ops */
     if (!initialized) {
@@ -1911,7 +2001,11 @@ int comex_malloc(void *ptrs[], size_t size, comex_group_t group)
     int reg_entries_local_count = 0;
     reg_entry_t *reg_entries_local = NULL;
     int status = 0;
+    double tbeg0, tbeg1;
 
+    _comex_profile_instnc++;
+    tbeg0 = MPI_Wtime();
+    tbeg1 = MPI_Wtime();
     /* preconditions */
     COMEX_ASSERT(ptrs);
    
@@ -1939,8 +2033,10 @@ int comex_malloc(void *ptrs[], size_t size, comex_group_t group)
     if (is_notifier) {
         reg_entries_local = malloc(sizeof(reg_entry_t)*g_state.node_size);
     }
+    _comex_profile_set_ranks += MPI_Wtime()-tbeg1;
 
     /* allocate space for registration cache entries */
+    tbeg1 = MPI_Wtime();
     size_entries = sizeof(reg_entry_t) * igroup->size;
     reg_entries = malloc(size_entries);
     MAYBE_MEMSET(reg_entries, 0, sizeof(reg_entry_t)*igroup->size);
@@ -1952,11 +2048,16 @@ int comex_malloc(void *ptrs[], size_t size, comex_group_t group)
 
     /* allocate and register segment */
     MAYBE_MEMSET(&my_reg, 0, sizeof(reg_entry_t));
+    _comex_profile_memset += MPI_Wtime()-tbeg1;
     if (0 == size) {
+    tbeg1 = MPI_Wtime();
         reg_cache_nullify(&my_reg);
+    _comex_profile_nullify += MPI_Wtime()-tbeg1;
     }
     else {
+        tbeg1 = MPI_Wtime();
         my_reg = *_comex_malloc_local(sizeof(char)*size);
+       _comex_profile_malloc_local += MPI_Wtime()-tbeg1;
     }
 
 #if DEBUG && DEBUG_VERBOSE
@@ -1966,8 +2067,11 @@ int comex_malloc(void *ptrs[], size_t size, comex_group_t group)
 
     /* exchange buffer address via reg entries */
     reg_entries[igroup->rank] = my_reg;
+        tbeg1 = MPI_Wtime();
     status = MPI_Allgather(MPI_IN_PLACE, 0, MPI_DATATYPE_NULL,
             reg_entries, sizeof(reg_entry_t), MPI_BYTE, igroup->comm);
+       _comex_profile_allgather += MPI_Wtime()-tbeg1;
+        tbeg1 = MPI_Wtime();
     COMEX_ASSERT(MPI_SUCCESS == status);
 
 #if DEBUG && DEBUG_VERBOSE
@@ -2039,9 +2143,11 @@ int comex_malloc(void *ptrs[], size_t size, comex_group_t group)
     for (i=0; i<igroup->size; ++i) {
         ptrs[i] = reg_entries[i].buf;
     }
+       _comex_profile_insert += MPI_Wtime()-tbeg1;
 
     /* send reg entries to my master */
     /* first non-master rank in an SMP node sends the message to master */
+       tbeg1 = MPI_Wtime();
     if (is_notifier) {
         nb_t *nb = NULL;
         int reg_entries_local_size = 0;
@@ -2068,9 +2174,13 @@ int comex_malloc(void *ptrs[], size_t size, comex_group_t group)
     }
 
     free(reg_entries);
+       _comex_profile_notify += MPI_Wtime()-tbeg1;
 
+       tbeg1 = MPI_Wtime();
     comex_barrier(group);
+       _comex_profile_barrier += MPI_Wtime()-tbeg1;
 
+       _comex_profile_total += MPI_Wtime()-tbeg0;
     return COMEX_SUCCESS;
 }
 

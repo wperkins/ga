@@ -118,6 +118,17 @@ int GA_Init_Proc_Group = -2;
 Integer GA_Debug_flag = 0;
 int *ProcPermList = NULL;
 
+/* Profiling */
+int _ga_profile_instnc = 0;
+double _ga_profile_distr = 0.0;
+double _ga_profile_alloc = 0.0;
+double _ga_profile_misc = 0.0;
+double _ga_profile_getmem = 0.0;
+double _ga_profile_shmem = 0.0;
+double _ga_profile_armci_malloc = 0.0;
+double _ga_profile_armci_malloc_grp = 0.0;
+double _ga_profile_armci_malloc_align = 0.0;
+
 /* MA addressing */
 DoubleComplex   *DCPL_MB;           /* double precision complex base address */
 SingleComplex   *SCPL_MB;           /* single precision complex base address */
@@ -2291,7 +2302,10 @@ logical pnga_allocate(Integer g_a)
   Integer blk[MAXDIM];
   Integer grp_me=GAme, grp_nproc=GAnproc;
   Integer block_size = 0;
+  double tbeg;
 
+  _ga_profile_instnc++;
+  tbeg = pnga_wtime();
   _ga_sync_begin = 1; _ga_sync_end=1; /*remove any previous sync masking*/
   if (GA[ga_handle].ndim == -1)
     pnga_error("Insufficient data to create global array",0);
@@ -2523,6 +2537,8 @@ logical pnga_allocate(Integer g_a)
         pnga_gop(pnga_type_f2c(MT_F_INT), &status, 1, "&&");
      }
   }else status = 1;
+  _ga_profile_distr += pnga_wtime()-tbeg;
+  tbeg = pnga_wtime();
 
   if (status) {
     status = !gai_getmem(GA[ga_handle].name, GA[ga_handle].ptr,mem_size,
@@ -2530,6 +2546,8 @@ logical pnga_allocate(Integer g_a)
   } else {
      GA[ga_handle].ptr[grp_me]=NULL;
   }
+  _ga_profile_alloc += pnga_wtime()-tbeg;
+  tbeg = pnga_wtime();
 
   if (GA[ga_handle].distr_type == REGULAR) {
     /* Finish setting up information for ghost cell updates */
@@ -2552,6 +2570,7 @@ logical pnga_allocate(Integer g_a)
     status = FALSE;
   }
   GA_POP_NAME;
+  _ga_profile_misc += pnga_wtime()-tbeg;
   return status;
 }
 
@@ -2789,7 +2808,9 @@ char *base;
 long diff, item_size;  
 Integer *adjust;
 int i, nproc,grp_me=GAme;
+double tbeg0, tbeg1;
 
+    tbeg0 = pnga_wtime();
     if (grp_id > 0) {
        nproc  = PGRP_LIST[grp_id].map_nproc;
        grp_me = PGRP_LIST[grp_id].map_proc_list[GAme];
@@ -2822,12 +2843,16 @@ int i, nproc,grp_me=GAme;
 	  or mirror group */
 #  ifdef MSG_COMMS_MPI
        if (grp_id > 0)
+         tbeg1 = pnga_wtime();
 	  status = ARMCI_Malloc_group((void**)ptr_array, bytes,
 				      &PGRP_LIST[grp_id].group);
+       _ga_profile_armci_malloc_grp += pnga_wtime()-tbeg1;
        else
 #  endif
        {
+         tbeg1 = pnga_wtime();
 	  status = ARMCI_Malloc((void**)ptr_array, bytes);
+       _ga_profile_armci_malloc += pnga_wtime()-tbeg1;
        }
        if(bytes!=0 && ptr_array[grp_me]==NULL) 
 	  pnga_error("gai_get_shmem: ARMCI Malloc failed", GAme);
@@ -2839,11 +2864,15 @@ int i, nproc,grp_me=GAme;
        or mirror group */
 #ifdef MSG_COMMS_MPI
     if (grp_id > 0) {
+         tbeg1 = pnga_wtime();
        status = ARMCI_Malloc_group((void**)ptr_arr, (armci_size_t)bytes,
 				   &PGRP_LIST[grp_id].group);
+       _ga_profile_armci_malloc_grp += pnga_wtime()-tbeg1;
     } else
 #endif
+         tbeg1 = pnga_wtime();
       status = ARMCI_Malloc((void**)ptr_arr, (armci_size_t)bytes);
+       _ga_profile_armci_malloc += pnga_wtime()-tbeg1;
 
     if(bytes!=0 && ptr_arr[grp_me]==NULL) 
        pnga_error("gai_get_shmem: ARMCI Malloc failed", GAme);
@@ -2856,6 +2885,7 @@ int i, nproc,grp_me=GAme;
     /* we need storage for GAnproc*sizeof(Integer) */
     /* JAD -- fixed bug where _ga_map was reused before gai_getmem was done
      * with it. Now malloc/free needed memory. */
+         tbeg1 = pnga_wtime();
     adjust = (Integer*)malloc(GAnproc*sizeof(Integer));
 
     diff = (GA_ABS( base - (char *) ptr_arr[grp_me])) % item_size; 
@@ -2872,8 +2902,10 @@ int i, nproc,grp_me=GAme;
        ptr_arr[i] = adjust[i] + (char*)ptr_arr[i];
     }
     free(adjust);
+       _ga_profile_armci_malloc_align += pnga_wtime()-tbeg1;
 
 #endif
+    _ga_profile_shmem += pnga_wtime() - tbeg0;
     return status;
 }
 
@@ -2890,12 +2922,15 @@ int gai_getmem(char* name, char **ptr_arr, C_Long bytes, int type, long *id,
 	       int grp_id)
 {
 #ifdef AVOID_MA_STORAGE
+double tbeg = pnga_wtime();
    return gai_get_shmem(ptr_arr, bytes, type, id, grp_id);
+   _ga_profile_getmem += pnga_wtime()-tbeg;
 #else
 Integer handle = INVALID_MA_HANDLE, index;
 Integer nproc=GAnproc, grp_me=GAme, item_size = GAsizeofM(type);
 C_Long nelem;
 char *ptr = (char*)0;
+double tbeg = pnga_wtime();
 
    if (grp_id > 0) {
      nproc  = PGRP_LIST[grp_id].map_nproc;
@@ -2937,6 +2972,7 @@ char *ptr = (char*)0;
      if(bytes && !ptr) return 1; 
      else return 0;
    }
+   _ga_profile_getmem += pnga_wtime()-tbeg;
 #endif /* AVOID_MA_STORAGE */
 }
 
@@ -3388,6 +3424,52 @@ Integer i, handle;
     {
         //GA_Internal_Threadsafe_Unlock();
         return;
+    }
+    /* Print out GA profiling information */
+    pnga_gop(C_DBL,&_ga_profile_distr,1,"+");
+    pnga_gop(C_DBL,&_ga_profile_alloc,1,"+");
+    pnga_gop(C_DBL,&_ga_profile_misc,1,"+");
+    pnga_gop(C_DBL,&_ga_profile_getmem,1,"+");
+    pnga_gop(C_DBL,&_ga_profile_shmem,1,"+");
+    pnga_gop(C_DBL,&_ga_profile_armci_malloc,1,"+");
+    pnga_gop(C_DBL,&_ga_profile_armci_malloc_grp,1,"+");
+    pnga_gop(C_DBL,&_ga_profile_armci_malloc_align,1,"+");
+    _ga_profile_distr /= ((double)GAnproc);
+    _ga_profile_alloc /= ((double)GAnproc);
+    _ga_profile_misc /= ((double)GAnproc);
+    _ga_profile_getmem /= ((double)GAnproc);
+    _ga_profile_shmem /= ((double)GAnproc);
+    _ga_profile_armci_malloc /= ((double)GAnproc);
+    _ga_profile_armci_malloc_grp /= ((double)GAnproc);
+    _ga_profile_armci_malloc_align /= ((double)GAnproc);
+    if (_ga_profile_instnc > 0) {
+      _ga_profile_distr /= ((double)_ga_profile_instnc);
+      _ga_profile_alloc /= ((double)_ga_profile_instnc);
+      _ga_profile_misc /= ((double)_ga_profile_instnc);
+      _ga_profile_getmem /= ((double)_ga_profile_instnc);
+      _ga_profile_shmem /= ((double)_ga_profile_instnc);
+      _ga_profile_armci_malloc /= ((double)_ga_profile_instnc);
+      _ga_profile_armci_malloc_grp /= ((double)_ga_profile_instnc);
+      _ga_profile_armci_malloc_align /= ((double)_ga_profile_instnc);
+    }
+    if (GAme == 0) {
+      printf("\nProfiling from GA\n");
+      printf("Time spent in setting up data distribution: %16.6f\n",
+          _ga_profile_distr);
+      printf("Time spent in allocating memory           : %16.6f\n",
+          _ga_profile_alloc);
+      printf("Time spent in miscellaneous operations    : %16.6f\n",
+          _ga_profile_misc);
+      printf("Time spent in getmem                      : %16.6f\n",
+          _ga_profile_getmem);
+      printf("Time spent in get_shmem                   : %16.6f\n",
+          _ga_profile_shmem);
+      printf("Time spent in ARMCI_Malloc                : %16.6f\n",
+          _ga_profile_armci_malloc);
+      printf("Time spent in ARMCI_Malloc_grp            : %16.6f\n",
+          _ga_profile_armci_malloc_grp);
+      printf("Time spent in ARMCI_Malloc_align          : %16.6f\n",
+          _ga_profile_armci_malloc_align);
     }
 
 #ifdef PROFILE_OLD 

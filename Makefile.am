@@ -462,6 +462,7 @@ check_PROGRAMS += global/testing/thread_perf_contig
 check_PROGRAMS += global/testing/thread_perf_strided
 check_PROGRAMS += global/testing/threadsafec
 check_PROGRAMS += global/testing/read_only
+check_PROGRAMS += global/testing/alloc
 check_PROGRAMS += global/testing/unpackc
 if ENABLE_F77
 check_PROGRAMS += global/testing/bin
@@ -646,6 +647,7 @@ GLOBAL_PARALLEL_TESTS += global/testing/thread_perf_contig$(EXEEXT)
 GLOBAL_PARALLEL_TESTS += global/testing/thread_perf_strided$(EXEEXT)
 GLOBAL_PARALLEL_TESTS += global/testing/threadsafec$(EXEEXT)
 GLOBAL_PARALLEL_TESTS += global/testing/read_only$(EXEEXT)
+GLOBAL_PARALLEL_TESTS += global/testing/alloc$(EXEEXT)
 GLOBAL_PARALLEL_TESTS += global/testing/unpackc$(EXEEXT)
 if ENABLE_F77
 GLOBAL_PARALLEL_TESTS += global/testing/bin$(EXEEXT)
@@ -1028,14 +1030,17 @@ global_testing_thread_perf_contig_CFLAGS  = $(AM_CFLAGS) $(OPENMP_CFLAGS)
 global_testing_thread_perf_strided_CFLAGS = $(AM_CFLAGS) $(OPENMP_CFLAGS)
 global_testing_threadsafec_CFLAGS         = $(AM_CFLAGS) $(OPENMP_CFLAGS)
 global_testing_read_only_CFLAGS           = $(AM_CFLAGS) $(OPENMP_CFLAGS)
+global_testing_alloc_CFLAGS               = $(AM_CFLAGS) $(OPENMP_CFLAGS)
 
 global_testing_thread_perf_contig_CPPFLAGS  = $(AM_CPPFLAGS) $(OPENMP_CFLAGS)
 global_testing_thread_perf_strided_CPPFLAGS = $(AM_CPPFLAGS) $(OPENMP_CFLAGS)
 global_testing_threadsafec_CPPFLAGS         = $(AM_CPPFLAGS) $(OPENMP_CFLAGS)
 global_testing_read_only_CPPFLAGS           = $(AM_CPPFLAGS) $(OPENMP_CFLAGS)
+global_testing_alloc_CPPFLAGS               = $(AM_CPPFLAGS) $(OPENMP_CFLAGS)
 
 global_testing_threadsafec_LDFLAGS        = $(AM_LDFLAGS) $(OPENMP_CFLAGS)
 global_testing_read_only_LDFLAGS          = $(AM_LDFLAGS) $(OPENMP_CFLAGS)
+global_testing_alloc_LDFLAGS              = $(AM_LDFLAGS) $(OPENMP_CFLAGS)
 
 if F77_INTEL_NO_INLINE
 global_testing_nga_scatter_FFLAGS         = $(AM_FFLAGS) -fno-inline

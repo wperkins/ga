@@ -187,15 +187,25 @@ static int COMEX_ENABLE_ACC_IOV = ENABLE_ACC_IOV;
 
 /* Profiling variables */
 int _comex_profile_instnc = 0;
+int _comex_profile_world_ranks = 0;
+int _comex_profile_free = 0;
 double _comex_profile_total = 0.0;
 double _comex_profile_set_ranks = 0.0;
 double _comex_profile_memset = 0.0;
 double _comex_profile_malloc_local = 0.0;
 double _comex_profile_nullify = 0.0;
 double _comex_profile_allgather = 0.0;
+double _comex_profile_allgather_world_ranks = 0.0;
+double _comex_profile_allgather_free = 0.0;
 double _comex_profile_insert = 0.0;
 double _comex_profile_notify = 0.0;
 double _comex_profile_barrier = 0.0;
+double _comex_profile_set_ranks_sec1 = 0.0;
+double _comex_profile_set_ranks_sec2 = 0.0;
+double _comex_profile_set_ranks_sec3 = 0.0;
+double _comex_profile_set_ranks_sec4 = 0.0;
+double _comex_profile_set_ranks_sec5 = 0.0;
+double _comex_profile_set_ranks_sec6 = 0.0;
 #if USE_SICM
 static sicm_device_list devices = {0};
 #if SICM_OLD
@@ -697,7 +707,10 @@ int comex_finalize()
   comex_igroup_t *igroup = NULL;
   MPI_Comm comm;
   int size, rank;
-  double total,set_ranks,memset,malloc_local,nullify,allgather,insert,notify,barrier;
+  double total,set_ranks,memset,malloc_local,nullify,allgather;
+  double allgather_world_ranks,allgather_free,insert,notify,barrier;
+  double set_ranks_sec1,set_ranks_sec2,set_ranks_sec3;
+  double set_ranks_sec4,set_ranks_sec5,set_ranks_sec6;
 #if DEBUG
     fprintf(stderr, "[%d] comex_finalize()\n", g_state.rank);
 #endif
@@ -711,6 +724,26 @@ int comex_finalize()
     MPI_Allreduce(&_comex_profile_set_ranks,&dst,1,MPI_DOUBLE,MPI_SUM,comm);
     set_ranks = dst;
     _comex_profile_set_ranks = dst/((double)(_comex_profile_instnc*g_state.size));
+
+    MPI_Allreduce(&_comex_profile_set_ranks_sec1,&dst,1,MPI_DOUBLE,MPI_SUM,comm);
+    set_ranks_sec1 = dst;
+    _comex_profile_set_ranks_sec1 = dst/((double)(_comex_profile_instnc*g_state.size));
+    MPI_Allreduce(&_comex_profile_set_ranks_sec2,&dst,1,MPI_DOUBLE,MPI_SUM,comm);
+    set_ranks_sec2 = dst;
+    _comex_profile_set_ranks_sec2 = dst/((double)(_comex_profile_instnc*g_state.size));
+    MPI_Allreduce(&_comex_profile_set_ranks_sec3,&dst,1,MPI_DOUBLE,MPI_SUM,comm);
+    set_ranks_sec3 = dst;
+    _comex_profile_set_ranks_sec3 = dst/((double)(_comex_profile_instnc*g_state.size));
+    MPI_Allreduce(&_comex_profile_set_ranks_sec4,&dst,1,MPI_DOUBLE,MPI_SUM,comm);
+    set_ranks_sec4 = dst;
+    _comex_profile_set_ranks_sec4 = dst/((double)(_comex_profile_instnc*g_state.size));
+    MPI_Allreduce(&_comex_profile_set_ranks_sec5,&dst,1,MPI_DOUBLE,MPI_SUM,comm);
+    set_ranks_sec5 = dst;
+    _comex_profile_set_ranks_sec5 = dst/((double)(_comex_profile_instnc*g_state.size));
+    MPI_Allreduce(&_comex_profile_set_ranks_sec6,&dst,1,MPI_DOUBLE,MPI_SUM,comm);
+    set_ranks_sec6 = dst;
+    _comex_profile_set_ranks_sec6 = dst/((double)(_comex_profile_instnc*g_state.size));
+
     MPI_Allreduce(&_comex_profile_memset,&dst,1,MPI_DOUBLE,MPI_SUM,comm);
     memset = dst;
     _comex_profile_memset = dst/((double)(_comex_profile_instnc*g_state.size));
@@ -723,6 +756,12 @@ int comex_finalize()
     MPI_Allreduce(&_comex_profile_allgather,&dst,1,MPI_DOUBLE,MPI_SUM,comm);
     allgather = dst;
     _comex_profile_allgather = dst/((double)(_comex_profile_instnc*g_state.size));
+    MPI_Allreduce(&_comex_profile_allgather_world_ranks,&dst,1,MPI_DOUBLE,MPI_SUM,comm);
+    allgather_world_ranks = dst;
+    _comex_profile_allgather_world_ranks = dst/((double)(_comex_profile_instnc*g_state.size));
+    MPI_Allreduce(&_comex_profile_allgather_free,&dst,1,MPI_DOUBLE,MPI_SUM,comm);
+    allgather_free = dst;
+    _comex_profile_allgather_free = dst/((double)(_comex_profile_free*g_state.size));
     MPI_Allreduce(&_comex_profile_insert,&dst,1,MPI_DOUBLE,MPI_SUM,comm);
     insert = dst;
     _comex_profile_insert = dst/((double)(_comex_profile_instnc*g_state.size));
@@ -739,6 +778,18 @@ int comex_finalize()
           _comex_profile_total);
       fprintf(stdout,"Time setting ranks:                         %16.6f\n",
           _comex_profile_set_ranks);
+      fprintf(stdout,"    Section 1:                              %16.6f\n",
+          _comex_profile_set_ranks_sec1);
+      fprintf(stdout,"    Section 2:                              %16.6f\n",
+          _comex_profile_set_ranks_sec2);
+      fprintf(stdout,"    Section 3:                              %16.6f\n",
+          _comex_profile_set_ranks_sec3);
+      fprintf(stdout,"    Section 4:                              %16.6f\n",
+          _comex_profile_set_ranks_sec4);
+      fprintf(stdout,"    Section 5:                              %16.6f\n",
+          _comex_profile_set_ranks_sec5);
+      fprintf(stdout,"    Section 6:                              %16.6f\n",
+          _comex_profile_set_ranks_sec6);
       fprintf(stdout,"Time setting memory:                        %16.6f\n",
           _comex_profile_memset);
       fprintf(stdout,"Time allocating local memory:               %16.6f\n",
@@ -753,11 +804,27 @@ int comex_finalize()
           _comex_profile_notify);
       fprintf(stdout,"Time in barrier:                            %16.6f\n",
           _comex_profile_barrier);
+      fprintf(stdout,"Time in MPI_Allgather for world ranks:      %16.6f\n",
+          _comex_profile_allgather_world_ranks);
+      fprintf(stdout,"Time in MPI_Allgather for free:             %16.6f\n",
+          _comex_profile_allgather_free);
       fprintf(stdout,"\nTotal times\n\n");
       fprintf(stdout,"Total time in comex_malloc:                 %16.6f\n",
           total);
       fprintf(stdout,"Time setting ranks:                         %16.6f\n",
           set_ranks);
+      fprintf(stdout,"    Section 1:                              %16.6f\n",
+          set_ranks_sec1);
+      fprintf(stdout,"    Section 2:                              %16.6f\n",
+          set_ranks_sec2);
+      fprintf(stdout,"    Section 3:                              %16.6f\n",
+          set_ranks_sec3);
+      fprintf(stdout,"    Section 4:                              %16.6f\n",
+          set_ranks_sec4);
+      fprintf(stdout,"    Section 5:                              %16.6f\n",
+          set_ranks_sec5);
+      fprintf(stdout,"    Section 6:                              %16.6f\n",
+          set_ranks_sec6);
       fprintf(stdout,"Time setting memory:                        %16.6f\n",
           memset);
       fprintf(stdout,"Time allocating local memory:               %16.6f\n",
@@ -772,6 +839,10 @@ int comex_finalize()
           notify);
       fprintf(stdout,"Time in barrier:                            %16.6f\n",
           barrier);
+      fprintf(stdout,"Time in MPI_Allgather for world ranks:      %16.6f\n",
+          allgather_world_ranks);
+      fprintf(stdout,"Time in MPI_Allgather for free:             %16.6f\n",
+          allgather_free);
     }
 
 
@@ -2222,7 +2293,7 @@ int comex_malloc(void *ptrs[], size_t size, comex_group_t group)
     int reg_entries_local_count = 0;
     reg_entry_t *reg_entries_local = NULL;
     int status = 0;
-    double tbeg0, tbeg1;
+    double tbeg0, tbeg1, tbeg2;
 
     _comex_profile_instnc++;
     tbeg0 = MPI_Wtime();
@@ -2235,26 +2306,36 @@ int comex_malloc(void *ptrs[], size_t size, comex_group_t group)
             g_state.rank, ptrs, (long unsigned)size, group);
 #endif
 
+    tbeg2 = MPI_Wtime();
     /* is this needed? */
     comex_barrier(group);
+    _comex_profile_set_ranks_sec1 += MPI_Wtime()-tbeg2;
 
+    tbeg2 = MPI_Wtime();
     igroup = comex_get_igroup_from_group(group);
     my_world_rank = _get_world_rank(igroup, igroup->rank);
     my_master = g_state.master[my_world_rank];
+    _comex_profile_set_ranks_sec2 += MPI_Wtime()-tbeg2;
 
 #if DEBUG && DEBUG_VERBOSE
     fprintf(stderr, "[%d] comex_malloc my_master=%d\n", g_state.rank, my_master);
 #endif
 
+    tbeg2 = MPI_Wtime();
     int smallest_rank_with_same_hostid, largest_rank_with_same_hostid; 
     int num_progress_ranks_per_node, is_node_ranks_packed;
     num_progress_ranks_per_node = get_num_progress_ranks_per_node();
     is_node_ranks_packed = get_progress_rank_distribution_on_node();
+    _comex_profile_set_ranks_sec3 += MPI_Wtime()-tbeg2;
+    tbeg2 = MPI_Wtime();
     smallest_rank_with_same_hostid = _smallest_world_rank_with_same_hostid(igroup);
     largest_rank_with_same_hostid = _largest_world_rank_with_same_hostid(igroup);
+    _comex_profile_set_ranks_sec4 += MPI_Wtime()-tbeg2;
+    tbeg2 = MPI_Wtime();
     is_notifier = g_state.rank == get_my_master_rank_with_same_hostid(g_state.rank,
         g_state.node_size, smallest_rank_with_same_hostid, largest_rank_with_same_hostid,
         num_progress_ranks_per_node, is_node_ranks_packed);
+    _comex_profile_set_ranks_sec5 += MPI_Wtime()-tbeg2;
 #if 0
 #if MASTER_IS_SMALLEST_SMP_RANK
     // is_notifier = _smallest_world_rank_with_same_hostid(igroup) == g_state.rank;
@@ -2268,9 +2349,11 @@ int comex_malloc(void *ptrs[], size_t size, comex_group_t group)
        ((largest_rank_with_same_hostid - g_state.rank)/g_state.node_size));
 #endif
 #endif
+    tbeg2 = MPI_Wtime();
     if (is_notifier) {
         reg_entries_local = malloc(sizeof(reg_entry_t)*g_state.node_size);
     }
+    _comex_profile_set_ranks_sec6 += MPI_Wtime()-tbeg2;
     _comex_profile_set_ranks += MPI_Wtime()-tbeg1;
 
     /* allocate space for registration cache entries */
@@ -2846,6 +2929,7 @@ int comex_free(void *ptr, comex_group_t group)
     int reg_entries_local_count = 0;
     rank_ptr_t *rank_ptrs = NULL;
     int status = 0;
+    double tbeg;
 
     comex_barrier(group);
 
@@ -2897,8 +2981,11 @@ int comex_free(void *ptr, comex_group_t group)
 #endif
 
     /* exchange of pointers */
+    _comex_profile_free++;
+    tbeg = MPI_Wtime();
     status = MPI_Allgather(MPI_IN_PLACE, sizeof(void *), MPI_BYTE,
             ptrs, sizeof(void *), MPI_BYTE, igroup->comm);
+    _comex_profile_allgather_free += MPI_Wtime()-tbeg;
     COMEX_ASSERT(MPI_SUCCESS == status);
 
 #if DEBUG && DEBUG_VERBOSE
@@ -4703,13 +4790,17 @@ STATIC int* _get_world_ranks(comex_igroup_t *igroup)
     int my_world_rank = g_state.rank;
     int *world_ranks = (int*)malloc(sizeof(int)*igroup->size);
     int status;
+    double tbeg;
 
     for (i=0; i<igroup->size; ++i) {
         world_ranks[i] = MPI_PROC_NULL;
     }
 
+    _comex_profile_world_ranks++;
+    tbeg = MPI_Wtime();
     status = MPI_Allgather(&my_world_rank,1,MPI_INT,world_ranks,
         1,MPI_INT,comm);
+    _comex_profile_allgather_world_ranks += MPI_Wtime()-tbeg;
     COMEX_ASSERT(MPI_SUCCESS == status);
 
     for (i=0; i<igroup->size; ++i) {

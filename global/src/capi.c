@@ -99,6 +99,7 @@ void NGA_Initialize_ltd(size_t limit)
 
 void GA_Initialize_args(int *argc, char ***argv)
 {
+
   _ga_argc = argc;
   _ga_argv = argv;
   _ga_initialize_c = 1;
@@ -131,6 +132,8 @@ int NGA_Initialized()
 
 void GA_Terminate() 
 {
+    printf("C API: terminate called\n");
+    fflush(stdout);
     wnga_terminate();
     
     _ga_argc = NULL;

@@ -263,9 +263,6 @@ enum WPROF_GA {
 
 #include "ga.h"
 
-extern int me;
-extern int nproc;
-
 #define GET_TYPE(ga, type, ndims, dims) { \
    NGA_Inquire(ga, &type, &ndims, dims); \
 }
@@ -299,7 +296,7 @@ extern int nproc;
    }                        \
 }
 
-enum FMT ={
+enum FMT {
    CSV_FMT,
    HUMAN_FMT
 };
@@ -317,9 +314,9 @@ extern ga_weak_profile_t gaw_local_stats[];
 extern char ga_weak_symbols[][80];
 
 int init_ga_prof_struct();
-int print_ga_prof_stats(enum FMT f, FILE *fp);
+int print_ga_prof_stats(enum FMT f, FILE *fp, MPI_Comm comm);
 
-int update_local_entry(enum WPROF_GA e, uint64_t tme, uint64_6 bytes);
+int update_local_entry(enum WPROF_GA e, uint64_t tme, uint64_t bytes);
 int update_global_entry(enum WPROF_GA e, MPI_Comm comm);
 
 #endif

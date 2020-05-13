@@ -3695,6 +3695,10 @@ int local_sync_begin,local_sync_end;
 void pnga_terminate() 
 {
     //GA_Internal_Threadsafe_Lock();
+#if HAVE_SYS_WEAK_ALIAS_PRAGMA
+    printf ("PRAGMA WAS FOUND AND ALIAS CREATED\n");
+#endif
+    printf("PNGA_TERMINATE : %p %p\n", wnga_terminate, pnga_terminate);
 Integer i, handle;
 
     _ga_sync_begin = 1; _ga_sync_end=1; /*remove any previous masking*/

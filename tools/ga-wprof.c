@@ -258,15 +258,17 @@ char ga_weak_symbols[WPROF_TOTAL][80] = {
   "WPROF_TOTAL"
 };
 
+#include <string.h>
+
 int init_ga_prof_struct(){
    int i;
-   for(i = 0; i < WPRF_TOTAL; ++i){
+   for(i = 0; i < WPROF_TOTAL; ++i){
       strncpy(gaw_global_stats[i].name, ga_weak_symbols[i], 80);
       strncpy(gaw_local_stats[i].name, ga_weak_symbols[i], 80);
    
       gaw_global_stats[i].count = 0;
       gaw_global_stats[i].time = 0;
-      gaw_gloabl_stats[i].total_bytes = 0;
+      gaw_global_stats[i].total_bytes = 0;
 
       gaw_local_stats[i].count = 0;
       gaw_local_stats[i].time = 0;
@@ -276,8 +278,8 @@ int init_ga_prof_struct(){
 
 pthread_mutex_t gprof_lock =  PTHREAD_MUTEX_INITIALIZER;
 
-int update_local_entry(enum WPROF_GA e, uint64_t tme, uint64_6 bytes){
-   if(e >= wPROF_TOTAL){
+int update_local_entry(enum WPROF_GA e, uint64_t tme, uint64_t bytes){
+   if(e >= WPROF_TOTAL){
       return -1;
    }
    __sync_fetch_and_add(&(gaw_local_stats[e].count), 1);
@@ -287,24 +289,28 @@ int update_local_entry(enum WPROF_GA e, uint64_t tme, uint64_6 bytes){
 }
 
 int update_global_entry(enum WPROF_GA e, MPI_Comm comm){
-   if(e >= wPROF_TOTAL){
+   if(e >= WPROF_TOTAL){
       return -1;
    }
    pthread_mutex_lock(&gprof_lock);
-   MPI_Reduce(&gaw_global_stats[e].count, &gaw_local_stas[e].count, 1, MPI_LONG_LONG, MPI_SUM, 0, comm);
-   MPI_Reduce(&gaw_global_stats[e].time, &gaw_local_stas[e].time, 1, MPI_LONG_LONG, MPI_SUM, 0, comm);
-   MPI_Reduce(&gaw_global_stats[e].total_bytes, &gaw_local_stas[e].total_bytes, 1, MPI_LONG_LONG, MPI_SUM, 0, comm);
+   MPI_Reduce(&gaw_global_stats[e].count, &gaw_local_stats[e].count, 1, MPI_LONG_LONG, MPI_SUM, 0, comm);
+   MPI_Reduce(&gaw_global_stats[e].time, &gaw_local_stats[e].time, 1, MPI_LONG_LONG, MPI_SUM, 0, comm);
+   MPI_Reduce(&gaw_global_stats[e].total_bytes, &gaw_local_stats[e].total_bytes, 1, MPI_LONG_LONG, MPI_SUM, 0, comm);
    pthread_mutex_unlock(&gprof_lock);
    return 0;
 }
 
 int print_ga_prof_stats(enum FMT f, FILE *fp, MPI_Comm comm){
    int i;
+   int me, nproc;
+   MPI_Comm_rank(MPI_COMM_WORLD, &me);
+   MPI_Comm_size(MPI_COMM_WORLD, &nproc);
+
    fprintf(fp, "Local stats\n");
-   switch(f):
+   switch(f)
    {
-      case CVS_FMT:
-         fprintf("Func Name, Node, Count, Time, Bytes\n");
+      case CSV_FMT:
+         fprintf(fp, "Func Name, Node, Count, Time, Bytes\n");
          break;
       case HUMAN_FMT:
          break;
@@ -312,16 +318,16 @@ int print_ga_prof_stats(enum FMT f, FILE *fp, MPI_Comm comm){
    for (i = 0; i < WPROF_TOTAL; ++i){
       if(gaw_local_stats[i].count){
          switch(f){
-            case CVS_FMT:  
-               fprintf(fp, "%s, %d, %lld, %lld, %lld\n",
+            case CSV_FMT:  
+               fprintf(fp, "%s, %d, %"PRIu64", %"PRIu64", %"PRIu64"\n",
                       gaw_local_stats[i].name, me, gaw_local_stats[i].count, gaw_local_stats[i].time, 
                       gaw_local_stats[i].total_bytes);
                break;
             case HUMAN_FMT:
-               fprintf(fp, "[%d] Function Name: %s and Node: %d\n", me, gaw_local_stats[i].name);
-               fprintf(fp, "[%d]\tCount: %lld\n", me, gaw_local_stats[i].count);
-               fprintf(fp, "[%d]\tCumm Time: %lld\n", me, gaw_local_stats[i].time);
-               fprintf(fp, "[%d]\tTotal Bytes: %lld\n", me, gaw_local_stats[i].total_bytes);
+               fprintf(fp, "[%d] Function Name: %s\n", me, gaw_local_stats[i].name);
+               fprintf(fp, "[%d]\tCount: %"PRIu64"\n", me, gaw_local_stats[i].count);
+               fprintf(fp, "[%d]\tCumm Time: %"PRIu64"\n", me, gaw_local_stats[i].time);
+               fprintf(fp, "[%d]\tTotal Bytes: %"PRIu64"\n", me, gaw_local_stats[i].total_bytes);
                break;
          }
       }
@@ -330,10 +336,10 @@ int print_ga_prof_stats(enum FMT f, FILE *fp, MPI_Comm comm){
    if(me == 0){
       fprintf(fp, "Global Stats\n");     
    }    
-   switch(f):
+   switch(f)
    {
-      case CVS_FMT:
-         fprintf("Func Name, Node, Count, Time, Bytes\n");
+      case CSV_FMT:
+         fprintf(fp, "Func Name, Node, Count, Time, Bytes\n");
          break;
       case HUMAN_FMT:
          break;
@@ -341,16 +347,16 @@ int print_ga_prof_stats(enum FMT f, FILE *fp, MPI_Comm comm){
    for (i = 0; i < WPROF_TOTAL; ++i){
       if(gaw_local_stats[i].count){
          switch(f){
-            case CVS_FMT:  
-               fprintf(fp, "%s, %lld, %lld, %lld\n",
+            case CSV_FMT:  
+               fprintf(fp, "%s, %"PRIu64", %"PRIu64", %"PRIu64"\n",
                       gaw_global_stats[i].name, gaw_global_stats[i].count, gaw_global_stats[i].time, 
                       gaw_global_stats[i].total_bytes);
                break;
             case HUMAN_FMT:
-               fprintf(fp, "Function Name: %s and Node: %d\n", gaw_global_stats[i].name);
-               fprintf(fp, "\tCount: %lld\n", gaw_global_stats[i].count);
-               fprintf(fp, "\tCumm Time: %lld\n", gaw_global_stats[i].time);
-               fprintf(fp, "\tTotal Bytes: %lld\n", gaw_global_stats[i].total_bytes);
+               fprintf(fp, "Function Name: %s\n", gaw_global_stats[i].name);
+               fprintf(fp, "\tCount: %"PRIu64"\n", gaw_global_stats[i].count);
+               fprintf(fp, "\tCumm Time: %"PRIu64"\n", gaw_global_stats[i].time);
+               fprintf(fp, "\tTotal Bytes: %"PRIu64"\n", gaw_global_stats[i].total_bytes);
                break;
          }
       }

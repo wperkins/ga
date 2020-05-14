@@ -314,15 +314,14 @@ libwapi_la_SOURCES =
 libwapi_la_SOURCES += tools/ga-wapi.c
 libwapi_la_SOURCES += tools/ga-wprof.c
 if ENABLE_GPARRAYS
-libwapi_la_SOURCES += tools/gp-wapi.c
-libwapi_la_SOURCES += tools/ga-wprof.c
+#libwapi_la_SOURCES += tools/gp-wapi.c
 endif
 else
 nodist_libga_la_SOURCES += tools/ga-wapi.c
 nodist_libga_la_SOURCES += tools/ga-wprof.c
 if ENABLE_GPARRAYS
-nodist_libga_la_SOURCES += tools/gp-wapi.c
-nodist_libga_la_SOURCES += tools/gp-wprof.c
+#nodist_libga_la_SOURCES += tools/gp-wapi.c
+#nodist_libga_la_SOURCES += tools/gp-wprof.c
 endif
 endif
 endif

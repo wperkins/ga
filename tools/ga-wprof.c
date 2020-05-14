@@ -272,7 +272,12 @@ uint64_t I_Wtime(void)
     return timeRes;
 }
 
-int init_ga_prof_struct(){
+enum FMT logs = HUMAN_FMT;
+FILE *filePre = NULL;
+FILE *globalFilePre = NULL;
+int gaw_depth = 1;
+
+int init_ga_prof_struct(int me, int nproc){
    int i;
    for(i = 0; i < WPROF_TOTAL; ++i){
       strncpy(gaw_global_stats[i].name, ga_weak_symbols[i], 80);
@@ -286,6 +291,55 @@ int init_ga_prof_struct(){
       gaw_local_stats[i].time = 0;
       gaw_local_stats[i].total_bytes = 0;
    }
+   char *filePrefix = getenv("GAW_FILE_PREFIX");
+   char *strLogs = getenv("GAW_FMT");
+   char *Gdepth = getenv("GAW_DEPTH");
+   if(!filePrefix){
+      filePre = stdout;
+      if(me == 0)
+         globalFilePre = stdout;
+      
+   }  
+   else{
+      char *fname[1024];
+      sprintf(fname, "%s-%d-%d.txt", filePrefix, me, nproc);
+      filePre = fopen(fname, "wb+");
+      if(!filePre){
+         printf("Error in openning logs files: %s\n", fname);
+         exit(11);
+      }
+      else{
+         printf("Log File openned: %s\n", fname);
+      }
+      if(me == 0){
+         sprintf(fname, "%s-GLOBAL.txt", filePrefix);
+         globalFilePre = fopen(fname, "wb+");
+         if(!globalFilePre){
+            printf("Error in openning logs files: %s\n", fname);
+            exit(11);
+         }
+         else{
+            printf("Log File openned: %s\n", fname);
+         }      
+      }
+   }
+   if(!strLogs){
+       /* Assume that the default is HUMAN readable */
+   }
+   else{
+      int fm = atoi(strLogs); /* zero for CSV and one for HUMAN READABLE */
+      switch(fm){
+         case HUMAN_FMT:
+            logs = HUMAN_FMT;
+            break;
+         case CSV_FMT:
+             logs = CSV_FMT;
+             break;
+         default:
+            logs = HUMAN_FMT;
+            break;
+      }   
+   }
 }
 
 pthread_mutex_t gprof_lock =  PTHREAD_MUTEX_INITIALIZER;
@@ -294,9 +348,6 @@ int update_local_entry(enum WPROF_GA e, uint64_t tme, uint64_t bytes){
    if(e >= WPROF_TOTAL){
       return -1;
    }
-/*   __sync_fetch_and_add(&(gaw_local_stats[e].count), 1);
-   __sync_fetch_and_add(&(gaw_local_stats[e].time), tme);
-   __sync_fetch_and_add(&(gaw_local_stats[e].total_bytes), bytes);*/
    pthread_mutex_lock(&gprof_lock);
    gaw_local_stats[e].count++;
    gaw_local_stats[e].time += tme;
@@ -320,6 +371,9 @@ int print_ga_prof_stats(enum FMT f, FILE *fp, MPI_Comm comm){
    int me, nproc;
    MPI_Comm_rank(MPI_COMM_WORLD, &me);
    MPI_Comm_size(MPI_COMM_WORLD, &nproc);
+   /* TODO: change the arguments, they are not longer needed */
+   f = logs;
+   fp = filePre;
 
    fprintf(fp, "Local stats\n");
    switch(f)
@@ -348,6 +402,7 @@ int print_ga_prof_stats(enum FMT f, FILE *fp, MPI_Comm comm){
       }
    }
    MPI_Barrier(comm);
+   fp = globalFilePre;
    if(me == 0){
       fprintf(fp, "Global Stats\n");     
    switch(f)
@@ -376,4 +431,6 @@ int print_ga_prof_stats(enum FMT f, FILE *fp, MPI_Comm comm){
       }
    }   
    }
+   fclose(filePre);
+   if(me == 0) fclose(globalFilePre);   
 }

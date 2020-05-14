@@ -1,5 +1,7 @@
 #ifndef _GA_WPRF
 #define _GA_WPRF 1
+#include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include <inttypes.h>
 #include <pthread.h>
@@ -318,7 +320,7 @@ extern ga_weak_profile_t gaw_global_stats[];
 extern ga_weak_profile_t gaw_local_stats[];
 extern char ga_weak_symbols[][80];
 
-int init_ga_prof_struct();
+int init_ga_prof_struct(int, int);
 int print_ga_prof_stats(enum FMT f, FILE *fp, MPI_Comm comm);
 
 int update_local_entry(enum WPROF_GA e, uint64_t tme, uint64_t bytes);

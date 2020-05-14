@@ -4706,21 +4706,23 @@ void wnga_initialize()
 {
     //++count_pnga_initialize;
     //
-    init_ga_prof_struct();
+    
     pnga_initialize();
     update_local_entry(PNGA_INITIALIZE, 0, 0);
     MPI_Comm_rank(MPI_COMM_WORLD, &me);
     MPI_Comm_size(MPI_COMM_WORLD, &nproc);
+    init_ga_prof_struct(me, nproc);
 }
 
 void wnga_initialize_ltd(Integer limit)
 {
     //++count_pnga_initialize_ltd;
-    init_ga_prof_struct();
+
     pnga_initialize_ltd(limit);
     update_local_entry(PNGA_INITIALIZE_LTD, 0, 0);
     MPI_Comm_rank(MPI_COMM_WORLD, &me);
     MPI_Comm_size(MPI_COMM_WORLD, &nproc);
+    init_ga_prof_struct(me, nproc);
 }
 
 void wnga_terminate()

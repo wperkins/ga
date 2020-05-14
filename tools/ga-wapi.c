@@ -520,14 +520,6 @@ static double time_pnga_zero_patch = 0;
 
 void wnga_abs_value(Integer g_a)
 {
-    /*
-    double local_start, local_stop;
-    ++count_pnga_abs_value;
-    local_start = I_Wtime();
-    pnga_abs_value(g_a);
-    local_stop = I_Wtime();
-    time_pnga_abs_value += local_stop - local_start;
-    */
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_abs_value(g_a);
@@ -538,12 +530,6 @@ void wnga_abs_value(Integer g_a)
 
 void wnga_abs_value_patch(Integer g_a, Integer *lo, Integer *hi)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_abs_value_patch;
-    local_start = I_Wtime();
-    pnga_abs_value_patch(g_a, lo, hi);
-    local_stop = I_Wtime();
-    time_pnga_abs_value_patch += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_abs_value_patch(g_a, lo, hi);
@@ -554,12 +540,6 @@ void wnga_abs_value_patch(Integer g_a, Integer *lo, Integer *hi)
 
 void wnga_acc(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld, void *alpha)
 {
-/*    double local_start, local_stop;
-    ++count_pnga_acc;
-    local_start = I_Wtime();
-    pnga_acc(g_a, lo, hi, buf, ld, alpha);
-    local_stop = I_Wtime();
-    time_pnga_acc += local_stop - local_start;*/
    unsigned long long ltme, sz;
    GET_SIZE(g_a, lo, hi, sz);
    ltme=- I_Wtime();
@@ -571,12 +551,6 @@ void wnga_acc(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld, voi
 
 void wnga_access_block_grid_idx(Integer g_a, Integer *subscript, AccessIndex *index, Integer *ld)
 {
-/*    double local_start, local_stop;
-    ++count_pnga_access_block_grid_idx;
-    local_start = I_Wtime();
-    pnga_access_block_grid_idx(g_a, subscript, index, ld);
-    local_stop = I_Wtime();
-    time_pnga_access_block_grid_idx += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_access_block_grid_idx(g_a, subscript, index, ld);
@@ -587,12 +561,6 @@ void wnga_access_block_grid_idx(Integer g_a, Integer *subscript, AccessIndex *in
 
 void wnga_access_block_grid_ptr(Integer g_a, Integer *index, void *ptr, Integer *ld)
 {
-/*    double local_start, local_stop;
-    ++count_pnga_access_block_grid_ptr;
-    local_start = I_Wtime();
-    pnga_access_block_grid_ptr(g_a, index, ptr, ld);
-    local_stop = I_Wtime();
-    time_pnga_access_block_grid_ptr += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_access_block_grid_ptr(g_a, index, ptr, ld);
@@ -603,12 +571,6 @@ void wnga_access_block_grid_ptr(Integer g_a, Integer *index, void *ptr, Integer 
 
 void wnga_access_block_idx(Integer g_a, Integer idx, AccessIndex *index, Integer *ld)
 {
-/*    double local_start, local_stop;
-    ++count_pnga_access_block_idx;
-    local_start = I_Wtime();
-    pnga_access_block_idx(g_a, idx, index, ld);
-    local_stop = I_Wtime();
-    time_pnga_access_block_idx += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_access_block_idx(g_a, idx, index, ld);
@@ -619,12 +581,6 @@ void wnga_access_block_idx(Integer g_a, Integer idx, AccessIndex *index, Integer
 
 void wnga_access_block_ptr(Integer g_a, Integer idx, void *ptr, Integer *ld)
 {
-/*    double local_start, local_stop;
-    ++count_pnga_access_block_ptr;
-    local_start = I_Wtime();
-    pnga_access_block_ptr(g_a, idx, ptr, ld);
-    local_stop = I_Wtime();
-    time_pnga_access_block_ptr += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_access_block_ptr(g_a, idx, ptr, ld);
@@ -635,12 +591,6 @@ void wnga_access_block_ptr(Integer g_a, Integer idx, void *ptr, Integer *ld)
 
 void wnga_access_block_segment_idx(Integer g_a, Integer proc, AccessIndex *index, Integer *len)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_access_block_segment_idx;
-    local_start = I_Wtime();
-    pnga_access_block_segment_idx(g_a, proc, index, len);
-    local_stop = I_Wtime();
-    time_pnga_access_block_segment_idx += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_access_block_segment_idx(g_a, proc, index, len);
@@ -651,12 +601,6 @@ void wnga_access_block_segment_idx(Integer g_a, Integer proc, AccessIndex *index
 
 void wnga_access_block_segment_ptr(Integer g_a, Integer proc, void *ptr, Integer *len)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_access_block_segment_ptr;
-    local_start = I_Wtime();
-    pnga_access_block_segment_ptr(g_a, proc, ptr, len);
-    local_stop = I_Wtime();
-    time_pnga_access_block_segment_ptr += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_access_block_segment_ptr(g_a, proc, ptr, len);
@@ -667,12 +611,6 @@ void wnga_access_block_segment_ptr(Integer g_a, Integer proc, void *ptr, Integer
 
 void wnga_access_ghost_element(Integer g_a, AccessIndex *index, Integer subscript[], Integer ld[])
 {
-/*    double local_start, local_stop;
-    ++count_pnga_access_ghost_element;
-    local_start = I_Wtime();
-    pnga_access_ghost_element(g_a, index, subscript, ld);
-    local_stop = I_Wtime();
-    time_pnga_access_ghost_element += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_access_ghost_element(g_a, index, subscript, ld);
@@ -683,12 +621,6 @@ void wnga_access_ghost_element(Integer g_a, AccessIndex *index, Integer subscrip
 
 void wnga_access_ghost_element_ptr(Integer g_a, void *ptr, Integer subscript[], Integer ld[])
 {
-/*    double local_start, local_stop;
-    ++count_pnga_access_ghost_element_ptr;
-    local_start = I_Wtime();
-    pnga_access_ghost_element_ptr(g_a, ptr, subscript, ld);
-    local_stop = I_Wtime();
-    time_pnga_access_ghost_element_ptr += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_access_ghost_element_ptr(g_a, ptr, subscript, ld);
@@ -699,12 +631,6 @@ void wnga_access_ghost_element_ptr(Integer g_a, void *ptr, Integer subscript[], 
 
 void wnga_access_ghost_ptr(Integer g_a, Integer dims[], void *ptr, Integer ld[])
 {
-    /*double local_start, local_stop;
-    ++count_pnga_access_ghost_ptr;
-    local_start = I_Wtime();
-    pnga_access_ghost_ptr(g_a, dims, ptr, ld);
-    local_stop = I_Wtime();
-    time_pnga_access_ghost_ptr += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_access_ghost_ptr(g_a, dims, ptr, ld);
@@ -714,12 +640,6 @@ void wnga_access_ghost_ptr(Integer g_a, Integer dims[], void *ptr, Integer ld[])
 
 void wnga_access_ghosts(Integer g_a, Integer dims[], AccessIndex *index, Integer ld[])
 {
-/*    double local_start, local_stop;
-    ++count_pnga_access_ghosts;
-    local_start = I_Wtime();
-    pnga_access_ghosts(g_a, dims, index, ld);
-    local_stop = I_Wtime();
-    time_pnga_access_ghosts += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_access_ghosts(g_a, dims, index, ld);
@@ -730,12 +650,6 @@ void wnga_access_ghosts(Integer g_a, Integer dims[], AccessIndex *index, Integer
 
 void wnga_access_idx(Integer g_a, Integer *lo, Integer *hi, AccessIndex *index, Integer *ld)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_access_idx;
-    local_start = I_Wtime();
-    pnga_access_idx(g_a, lo, hi, index, ld);
-    local_stop = I_Wtime();
-    time_pnga_access_idx += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_access_idx(g_a, lo, hi, index, ld);
@@ -746,13 +660,6 @@ void wnga_access_idx(Integer g_a, Integer *lo, Integer *hi, AccessIndex *index, 
 
 void wnga_access_ptr(Integer g_a, Integer *lo, Integer *hi, void *ptr, Integer *ld)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_access_ptr;
-    local_start = I_Wtime();
-    pnga_access_ptr(g_a, lo, hi, ptr, ld);
-    local_stop = I_Wtime();
-    time_pnga_access_ptr += local_stop - local_start;*/
-
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_access_ptr(g_a, lo, hi, ptr, ld);
@@ -763,12 +670,6 @@ void wnga_access_ptr(Integer g_a, Integer *lo, Integer *hi, void *ptr, Integer *
 
 void wnga_add(void *alpha, Integer g_a, void *beta, Integer g_b, Integer g_c)
 {
-/*    double local_start, local_stop;
-    ++count_pnga_add;
-    local_start = I_Wtime();
-    pnga_add(alpha, g_a, beta, g_b, g_c);
-    local_stop = I_Wtime();
-    time_pnga_add += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_add(alpha, g_a, beta, g_b, g_c);
@@ -779,12 +680,6 @@ void wnga_add(void *alpha, Integer g_a, void *beta, Integer g_b, Integer g_c)
 
 void wnga_add_constant(Integer g_a, void *alpha)
 {
-/*    double local_start, local_stop;
-    ++count_pnga_add_constant;
-    local_start = I_Wtime();
-    pnga_add_constant(g_a, alpha);
-    local_stop = I_Wtime();
-    time_pnga_add_constant += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_add_constant(g_a, alpha);
@@ -795,12 +690,6 @@ void wnga_add_constant(Integer g_a, void *alpha)
 
 void wnga_add_constant_patch(Integer g_a, Integer *lo, Integer *hi, void *alpha)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_add_constant_patch;
-    local_start = I_Wtime();
-    pnga_add_constant_patch(g_a, lo, hi, alpha);
-    local_stop = I_Wtime();
-    time_pnga_add_constant_patch += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_add_constant_patch(g_a, lo, hi, alpha);
@@ -811,12 +700,6 @@ void wnga_add_constant_patch(Integer g_a, Integer *lo, Integer *hi, void *alpha)
 
 void wnga_add_diagonal(Integer g_a, Integer g_v)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_add_diagonal;
-    local_start = I_Wtime();
-    pnga_add_diagonal(g_a, g_v);
-    local_stop = I_Wtime();
-    time_pnga_add_diagonal += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_add_diagonal(g_a, g_v);
@@ -827,12 +710,6 @@ void wnga_add_diagonal(Integer g_a, Integer g_v)
 
 void wnga_add_patch(void *alpha, Integer g_a, Integer *alo, Integer *ahi, void *beta, Integer g_b, Integer *blo, Integer *bhi, Integer g_c, Integer *clo, Integer *chi)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_add_patch;
-    local_start = I_Wtime();
-    pnga_add_patch(alpha, g_a, alo, ahi, beta, g_b, blo, bhi, g_c, clo, chi);
-    local_stop = I_Wtime();
-    time_pnga_add_patch += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_add_patch(alpha, g_a, alo, ahi, beta, g_b, blo, bhi, g_c, clo, chi);
@@ -842,31 +719,19 @@ void wnga_add_patch(void *alpha, Integer g_a, Integer *alo, Integer *ahi, void *
 
 logical wnga_allocate(Integer g_a)
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_allocate;
-    local_start = I_Wtime();
-    return_value = pnga_allocate(g_a);
-    local_stop = I_Wtime();
-    time_pnga_allocate += local_stop - local_start;
-    return return_value;*/
-   unsigned long long ltme;
+   logical return_value;
+   unsigned long long ltme, sz;
    ltme=- I_Wtime();
    return_value = pnga_allocate(g_a);
    ltme += I_Wtime();
-   update_local_entry(PNGA_ALLOCATE, ltme, 0);
+   GET_LOCAL_MSIZE(g_a, sz);
+   update_local_entry(PNGA_ALLOCATE, ltme, sz);
    return return_value;
 }
 
 
 void wnga_bin_index(Integer g_bin, Integer g_cnt, Integer g_off, Integer *values, Integer *subs, Integer n, Integer sortit)
 {
-/*    double local_start, local_stop;
-    ++count_pnga_bin_index;
-    local_start = I_Wtime();
-    pnga_bin_index(g_bin, g_cnt, g_off, values, subs, n, sortit);
-    local_stop = I_Wtime();
-    time_pnga_bin_index += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_bin_index(g_bin, g_cnt, g_off, values, subs, n, sortit);
@@ -877,12 +742,6 @@ void wnga_bin_index(Integer g_bin, Integer g_cnt, Integer g_off, Integer *values
 
 void wnga_bin_sorter(Integer g_bin, Integer g_cnt, Integer g_off)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_bin_sorter;
-    local_start = I_Wtime();
-    pnga_bin_sorter(g_bin, g_cnt, g_off);
-    local_stop = I_Wtime();
-    time_pnga_bin_sorter += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_bin_sorter(g_bin, g_cnt, g_off);
@@ -893,12 +752,6 @@ void wnga_bin_sorter(Integer g_bin, Integer g_cnt, Integer g_off)
 
 void wnga_brdcst(Integer type, void *buf, Integer len, Integer originator)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_brdcst;
-    local_start = I_Wtime();
-    pnga_brdcst(type, buf, len, originator);
-    local_stop = I_Wtime();
-    time_pnga_brdcst += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_brdcst(type, buf, len, originator);
@@ -909,12 +762,6 @@ void wnga_brdcst(Integer type, void *buf, Integer len, Integer originator)
 
 void wnga_check_handle(Integer g_a, char *string)
 {
-/*    double local_start, local_stop;
-    ++count_pnga_check_handle;
-    local_start = I_Wtime();
-    pnga_check_handle(g_a, string);
-    local_stop = I_Wtime();
-    time_pnga_check_handle += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_check_handle(g_a, string);
@@ -925,136 +772,88 @@ void wnga_check_handle(Integer g_a, char *string)
 
 Integer wnga_cluster_nnodes()
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_cluster_nnodes;
-    local_start = I_Wtime();
-    return_value = pnga_cluster_nnodes();
-    local_stop = I_Wtime();
-    time_pnga_cluster_nnodes += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme;
    ltme=- I_Wtime();
    return_value = pnga_cluster_nnodes();
    ltme += I_Wtime();
    update_local_entry(PNGA_CLUSTER_NNODES, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 Integer wnga_cluster_nodeid()
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_cluster_nodeid;
-    local_start = I_Wtime();
-    return_value = pnga_cluster_nodeid();
-    local_stop = I_Wtime();
-    time_pnga_cluster_nodeid += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme;
    ltme=- I_Wtime();
    return_value = pnga_cluster_nodeid();
    ltme += I_Wtime();
    update_local_entry(PNGA_CLUSTER_NODEID, ltme, 0);   
-    return return_value;
+   return return_value;
 }
 
 
 Integer wnga_cluster_nprocs(Integer node)
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_cluster_nprocs;
-    local_start = I_Wtime();
-    return_value = pnga_cluster_nprocs(node);
-    local_stop = I_Wtime();
-    time_pnga_cluster_nprocs += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme;
    ltme=- I_Wtime();
    return_value = pnga_cluster_nprocs(node);
    ltme += I_Wtime();
    update_local_entry(PNGA_CLUSTER_NPROCS, ltme, 0);       
-    return return_value;
+   return return_value;
 }
 
 
 Integer wnga_cluster_proc_nodeid(Integer proc)
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_cluster_proc_nodeid;
-    local_start = I_Wtime();
-    return_value = pnga_cluster_proc_nodeid(proc);
-    local_stop = I_Wtime();
-    time_pnga_cluster_proc_nodeid += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme;
    ltme=- I_Wtime();
    return_value = pnga_cluster_proc_nodeid(proc);
    ltme += I_Wtime();
    update_local_entry(PNGA_CLUSTER_PROC_NODEID, ltme, 0);
-    return return_value;
+   return return_value;
 }
 
 Integer wnga_cluster_procid(Integer node, Integer loc_proc_id)
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_cluster_procid;
-    local_start = I_Wtime();
-    return_value = pnga_cluster_procid(node, loc_proc_id);
-    local_stop = I_Wtime();
-    time_pnga_cluster_procid += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme;
    ltme=- I_Wtime();
    return_value = pnga_cluster_procid(node, loc_proc_id);
    ltme += I_Wtime();
    update_local_entry(PNGA_CLUSTER_PROCID, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 logical wnga_comp_patch(Integer andim, Integer *alo, Integer *ahi, Integer bndim, Integer *blo, Integer *bhi)
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_comp_patch;
-    local_start = I_Wtime();
-    return_value = pnga_comp_patch(andim, alo, ahi, bndim, blo, bhi);
-    local_stop = I_Wtime();
-    time_pnga_comp_patch += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme;
    ltme=- I_Wtime();
    return_value = pnga_comp_patch(andim, alo, ahi, bndim, blo, bhi);
    ltme += I_Wtime();
    update_local_entry(PNGA_COMP_PATCH, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 logical wnga_compare_distr(Integer g_a, Integer g_b)
 {
-    logical return_value;
-/*    double local_start, local_stop;
-    ++count_pnga_compare_distr;
-    local_start = I_Wtime();
-    return_value = pnga_compare_distr(g_a, g_b);
-    local_stop = I_Wtime();
-    time_pnga_compare_distr += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme;
    ltme=- I_Wtime();
    return_value = pnga_compare_distr(g_a, g_b);
    ltme += I_Wtime();
    update_local_entry(PNGA_COMPARE_DISTR, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 void wnga_copy(Integer g_a, Integer g_b)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_copy;
-    local_start = I_Wtime();
-    pnga_copy(g_a, g_b);
-    local_stop = I_Wtime();
-    time_pnga_copy += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_copy(g_a, g_b);
@@ -1065,12 +864,6 @@ void wnga_copy(Integer g_a, Integer g_b)
 
 void wnga_copy_patch(char *trans, Integer g_a, Integer *alo, Integer *ahi, Integer g_b, Integer *blo, Integer *bhi)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_copy_patch;
-    local_start = I_Wtime();
-    pnga_copy_patch(trans, g_a, alo, ahi, g_b, blo, bhi);
-    local_stop = I_Wtime();
-    time_pnga_copy_patch += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_copy_patch(trans, g_a, alo, ahi, g_b, blo, bhi);
@@ -1081,12 +874,6 @@ void wnga_copy_patch(char *trans, Integer g_a, Integer *alo, Integer *ahi, Integ
 
 void wnga_copy_patch_dp(char *t_a, Integer g_a, Integer ailo, Integer aihi, Integer ajlo, Integer ajhi, Integer g_b, Integer bilo, Integer bihi, Integer bjlo, Integer bjhi)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_copy_patch_dp;
-    local_start = I_Wtime();
-    pnga_copy_patch_dp(t_a, g_a, ailo, aihi, ajlo, ajhi, g_b, bilo, bihi, bjlo, bjhi);
-    local_stop = I_Wtime();
-    time_pnga_copy_patch_dp += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_copy_patch_dp(t_a, g_a, ailo, aihi, ajlo, ajhi, g_b, bilo, bihi, bjlo, bjhi);
@@ -1097,61 +884,39 @@ void wnga_copy_patch_dp(char *t_a, Integer g_a, Integer ailo, Integer aihi, Inte
 
 logical wnga_create(Integer type, Integer ndim, Integer *dims, char *name, Integer *chunk, Integer *g_a)
 {
-    logical return_value;
-    int i;
-    /*double local_start, local_stop;
-    ++count_pnga_create;
-    local_start = I_Wtime();
-    return_value = pnga_create(type, ndim, dims, name, chunk, g_a);
-    local_stop = I_Wtime();
-    time_pnga_create += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme;
    ltme=- I_Wtime();
    return_value = pnga_create(type, ndim, dims, name, chunk, g_a);
    ltme += I_Wtime();
-   uint64_t sz = 1;
-   for(i = 0; i < ndim; ++i) sz *= dims[i];
-   OBTAIN_SIZE(sz, type);
+   uint64_t sz;
+   GET_LOCAL_MSIZE(*g_a, sz);
    update_local_entry(PNGA_CREATE, ltme, sz);
-    return return_value;
+   return return_value;
 }
 
 
 logical wnga_create_bin_range(Integer g_bin, Integer g_cnt, Integer g_off, Integer *g_range)
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_create_bin_range;
-    local_start = I_Wtime();
-    return_value = pnga_create_bin_range(g_bin, g_cnt, g_off, g_range);
-    local_stop = I_Wtime();
-    time_pnga_create_bin_range += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme;
    ltme=- I_Wtime();
    return_value = pnga_create_bin_range(g_bin, g_cnt, g_off, g_range);
    ltme += I_Wtime();
    update_local_entry(PNGA_CREATE_BIN_RANGE, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 logical wnga_create_config(Integer type, Integer ndim, Integer *dims, char *name, Integer *chunk, Integer p_handle, Integer *g_a)
 {
-    logical return_value;
-    int i;
-    /*double local_start, local_stop;
-    ++count_pnga_create_config;
-    local_start = I_Wtime();
-    return_value = pnga_create_config(type, ndim, dims, name, chunk, p_handle, g_a);
-    local_stop = I_Wtime();
-    time_pnga_create_config += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme;
    ltme=- I_Wtime();
    return_value = pnga_create_config(type, ndim, dims, name, chunk, p_handle, g_a);
    ltme += I_Wtime();
-   uint64_t sz = 1;
-   for(i = 0; i < ndim; ++i) sz *= dims[i];
-   OBTAIN_SIZE(sz, type);
+   uint64_t sz ;
+   GET_LOCAL_MSIZE(*g_a, sz);
    update_local_entry(PNGA_CREATE_CONFIG, ltme, sz);
     return return_value;
 }
@@ -1159,250 +924,163 @@ logical wnga_create_config(Integer type, Integer ndim, Integer *dims, char *name
 
 logical wnga_create_ghosts(Integer type, Integer ndim, Integer *dims, Integer *width, char *name, Integer *chunk, Integer *g_a)
 {
-    logical return_value;
-    int i;
-    /*double local_start, local_stop;
-    ++count_pnga_create_ghosts;
-    local_start = I_Wtime();
-    return_value = pnga_create_ghosts(type, ndim, dims, width, name, chunk, g_a);
-    local_stop = I_Wtime();
-    time_pnga_create_ghosts += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme;
    ltme=- I_Wtime();
    return_value = pnga_create_ghosts(type, ndim, dims, width, name, chunk, g_a);
    ltme += I_Wtime();
-   uint64_t sz = 1;
-   for(i = 0; i < ndim; ++i) sz *= dims[i];
-   OBTAIN_SIZE(sz, type);
+   uint64_t sz ;
+   GET_LOCAL_MSIZE(*g_a, sz);
    update_local_entry(PNGA_CREATE_GHOSTS, ltme, sz);    
-    return return_value;
+   return return_value;
 }
 
 
 logical wnga_create_ghosts_config(Integer type, Integer ndim, Integer *dims, Integer *width, char *name, Integer *chunk, Integer p_handle, Integer *g_a)
 {
-    logical return_value;
-    int i;
-    /*double local_start, local_stop;
-    ++count_pnga_create_ghosts_config;
-    local_start = I_Wtime();
-    return_value = pnga_create_ghosts_config(type, ndim, dims, width, name, chunk, p_handle, g_a);
-    local_stop = I_Wtime();
-    time_pnga_create_ghosts_config += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme;
    ltme=- I_Wtime();
    return_value = pnga_create_ghosts_config(type, ndim, dims, width, name, chunk, p_handle, g_a);
    ltme += I_Wtime();
-   uint64_t sz = 1;
-   for(i = 0; i < ndim; ++i) sz *= dims[i];
-   OBTAIN_SIZE(sz, type);
+   uint64_t sz;
+   GET_LOCAL_MSIZE(*g_a, sz);
    update_local_entry(PNGA_CREATE_GHOSTS_CONFIG, ltme, sz);    
-    return return_value;
+   return return_value;
 }
 
 
 logical wnga_create_ghosts_irreg(Integer type, Integer ndim, Integer *dims, Integer *width, char *name, Integer *map, Integer *block, Integer *g_a)
 {
-    logical return_value;
-    int i;
-    /*double local_start, local_stop;
-    ++count_pnga_create_ghosts_irreg;
-    local_start = I_Wtime();
-    return_value = pnga_create_ghosts_irreg(type, ndim, dims, width, name, map, block, g_a);
-    local_stop = I_Wtime();
-    time_pnga_create_ghosts_irreg += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme;
    ltme=- I_Wtime();
    return_value = pnga_create_ghosts_irreg(type, ndim, dims, width, name, map, block, g_a);
    ltme += I_Wtime();
-   uint64_t sz = 1;
-   for(i = 0; i < ndim; ++i) sz *= dims[i];
-   OBTAIN_SIZE(sz, type);
+   uint64_t sz;
+   GET_LOCAL_MSIZE(*g_a, sz);
    update_local_entry(PNGA_CREATE_GHOSTS_IRREG, ltme, sz);    
-    return return_value;
+   return return_value;
 }
 
 
 logical wnga_create_ghosts_irreg_config(Integer type, Integer ndim, Integer *dims, Integer *width, char *name, Integer *map, Integer *block, Integer p_handle, Integer *g_a)
 {
-    logical return_value;
-    int i;
-    /*double local_start, local_stop;
-    ++count_pnga_create_ghosts_irreg_config;
-    local_start = I_Wtime();
-    return_value = pnga_create_ghosts_irreg_config(type, ndim, dims, width, name, map, block, p_handle, g_a);
-    local_stop = I_Wtime();
-    time_pnga_create_ghosts_irreg_config += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme;
    ltme=- I_Wtime();
    return_value = pnga_create_ghosts_irreg_config(type, ndim, dims, width, name, map, block, p_handle, g_a);
    ltme += I_Wtime();
-   uint64_t sz = 1;
-   OBTAIN_SIZE(sz, type);
+   uint64_t sz;
+   GET_LOCAL_MSIZE(*g_a, sz);
    update_local_entry(PNGA_CREATE_GHOSTS_IRREG_CONFIG, ltme, sz);    
-    return return_value;
+   return return_value;
 }
 
 
 Integer wnga_create_handle()
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_create_handle;
-    local_start = I_Wtime();
-    return_value = pnga_create_handle();
-    local_stop = I_Wtime();
-    time_pnga_create_handle += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme;
    ltme=- I_Wtime();
    return_value = pnga_create_handle();
    ltme += I_Wtime();
    update_local_entry(PNGA_CREATE_HANDLE, ltme, 0);
-    return return_value;
+   return return_value;
 }
 
 
 logical wnga_create_irreg(Integer type, Integer ndim, Integer *dims, char *name, Integer *map, Integer *block, Integer *g_a)
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_create_irreg;
-    local_start = I_Wtime();
-    return_value = pnga_create_irreg(type, ndim, dims, name, map, block, g_a);
-    local_stop = I_Wtime();
-    time_pnga_create_irreg += local_stop - local_start;*/
-   unsigned long long ltme, i;
+   logical return_value;
+   unsigned long long ltme;
    ltme=- I_Wtime();
    return_value = pnga_create_irreg(type, ndim, dims, name, map, block, g_a);
    ltme += I_Wtime();
-   uint64_t sz = 1;
-   for(i = 0; i < ndim; ++i) sz *= dims[i];
-   OBTAIN_SIZE(sz, type);
+   uint64_t sz;
+   GET_LOCAL_MSIZE(*g_a, sz);
    update_local_entry(PNGA_CREATE_IRREG, ltme, sz);
-    return return_value;
+   return return_value;
 }
 
 
 logical wnga_create_irreg_config(Integer type, Integer ndim, Integer *dims, char *name, Integer *map, Integer *block, Integer p_handle, Integer *g_a)
 {
-    logical return_value;
-    int i;
-    /*double local_start, local_stop;
-    ++count_pnga_create_irreg_config;
-    local_start = I_Wtime();
-    return_value = pnga_create_irreg_config(type, ndim, dims, name, map, block, p_handle, g_a);
-    local_stop = I_Wtime();
-    time_pnga_create_irreg_config += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme;
    ltme=- I_Wtime();
    return_value = pnga_create_irreg_config(type, ndim, dims, name, map, block, p_handle, g_a);
    ltme += I_Wtime();
-   uint64_t sz = 1;
-   for(i = 0; i < ndim; ++i) sz *= dims[i];
-   OBTAIN_SIZE(sz, type);
+   uint64_t sz;
+   GET_LOCAL_MSIZE(*g_a, sz);
    update_local_entry(PNGA_CREATE_IRREG_CONFIG, ltme, sz);    
-    return return_value;
+   return return_value;
 }
 
 
 logical wnga_create_mutexes(Integer num)
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_create_mutexes;
-    local_start = I_Wtime();
-    return_value = pnga_create_mutexes(num);
-    local_stop = I_Wtime();
-    time_pnga_create_mutexes += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme;
    ltme=- I_Wtime();
    return_value = pnga_create_mutexes(num);
    ltme += I_Wtime();
    update_local_entry(PNGA_CREATE_CREATE_MUTEXES, ltme, 0);
-    return return_value;
+   return return_value;
 }
 
 
 DoublePrecision wnga_ddot_patch_dp(Integer g_a, char *t_a, Integer ailo, Integer aihi, Integer ajlo, Integer ajhi, Integer g_b, char *t_b, Integer bilo, Integer bihi, Integer bjlo, Integer bjhi)
 {
-    DoublePrecision return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_ddot_patch_dp;
-    local_start = I_Wtime();
-    return_value = pnga_ddot_patch_dp(g_a, t_a, ailo, aihi, ajlo, ajhi, g_b, t_b, bilo, bihi, bjlo, bjhi);
-    local_stop = I_Wtime();
-    time_pnga_ddot_patch_dp += local_stop - local_start;*/
+   DoublePrecision return_value;
    unsigned long long ltme;
    ltme=- I_Wtime();
    return_value = pnga_ddot_patch_dp(g_a, t_a, ailo, aihi, ajlo, ajhi, g_b, t_b, bilo, bihi, bjlo, bjhi);
    ltme += I_Wtime();
    update_local_entry(PNGA_DDOT_PATCH_DP, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 int wnga_deregister_type(int type)
 {
-    int return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_deregister_type;
-    local_start = I_Wtime();
-    return_value = pnga_deregister_type(type);
-    local_stop = I_Wtime();
-    time_pnga_deregister_type += local_stop - local_start;*/
+   int return_value;
    unsigned long long ltme;
    ltme=- I_Wtime();
    return_value = pnga_deregister_type(type);
    ltme += I_Wtime();
    update_local_entry(PNGA_DEREGISTER_TYPE, ltme, 0);
-    return return_value;
+   return return_value;
 }
 
 
 logical wnga_destroy(Integer g_a)
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_destroy;
-    local_start = I_Wtime();
-    return_value = pnga_destroy(g_a);
-    local_stop = I_Wtime();
-    time_pnga_destroy += local_stop - local_start;*/
-   unsigned long long ltme;
+   logical return_value;
+   unsigned long long ltme, sz;
    ltme=- I_Wtime();
    return_value = pnga_destroy(g_a);
    ltme += I_Wtime();
-   update_local_entry(PNGA_DESTROY, ltme, 0);    
-    return return_value;
+   GET_LOCAL_MSIZE(g_a, sz);
+   update_local_entry(PNGA_DESTROY, ltme, sz);    
+   return return_value;
 }
 
 
 logical wnga_destroy_mutexes()
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_destroy_mutexes;
-    local_start = I_Wtime();
-    return_value = pnga_destroy_mutexes();
-    local_stop = I_Wtime();
-    time_pnga_destroy_mutexes += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme;
    ltme=- I_Wtime();
    return_value = pnga_destroy_mutexes();
    ltme += I_Wtime();
    update_local_entry(PNGA_DESTROY_MUTEXES, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 void wnga_diag(Integer g_a, Integer g_s, Integer g_v, DoublePrecision *eval)
 {
-/*    double local_start, local_stop;
-    ++count_pnga_diag;
-    local_start = I_Wtime();
-    pnga_diag(g_a, g_s, g_v, eval);
-    local_stop = I_Wtime();
-    time_pnga_diag += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_diag(g_a, g_s, g_v, eval);
@@ -1413,12 +1091,6 @@ void wnga_diag(Integer g_a, Integer g_s, Integer g_v, DoublePrecision *eval)
 
 void wnga_diag_reuse(Integer reuse, Integer g_a, Integer g_s, Integer g_v, DoublePrecision *eval)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_diag_reuse;
-    local_start = I_Wtime();
-    pnga_diag_reuse(reuse, g_a, g_s, g_v, eval);
-    local_stop = I_Wtime();
-    time_pnga_diag_reuse += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_diag_reuse(reuse, g_a, g_s, g_v, eval);
@@ -1429,12 +1101,6 @@ void wnga_diag_reuse(Integer reuse, Integer g_a, Integer g_s, Integer g_v, Doubl
 
 void wnga_diag_seq(Integer g_a, Integer g_s, Integer g_v, DoublePrecision *eval)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_diag_seq;
-    local_start = I_Wtime();
-    pnga_diag_seq(g_a, g_s, g_v, eval);
-    local_stop = I_Wtime();
-    time_pnga_diag_seq += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_diag_seq(g_a, g_s, g_v, eval);
@@ -1445,12 +1111,6 @@ void wnga_diag_seq(Integer g_a, Integer g_s, Integer g_v, DoublePrecision *eval)
 
 void wnga_diag_std(Integer g_a, Integer g_v, DoublePrecision *eval)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_diag_std;
-    local_start = I_Wtime();
-    pnga_diag_std(g_a, g_v, eval);
-    local_stop = I_Wtime();
-    time_pnga_diag_std += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_diag_std(g_a, g_v, eval);
@@ -1461,12 +1121,6 @@ void wnga_diag_std(Integer g_a, Integer g_v, DoublePrecision *eval)
 
 void wnga_diag_std_seq(Integer g_a, Integer g_v, DoublePrecision *eval)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_diag_std_seq;
-    local_start = I_Wtime();
-    pnga_diag_std_seq(g_a, g_v, eval);
-    local_stop = I_Wtime();
-    time_pnga_diag_std_seq += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_diag_std_seq(g_a, g_v, eval);
@@ -1477,12 +1131,6 @@ void wnga_diag_std_seq(Integer g_a, Integer g_v, DoublePrecision *eval)
 
 void wnga_distribution(Integer g_a, Integer proc, Integer *lo, Integer *hi)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_distribution;
-    local_start = I_Wtime();
-    pnga_distribution(g_a, proc, lo, hi);
-    local_stop = I_Wtime();
-    time_pnga_distribution += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_distribution(g_a, proc, lo, hi);
@@ -1493,12 +1141,6 @@ void wnga_distribution(Integer g_a, Integer proc, Integer *lo, Integer *hi)
 
 void wnga_dot(int type, Integer g_a, Integer g_b, void *value)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_dot;
-    local_start = I_Wtime();
-    pnga_dot(type, g_a, g_b, value);
-    local_stop = I_Wtime();
-    time_pnga_dot += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_dot(type, g_a, g_b, value);
@@ -1509,12 +1151,6 @@ void wnga_dot(int type, Integer g_a, Integer g_b, void *value)
 
 void wnga_dot_patch(Integer g_a, char *t_a, Integer *alo, Integer *ahi, Integer g_b, char *t_b, Integer *blo, Integer *bhi, void *retval)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_dot_patch;
-    local_start = I_Wtime();
-    pnga_dot_patch(g_a, t_a, alo, ahi, g_b, t_b, blo, bhi, retval);
-    local_stop = I_Wtime();
-    time_pnga_dot_patch += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_dot_patch(g_a, t_a, alo, ahi, g_b, t_b, blo, bhi, retval);
@@ -1525,30 +1161,19 @@ void wnga_dot_patch(Integer g_a, char *t_a, Integer *alo, Integer *ahi, Integer 
 
 logical wnga_duplicate(Integer g_a, Integer *g_b, char *array_name)
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_duplicate;
-    local_start = I_Wtime();
-    return_value = pnga_duplicate(g_a, g_b, array_name);
-    local_stop = I_Wtime();
-    time_pnga_duplicate += local_stop - local_start;*/
-   unsigned long long ltme;
+   logical return_value;
+   unsigned long long ltme, sz;
    ltme=- I_Wtime();
    return_value = pnga_duplicate(g_a, g_b, array_name);
    ltme += I_Wtime();
-   update_local_entry(PNGA_DUPLICATE, ltme, 0);    
-    return return_value;
+   GET_LOCAL_MSIZE(*g_b, sz)
+   update_local_entry(PNGA_DUPLICATE, ltme, sz);    
+   return return_value;
 }
 
 
 void wnga_elem_divide(Integer g_a, Integer g_b, Integer g_c)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_elem_divide;
-    local_start = I_Wtime();
-    pnga_elem_divide(g_a, g_b, g_c);
-    local_stop = I_Wtime();
-    time_pnga_elem_divide += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_elem_divide(g_a, g_b, g_c);
@@ -1559,12 +1184,6 @@ void wnga_elem_divide(Integer g_a, Integer g_b, Integer g_c)
 
 void wnga_elem_divide_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b, Integer *blo, Integer *bhi, Integer g_c, Integer *clo, Integer *chi)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_elem_divide_patch;
-    local_start = I_Wtime();
-    pnga_elem_divide_patch(g_a, alo, ahi, g_b, blo, bhi, g_c, clo, chi);
-    local_stop = I_Wtime();
-    time_pnga_elem_divide_patch += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_elem_divide_patch(g_a, alo, ahi, g_b, blo, bhi, g_c, clo, chi);
@@ -1575,12 +1194,6 @@ void wnga_elem_divide_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b
 
 void wnga_elem_maximum(Integer g_a, Integer g_b, Integer g_c)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_elem_maximum;
-    local_start = I_Wtime();
-    pnga_elem_maximum(g_a, g_b, g_c);
-    local_stop = I_Wtime();
-    time_pnga_elem_maximum += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_elem_maximum(g_a, g_b, g_c);
@@ -1591,12 +1204,6 @@ void wnga_elem_maximum(Integer g_a, Integer g_b, Integer g_c)
 
 void wnga_elem_maximum_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b, Integer *blo, Integer *bhi, Integer g_c, Integer *clo, Integer *chi)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_elem_maximum_patch;
-    local_start = I_Wtime();
-    pnga_elem_maximum_patch(g_a, alo, ahi, g_b, blo, bhi, g_c, clo, chi);
-    local_stop = I_Wtime();
-    time_pnga_elem_maximum_patch += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_elem_maximum_patch(g_a, alo, ahi, g_b, blo, bhi, g_c, clo, chi);
@@ -1607,12 +1214,6 @@ void wnga_elem_maximum_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_
 
 void wnga_elem_minimum(Integer g_a, Integer g_b, Integer g_c)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_elem_minimum;
-    local_start = I_Wtime();
-    pnga_elem_minimum(g_a, g_b, g_c);
-    local_stop = I_Wtime();
-    time_pnga_elem_minimum += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_elem_minimum(g_a, g_b, g_c);
@@ -1623,12 +1224,6 @@ void wnga_elem_minimum(Integer g_a, Integer g_b, Integer g_c)
 
 void wnga_elem_minimum_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b, Integer *blo, Integer *bhi, Integer g_c, Integer *clo, Integer *chi)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_elem_minimum_patch;
-    local_start = I_Wtime();
-    pnga_elem_minimum_patch(g_a, alo, ahi, g_b, blo, bhi, g_c, clo, chi);
-    local_stop = I_Wtime();
-    time_pnga_elem_minimum_patch += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_elem_minimum_patch(g_a, alo, ahi, g_b, blo, bhi, g_c, clo, chi);
@@ -1639,12 +1234,6 @@ void wnga_elem_minimum_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_
 
 void wnga_elem_multiply(Integer g_a, Integer g_b, Integer g_c)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_elem_multiply;
-    local_start = I_Wtime();
-    pnga_elem_multiply(g_a, g_b, g_c);
-    local_stop = I_Wtime();
-    time_pnga_elem_multiply += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_elem_multiply(g_a, g_b, g_c);
@@ -1655,12 +1244,6 @@ void wnga_elem_multiply(Integer g_a, Integer g_b, Integer g_c)
 
 void wnga_elem_multiply_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b, Integer *blo, Integer *bhi, Integer g_c, Integer *clo, Integer *chi)
 {
-/*    double local_start, local_stop;
-    ++count_pnga_elem_multiply_patch;
-    local_start = I_Wtime();
-    pnga_elem_multiply_patch(g_a, alo, ahi, g_b, blo, bhi, g_c, clo, chi);
-    local_stop = I_Wtime();
-    time_pnga_elem_multiply_patch += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_elem_multiply_patch(g_a, alo, ahi, g_b, blo, bhi, g_c, clo, chi);
@@ -1671,12 +1254,6 @@ void wnga_elem_multiply_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g
 
 void wnga_elem_step_divide_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b, Integer *blo, Integer *bhi, Integer g_c, Integer *clo, Integer *chi)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_elem_step_divide_patch;
-    local_start = I_Wtime();
-    pnga_elem_step_divide_patch(g_a, alo, ahi, g_b, blo, bhi, g_c, clo, chi);
-    local_stop = I_Wtime();
-    time_pnga_elem_step_divide_patch += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_elem_step_divide_patch(g_a, alo, ahi, g_b, blo, bhi, g_c, clo, chi);
@@ -1687,13 +1264,7 @@ void wnga_elem_step_divide_patch(Integer g_a, Integer *alo, Integer *ahi, Intege
 
 void wnga_elem_stepb_divide_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b, Integer *blo, Integer *bhi, Integer g_c, Integer *clo, Integer *chi)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_elem_stepb_divide_patch;
-    local_start = I_Wtime();
-    pnga_elem_stepb_divide_patch(g_a, alo, ahi, g_b, blo, bhi, g_c, clo, chi);
-    local_stop = I_Wtime();
-    time_pnga_elem_stepb_divide_patch += local_stop - local_start;*/
-    unsigned long long ltme;
+   unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_elem_stepb_divide_patch(g_a, alo, ahi, g_b, blo, bhi, g_c, clo, chi);
    ltme += I_Wtime();
@@ -1703,12 +1274,6 @@ void wnga_elem_stepb_divide_patch(Integer g_a, Integer *alo, Integer *ahi, Integ
 
 void wnga_error(char *string, Integer icode)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_error;
-    local_start = I_Wtime();
-    pnga_error(string, icode);
-    local_stop = I_Wtime();
-    time_pnga_error += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_error(string, icode);
@@ -1719,12 +1284,6 @@ void wnga_error(char *string, Integer icode)
 
 void wnga_fence()
 {
-    /*double local_start, local_stop;
-    ++count_pnga_fence;
-    local_start = I_Wtime();
-    pnga_fence();
-    local_stop = I_Wtime();
-    time_pnga_fence += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_fence();
@@ -1735,12 +1294,6 @@ void wnga_fence()
 
 void wnga_fill(Integer g_a, void *val)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_fill;
-    local_start = I_Wtime();
-    pnga_fill(g_a, val);
-    local_stop = I_Wtime();
-    time_pnga_fill += local_stop - local_start;*/
    unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_fill(g_a, val);
@@ -1751,13 +1304,7 @@ void wnga_fill(Integer g_a, void *val)
 
 void wnga_fill_patch(Integer g_a, Integer *lo, Integer *hi, void *val)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_fill_patch;
-    local_start = I_Wtime();
-    pnga_fill_patch(g_a, lo, hi, val);
-    local_stop = I_Wtime();
-    time_pnga_fill_patch += local_stop - local_start;*/
-    unsigned long long ltme;
+   unsigned long long ltme;
    ltme=- I_Wtime();
    pnga_fill_patch(g_a, lo, hi, val);
    ltme += I_Wtime();
@@ -1767,52 +1314,30 @@ void wnga_fill_patch(Integer g_a, Integer *lo, Integer *hi, void *val)
 
 void wnga_gather(Integer g_a, void *v, Integer subscript[], Integer c_flag, Integer nv)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_gather;
-    local_start = I_Wtime();
-    pnga_gather(g_a, v, subscript, c_flag, nv);
-    local_stop = I_Wtime();
-    time_pnga_gather += local_stop - local_start;*/
-    int ndims, *dims, type, sz;
-    // GET_TYPE(g_a, type, ndims, dims);
-    OBTAIN_SIZE(sz, c_flag);
-    unsigned long long ltme;
+   unsigned long long ltme, sz, tp;
    ltme=- I_Wtime();
    pnga_gather(g_a, v, subscript, c_flag, nv);
    ltme += I_Wtime();
-   sz *= nv;
+   OBTAIN_SIZE(tp, c_flag);
+   sz = tp * nv;
    update_local_entry(PNGA_GATHER, ltme, sz);    
 }
 
 
 void wnga_gather2d(Integer g_a, void *v, Integer *i, Integer *j, Integer nv)
 {
-/*    double local_start, local_stop;
-    ++count_pnga_gather2d;
-    local_start = I_Wtime();
-    pnga_gather2d(g_a, v, i, j, nv);
-    local_stop = I_Wtime();
-    time_pnga_gather2d += local_stop - local_start;*/
-    int ndims, *dims, type, sz;
-    //GET_TYPE(g_a, type, ndims, dims);
-    //OBTAIN_SIZE(sz, type);
-    unsigned long long ltme;
+   unsigned long long ltme, sz, tp;
    ltme=- I_Wtime();
    pnga_gather2d(g_a, v, i, j, nv);
    ltme += I_Wtime();
-   sz *= nv;
-   update_local_entry(PNGA_GATHER2D, ltme, 0);
+   OBTAIN_ESIZE(tp, g_a);
+   sz = tp * nv;
+   update_local_entry(PNGA_GATHER2D, ltme, sz);
 }
 
 
 void wnga_get(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld)
 {
-/*    double local_start, local_stop;
-    ++count_pnga_get;
-    local_start = I_Wtime();
-    pnga_get(g_a, lo, hi, buf, ld);
-    local_stop = I_Wtime();
-    time_pnga_get += local_stop - local_start;*/
    unsigned long long ltme, sz; /* TODO: Calculate the bytes */
    GET_SIZE(g_a, lo, hi, sz);
    ltme=- I_Wtime();
@@ -1824,12 +1349,6 @@ void wnga_get(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld)
 
 void wnga_get_block_info(Integer g_a, Integer *num_blocks, Integer *block_dims)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_get_block_info;
-    local_start = I_Wtime();
-    pnga_get_block_info(g_a, num_blocks, block_dims);
-    local_stop = I_Wtime();
-    time_pnga_get_block_info += local_stop - local_start;*/
    unsigned long long ltme; /* TODO: Calculate the bytes */
    ltme=- I_Wtime();
    pnga_get_block_info(g_a, num_blocks, block_dims);
@@ -1840,30 +1359,18 @@ void wnga_get_block_info(Integer g_a, Integer *num_blocks, Integer *block_dims)
 
 logical wnga_get_debug()
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_get_debug;
-    local_start = I_Wtime();
-    return_value = pnga_get_debug();
-    local_stop = I_Wtime();
-    time_pnga_get_debug += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme; /* TODO: Calculate the bytes */
    ltme=- I_Wtime();
    return_value = pnga_get_debug();
    ltme += I_Wtime();
    update_local_entry(PNGA_GET_DEBUG, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 void wnga_get_diag(Integer g_a, Integer g_v)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_get_diag;
-    local_start = I_Wtime();
-    pnga_get_diag(g_a, g_v);
-    local_stop = I_Wtime();
-    time_pnga_get_diag += local_stop - local_start;*/
    unsigned long long ltme; /* TODO: Calculate the bytes */
    ltme=- I_Wtime();
    pnga_get_diag(g_a, g_v);
@@ -1874,31 +1381,18 @@ void wnga_get_diag(Integer g_a, Integer g_v)
 
 Integer wnga_get_dimension(Integer g_a)
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_get_dimension;
-    local_start = I_Wtime();
-    return_value = pnga_get_dimension(g_a);
-    local_stop = I_Wtime();
-    time_pnga_get_dimension += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme; /* TODO: Calculate the bytes */
    ltme=- I_Wtime();
    return_value = pnga_get_dimension(g_a);
    ltme += I_Wtime();
    update_local_entry(PNGA_GET_DIMENSION, ltme, 0);
-
-    return return_value;
+   return return_value;
 }
 
 
 void wnga_get_field(Integer g_a, Integer *lo, Integer *hi, Integer foff, Integer fsize, void *buf, Integer *ld)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_get_field;
-    local_start = I_Wtime();
-    pnga_get_field(g_a, lo, hi, foff, fsize, buf, ld);
-    local_stop = I_Wtime();
-    time_pnga_get_field += local_stop - local_start;*/
    unsigned long long ltme; /* TODO: Calculate the bytes */
    ltme=- I_Wtime();
    pnga_get_field(g_a, lo, hi, foff, fsize, buf, ld);
@@ -1909,12 +1403,6 @@ void wnga_get_field(Integer g_a, Integer *lo, Integer *hi, Integer foff, Integer
 
 void wnga_get_ghost_block(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_get_ghost_block;
-    local_start = I_Wtime();
-    pnga_get_ghost_block(g_a, lo, hi, buf, ld);
-    local_stop = I_Wtime();
-    time_pnga_get_ghost_block += local_stop - local_start;*/
    unsigned long long ltme; /* TODO: Calculate the bytes */
    ltme=- I_Wtime();
    pnga_get_ghost_block(g_a, lo, hi, buf, ld);
@@ -1925,48 +1413,30 @@ void wnga_get_ghost_block(Integer g_a, Integer *lo, Integer *hi, void *buf, Inte
 
 Integer wnga_get_pgroup(Integer g_a)
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_get_pgroup;
-    local_start = I_Wtime();
-    return_value = pnga_get_pgroup(g_a);
-    local_stop = I_Wtime();
-    time_pnga_get_pgroup += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme; /* TODO: Calculate the bytes */
    ltme=- I_Wtime();
    return_value = pnga_get_pgroup(g_a);
    ltme += I_Wtime();
    update_local_entry(PNGA_GET_PGROUP, ltme, 0);
-    return return_value;
+   return return_value;
 }
 
 
 Integer wnga_get_pgroup_size(Integer grp_id)
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_get_pgroup_size;
-    local_start = I_Wtime();
-    return_value = pnga_get_pgroup_size(grp_id);
-    local_stop = I_Wtime();
-    time_pnga_get_pgroup_size += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme; /* TODO: Calculate the bytes */
    ltme=- I_Wtime();
    return_value = pnga_get_pgroup_size(grp_id);
    ltme += I_Wtime();
    update_local_entry(PNGA_GET_PGROUP_SIZE, ltme, 0);
-    return return_value;
+   return return_value;
 }
 
 
 void wnga_get_proc_grid(Integer g_a, Integer *dims)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_get_proc_grid;
-    local_start = I_Wtime();
-    pnga_get_proc_grid(g_a, dims);
-    local_stop = I_Wtime();
-    time_pnga_get_proc_grid += local_stop - local_start;*/
    unsigned long long ltme; /* TODO: Calculate the bytes */
    ltme=- I_Wtime();
    pnga_get_proc_grid(g_a, dims);
@@ -1977,12 +1447,6 @@ void wnga_get_proc_grid(Integer g_a, Integer *dims)
 
 void wnga_get_proc_index(Integer g_a, Integer iproc, Integer *index)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_get_proc_index;
-    local_start = I_Wtime();
-    pnga_get_proc_index(g_a, iproc, index);
-    local_stop = I_Wtime();
-    time_pnga_get_proc_index += local_stop - local_start;*/
    unsigned long long ltme; /* TODO: Calculate the bytes */
    ltme=- I_Wtime();
    pnga_get_proc_index(g_a, iproc, index);
@@ -1993,12 +1457,6 @@ void wnga_get_proc_index(Integer g_a, Integer iproc, Integer *index)
 
 void wnga_ghost_barrier()
 {
-    /*double local_start, local_stop;
-    ++count_pnga_ghost_barrier;
-    local_start = I_Wtime();
-    pnga_ghost_barrier();
-    local_stop = I_Wtime();
-    time_pnga_ghost_barrier += local_stop - local_start;*/
    unsigned long long ltme; /* TODO: Calculate the bytes */
    ltme=- I_Wtime();
    pnga_ghost_barrier();
@@ -2009,13 +1467,6 @@ void wnga_ghost_barrier()
 
 void wnga_gop(Integer type, void *x, Integer n, char *op)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_gop;
-    local_start = I_Wtime();
-    pnga_gop(type, x, n, op);
-    local_stop = I_Wtime();
-    time_pnga_gop += local_stop - local_start;*/
-
    unsigned long long ltme; /* TODO: Calculate the bytes */
    ltme=- I_Wtime();
    pnga_gop(type, x, n, op);
@@ -2027,30 +1478,18 @@ void wnga_gop(Integer type, void *x, Integer n, char *op)
 
 logical wnga_has_ghosts(Integer g_a)
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_has_ghosts;
-    local_start = I_Wtime();
-    return_value = pnga_has_ghosts(g_a);
-    local_stop = I_Wtime();
-    time_pnga_has_ghosts += local_stop - local_start;*/
-    unsigned long long ltme; /* TODO: Calculate the bytes */
+   logical return_value;
+   unsigned long long ltme; /* TODO: Calculate the bytes */
    ltme=- I_Wtime();
    return_value = pnga_has_ghosts(g_a);
    ltme += I_Wtime();
    update_local_entry(PNGA_HAS_GHOSTS, ltme, 0);
-    return return_value;
+   return return_value;
 }
 
 
 void wnga_init_fence()
 {
-    /*double local_start, local_stop;
-    ++count_pnga_init_fence;
-    local_start = I_Wtime();
-    pnga_init_fence();
-    local_stop = I_Wtime();
-    time_pnga_init_fence += local_stop - local_start;*/
    unsigned long long ltme; /* TODO: Calculate the bytes */
    ltme=- I_Wtime();
    pnga_init_fence();
@@ -2061,12 +1500,6 @@ void wnga_init_fence()
 
 void wnga_inquire(Integer g_a, Integer *type, Integer *ndim, Integer *dims)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_inquire;
-    local_start = I_Wtime();
-    pnga_inquire(g_a, type, ndim, dims);
-    local_stop = I_Wtime();
-    time_pnga_inquire += local_stop - local_start;*/
    unsigned long long ltme; /* TODO: Calculate the bytes */
    ltme=- I_Wtime();
    pnga_inquire(g_a, type, ndim, dims);
@@ -2077,30 +1510,18 @@ void wnga_inquire(Integer g_a, Integer *type, Integer *ndim, Integer *dims)
 
 Integer wnga_inquire_memory()
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_inquire_memory;
-    local_start = I_Wtime();
-    return_value = pnga_inquire_memory();
-    local_stop = I_Wtime();
-    time_pnga_inquire_memory += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme; /* TODO: Calculate the bytes */
    ltme=- I_Wtime();
    return_value = pnga_inquire_memory();
    ltme += I_Wtime();
    update_local_entry(PNGA_INQUIRE_MEMORY, ltme, 0);
-    return return_value;
+   return return_value;
 }
 
 
 void wnga_inquire_name(Integer g_a, char **array_name)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_inquire_name;
-    local_start = I_Wtime();
-    pnga_inquire_name(g_a, array_name);
-    local_stop = I_Wtime();
-    time_pnga_inquire_name += local_stop - local_start;*/
    unsigned long long ltme; /* TODO: Calculate the bytes */
    ltme=- I_Wtime();
    pnga_inquire_name(g_a, array_name);
@@ -2111,12 +1532,6 @@ void wnga_inquire_name(Integer g_a, char **array_name)
 
 void wnga_inquire_type(Integer g_a, Integer *type)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_inquire_type;
-    local_start = I_Wtime();
-    pnga_inquire_type(g_a, type);
-    local_stop = I_Wtime();
-    time_pnga_inquire_type += local_stop - local_start;*/
    unsigned long long ltme; /* TODO: Calculate the bytes */
    ltme=- I_Wtime();
    pnga_inquire_type(g_a, type);
@@ -2127,30 +1542,18 @@ void wnga_inquire_type(Integer g_a, Integer *type)
 
 logical wnga_is_mirrored(Integer g_a)
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_is_mirrored;
-    local_start = I_Wtime();
-    return_value = pnga_is_mirrored(g_a);
-    local_stop = I_Wtime();
-    time_pnga_is_mirrored += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_is_mirrored(g_a);
    ltme += I_Wtime();
    update_local_entry(PNGA_IS_MIRRORED, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 void wnga_list_nodeid(Integer *list, Integer nprocs)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_list_nodeid;
-    local_start = I_Wtime();
-    pnga_list_nodeid(list, nprocs);
-    local_stop = I_Wtime();
-    time_pnga_list_nodeid += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_list_nodeid(list, nprocs);
@@ -2161,102 +1564,66 @@ void wnga_list_nodeid(Integer *list, Integer nprocs)
 
 Integer wnga_llt_solve(Integer g_a, Integer g_b)
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_llt_solve;
-    local_start = I_Wtime();
-    return_value = pnga_llt_solve(g_a, g_b);
-    local_stop = I_Wtime();
-    time_pnga_llt_solve += local_stop - local_start; */
+   Integer return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_llt_solve(g_a, g_b);
    ltme += I_Wtime();
    update_local_entry(PNGA_LLT_SOLVE, ltme, 0);
-    return return_value;
+   return return_value;
 }
 
 
 logical wnga_locate(Integer g_a, Integer *subscript, Integer *owner)
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_locate;
-    local_start = I_Wtime();
-    return_value = pnga_locate(g_a, subscript, owner);
-    local_stop = I_Wtime();
-    time_pnga_locate += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_locate(g_a, subscript, owner);
    ltme += I_Wtime();
    update_local_entry(PNGA_LOCATE, ltme, 0);
-    return return_value;
+   return return_value;
 }
 
 
 logical wnga_locate_nnodes(Integer g_a, Integer *lo, Integer *hi, Integer *np)
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_locate_nnodes;
-    local_start = I_Wtime();
-    return_value = pnga_locate_nnodes(g_a, lo, hi, np);
-    local_stop = I_Wtime();
-    time_pnga_locate_nnodes += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_locate_nnodes(g_a, lo, hi, np);
    ltme += I_Wtime();
    update_local_entry(PNGA_LOCATE_NNODES, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 Integer wnga_locate_num_blocks(Integer g_a, Integer *lo, Integer *hi)
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_locate_num_blocks;
-    local_start = I_Wtime();
-    return_value = pnga_locate_num_blocks(g_a, lo, hi);
-    local_stop = I_Wtime();
-    time_pnga_locate_num_blocks += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_locate_num_blocks(g_a, lo, hi);
    ltme += I_Wtime();
    update_local_entry(PNGA_LOCATE_NUM_BLOCKS, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 logical wnga_locate_region(Integer g_a, Integer *lo, Integer *hi, Integer *map, Integer *proclist, Integer *np)
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_locate_region;
-    local_start = I_Wtime();
-    return_value = pnga_locate_region(g_a, lo, hi, map, proclist, np);
-    local_stop = I_Wtime();
-    time_pnga_locate_region += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_locate_region(g_a, lo, hi, map, proclist, np);
    ltme += I_Wtime();
    update_local_entry(PNGA_LOCATE_REGION, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 void wnga_lock(Integer mutex)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_lock;
-    local_start = I_Wtime();
-    pnga_lock(mutex);
-    local_stop = I_Wtime();
-    time_pnga_lock += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_lock(mutex);
@@ -2267,12 +1634,6 @@ void wnga_lock(Integer mutex)
 
 void wnga_lu_solve(char *tran, Integer g_a, Integer g_b)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_lu_solve;
-    local_start = I_Wtime();
-    pnga_lu_solve(tran, g_a, g_b);
-    local_stop = I_Wtime();
-    time_pnga_lu_solve += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_lu_solve(tran, g_a, g_b);
@@ -2283,12 +1644,6 @@ void wnga_lu_solve(char *tran, Integer g_a, Integer g_b)
 
 void wnga_lu_solve_alt(Integer tran, Integer g_a, Integer g_b)
 {
-/*    double local_start, local_stop;
-    ++count_pnga_lu_solve_alt;
-    local_start = I_Wtime();
-    pnga_lu_solve_alt(tran, g_a, g_b);
-    local_stop = I_Wtime();
-    time_pnga_lu_solve_alt += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_lu_solve_alt(tran, g_a, g_b);
@@ -2299,12 +1654,6 @@ void wnga_lu_solve_alt(Integer tran, Integer g_a, Integer g_b)
 
 void wnga_lu_solve_seq(char *trans, Integer g_a, Integer g_b)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_lu_solve_seq;
-    local_start = I_Wtime();
-    pnga_lu_solve_seq(trans, g_a, g_b);
-    local_stop = I_Wtime();
-    time_pnga_lu_solve_seq += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_lu_solve_seq(trans, g_a, g_b);
@@ -2315,12 +1664,6 @@ void wnga_lu_solve_seq(char *trans, Integer g_a, Integer g_b)
 
 void wnga_mask_sync(Integer begin, Integer end)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_mask_sync;
-    local_start = I_Wtime();
-    pnga_mask_sync(begin, end);
-    local_stop = I_Wtime();
-    time_pnga_mask_sync += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_mask_sync(begin, end);
@@ -2331,12 +1674,6 @@ void wnga_mask_sync(Integer begin, Integer end)
 
 void wnga_matmul(char *transa, char *transb, void *alpha, void *beta, Integer g_a, Integer ailo, Integer aihi, Integer ajlo, Integer ajhi, Integer g_b, Integer bilo, Integer bihi, Integer bjlo, Integer bjhi, Integer g_c, Integer cilo, Integer cihi, Integer cjlo, Integer cjhi)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_matmul;
-    local_start = I_Wtime();
-    pnga_matmul(transa, transb, alpha, beta, g_a, ailo, aihi, ajlo, ajhi, g_b, bilo, bihi, bjlo, bjhi, g_c, cilo, cihi, cjlo, cjhi);
-    local_stop = I_Wtime();
-    time_pnga_matmul += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_matmul(transa, transb, alpha, beta, g_a, ailo, aihi, ajlo, ajhi, g_b, bilo, bihi, bjlo, bjhi, g_c, cilo, cihi, cjlo, cjhi);
@@ -2347,12 +1684,6 @@ void wnga_matmul(char *transa, char *transb, void *alpha, void *beta, Integer g_
 
 void wnga_matmul_mirrored(char *transa, char *transb, void *alpha, void *beta, Integer g_a, Integer ailo, Integer aihi, Integer ajlo, Integer ajhi, Integer g_b, Integer bilo, Integer bihi, Integer bjlo, Integer bjhi, Integer g_c, Integer cilo, Integer cihi, Integer cjlo, Integer cjhi)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_matmul_mirrored;
-    local_start = I_Wtime();
-    pnga_matmul_mirrored(transa, transb, alpha, beta, g_a, ailo, aihi, ajlo, ajhi, g_b, bilo, bihi, bjlo, bjhi, g_c, cilo, cihi, cjlo, cjhi);
-    local_stop = I_Wtime();
-    time_pnga_matmul_mirrored += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_matmul_mirrored(transa, transb, alpha, beta, g_a, ailo, aihi, ajlo, ajhi, g_b, bilo, bihi, bjlo, bjhi, g_c, cilo, cihi, cjlo, cjhi);
@@ -2363,12 +1694,6 @@ void wnga_matmul_mirrored(char *transa, char *transb, void *alpha, void *beta, I
 
 void wnga_matmul_patch(char *transa, char *transb, void *alpha, void *beta, Integer g_a, Integer alo[], Integer ahi[], Integer g_b, Integer blo[], Integer bhi[], Integer g_c, Integer clo[], Integer chi[])
 {
-    /*double local_start, local_stop;
-    ++count_pnga_matmul_patch;
-    local_start = I_Wtime();
-    pnga_matmul_patch(transa, transb, alpha, beta, g_a, alo, ahi, g_b, blo, bhi, g_c, clo, chi);
-    local_stop = I_Wtime();
-    time_pnga_matmul_patch += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_matmul_patch(transa, transb, alpha, beta, g_a, alo, ahi, g_b, blo, bhi, g_c, clo, chi);
@@ -2379,12 +1704,6 @@ void wnga_matmul_patch(char *transa, char *transb, void *alpha, void *beta, Inte
 
 void wnga_median(Integer g_a, Integer g_b, Integer g_c, Integer g_m)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_median;
-    local_start = I_Wtime();
-    pnga_median(g_a, g_b, g_c, g_m);
-    local_stop = I_Wtime();
-    time_pnga_median += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_median(g_a, g_b, g_c, g_m);
@@ -2395,12 +1714,6 @@ void wnga_median(Integer g_a, Integer g_b, Integer g_c, Integer g_m)
 
 void wnga_median_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b, Integer *blo, Integer *bhi, Integer g_c, Integer *clo, Integer *chi, Integer g_m, Integer *mlo, Integer *mhi)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_median_patch;
-    local_start = I_Wtime();
-    pnga_median_patch(g_a, alo, ahi, g_b, blo, bhi, g_c, clo, chi, g_m, mlo, mhi);
-    local_stop = I_Wtime();
-    time_pnga_median_patch += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_median_patch(g_a, alo, ahi, g_b, blo, bhi, g_c, clo, chi, g_m, mlo, mhi);
@@ -2411,66 +1724,42 @@ void wnga_median_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b, Int
 
 Integer wnga_memory_avail()
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_memory_avail;
-    local_start = I_Wtime();
-    return_value = pnga_memory_avail();
-    local_stop = I_Wtime();
-    time_pnga_memory_avail += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_memory_avail();
    ltme += I_Wtime();
    update_local_entry(PNGA_MEMORY_AVAIL, ltme, 0);
-    return return_value;
+   return return_value;
 }
 
 
 Integer wnga_memory_avail_type(Integer datatype)
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_memory_avail_type;
-    local_start = I_Wtime();
-    return_value = pnga_memory_avail_type(datatype);
-    local_stop = I_Wtime();
-    time_pnga_memory_avail_type += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_memory_avail_type(datatype);
    ltme += I_Wtime();
    update_local_entry(PNGA_MEMORY_AVAIL_TYPE, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 logical wnga_memory_limited()
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_memory_limited;
-    local_start = I_Wtime();
-    return_value = pnga_memory_limited();
-    local_stop = I_Wtime();
-    time_pnga_memory_limited += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_memory_limited();
    ltme += I_Wtime();
    update_local_entry(PNGA_MEMORY_LIMITED, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 void wnga_merge_distr_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b, Integer *blo, Integer *bhi)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_merge_distr_patch;
-    local_start = I_Wtime();
-    pnga_merge_distr_patch(g_a, alo, ahi, g_b, blo, bhi);
-    local_stop = I_Wtime();
-    time_pnga_merge_distr_patch += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_merge_distr_patch(g_a, alo, ahi, g_b, blo, bhi);
@@ -2481,12 +1770,6 @@ void wnga_merge_distr_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b
 
 void wnga_merge_mirrored(Integer g_a)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_merge_mirrored;
-    local_start = I_Wtime();
-    pnga_merge_mirrored(g_a);
-    local_stop = I_Wtime();
-    time_pnga_merge_mirrored += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_merge_mirrored(g_a);
@@ -2497,28 +1780,16 @@ void wnga_merge_mirrored(Integer g_a)
 
 void wnga_msg_brdcst(Integer type, void *buffer, Integer len, Integer root)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_msg_brdcst;
-    local_start = I_Wtime();
-    pnga_msg_brdcst(type, buffer, len, root);
-    local_stop = I_Wtime();
-    time_pnga_msg_brdcst += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_msg_brdcst(type, buffer, len, root);
    ltme += I_Wtime();
-   update_local_entry(PNGA_MSG_BRDCST, ltme, 0);    
+   update_local_entry(PNGA_MSG_BRDCST, ltme, len);    
 }
 
 
 void wnga_msg_pgroup_sync(Integer grp_id)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_msg_pgroup_sync;
-    local_start = I_Wtime();
-    pnga_msg_pgroup_sync(grp_id);
-    local_stop = I_Wtime();
-    time_pnga_msg_pgroup_sync += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_msg_pgroup_sync(grp_id);
@@ -2529,12 +1800,6 @@ void wnga_msg_pgroup_sync(Integer grp_id)
 
 void wnga_msg_sync()
 {
-    /*double local_start, local_stop;
-    ++count_pnga_msg_sync;
-    local_start = I_Wtime();
-    pnga_msg_sync();
-    local_stop = I_Wtime();
-    time_pnga_msg_sync += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_msg_sync();
@@ -2545,12 +1810,6 @@ void wnga_msg_sync()
 
 void wnga_nbacc(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld, void *alpha, Integer *nbhndl)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_nbacc;
-    local_start = I_Wtime();
-    pnga_nbacc(g_a, lo, hi, buf, ld, alpha, nbhndl);
-    local_stop = I_Wtime();
-    time_pnga_nbacc += local_stop - local_start;*/
    unsigned long long ltme, sz; 
    GET_SIZE(g_a, lo, hi, sz);
    ltme=- I_Wtime();
@@ -2562,12 +1821,6 @@ void wnga_nbacc(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld, v
 
 void wnga_nbget(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld, Integer *nbhandle)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_nbget;
-    local_start = I_Wtime();
-    pnga_nbget(g_a, lo, hi, buf, ld, nbhandle);
-    local_stop = I_Wtime();
-    time_pnga_nbget += local_stop - local_start;*/
    unsigned long long ltme, sz; /* TODO: Calculate the size */
    GET_SIZE(g_a, lo, hi, sz);
    ltme=- I_Wtime();
@@ -2579,12 +1832,6 @@ void wnga_nbget(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld, I
 
 void wnga_nbget_field(Integer g_a, Integer *lo, Integer *hi, Integer foff, Integer fsize, void *buf, Integer *ld, Integer *nbhandle)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_nbget_field;
-    local_start = I_Wtime();
-    pnga_nbget_field(g_a, lo, hi, foff, fsize, buf, ld, nbhandle);
-    local_stop = I_Wtime();
-    time_pnga_nbget_field += local_stop - local_start;*/
    unsigned long long ltme, sz; /* TODO: Calculate the size */
    GET_SIZE(g_a, lo, hi, sz);
    ltme=- I_Wtime();
@@ -2596,12 +1843,6 @@ void wnga_nbget_field(Integer g_a, Integer *lo, Integer *hi, Integer foff, Integ
 
 void wnga_nbget_ghost_dir(Integer g_a, Integer *mask, Integer *nbhandle)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_nbget_ghost_dir;
-    local_start = I_Wtime();
-    pnga_nbget_ghost_dir(g_a, mask, nbhandle);
-    local_stop = I_Wtime();
-    time_pnga_nbget_ghost_dir += local_stop - local_start;*/
    unsigned long long ltme; /* TODO: Calculate the size */
    ltme=- I_Wtime();
    pnga_nbget_ghost_dir(g_a, mask, nbhandle);
@@ -2612,12 +1853,6 @@ void wnga_nbget_ghost_dir(Integer g_a, Integer *mask, Integer *nbhandle)
 
 void wnga_nblock(Integer g_a, Integer *nblock)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_nblock;
-    local_start = I_Wtime();
-    pnga_nblock(g_a, nblock);
-    local_stop = I_Wtime();
-    time_pnga_nblock += local_stop - local_start;*/
    unsigned long long ltme; /* TODO: Calculate the size */
    ltme=- I_Wtime();
    pnga_nblock(g_a, nblock);
@@ -2628,12 +1863,6 @@ void wnga_nblock(Integer g_a, Integer *nblock)
 
 void wnga_nbput(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld, Integer *nbhandle)
 {
-/*    double local_start, local_stop;
-    ++count_pnga_nbput;
-    local_start = I_Wtime();
-    pnga_nbput(g_a, lo, hi, buf, ld, nbhandle);
-    local_stop = I_Wtime();
-    time_pnga_nbput += local_stop - local_start;*/
    unsigned long long ltme, sz; /* TODO: Calculate the size */
    GET_SIZE(g_a, lo, hi, sz);
    ltme=- I_Wtime();
@@ -2645,12 +1874,6 @@ void wnga_nbput(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld, I
 
 void wnga_nbput_field(Integer g_a, Integer *lo, Integer *hi, Integer foff, Integer fsize, void *buf, Integer *ld, Integer *nbhandle)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_nbput_field;
-    local_start = I_Wtime();
-    pnga_nbput_field(g_a, lo, hi, foff, fsize, buf, ld, nbhandle);
-    local_stop = I_Wtime();
-    time_pnga_nbput_field += local_stop - local_start;*/
    unsigned long long ltme, sz; /* TODO: Calculate the size */
    GET_SIZE(g_a, lo, hi, sz);
    ltme=- I_Wtime();
@@ -2662,30 +1885,18 @@ void wnga_nbput_field(Integer g_a, Integer *lo, Integer *hi, Integer foff, Integ
 
 Integer wnga_nbtest(Integer *nbhandle)
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_nbtest;
-    local_start = I_Wtime();
-    return_value = pnga_nbtest(nbhandle);
-    local_stop = I_Wtime();
-    time_pnga_nbtest += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme; /* TODO: Calculate the size */
    ltme=- I_Wtime();
    return_value = pnga_nbtest(nbhandle);
    ltme += I_Wtime();
    update_local_entry(PNGA_NBTEST, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 void wnga_nbwait(Integer *nbhandle)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_nbwait;
-    local_start = I_Wtime();
-    pnga_nbwait(nbhandle);
-    local_stop = I_Wtime();
-    time_pnga_nbwait += local_stop - local_start;*/
    unsigned long long ltme; /* TODO: Calculate the size */
    ltme=- I_Wtime();
    pnga_nbwait(nbhandle);
@@ -2696,66 +1907,42 @@ void wnga_nbwait(Integer *nbhandle)
 
 Integer wnga_ndim(Integer g_a)
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_ndim;
-    local_start = I_Wtime();
-    return_value = pnga_ndim(g_a);
-    local_stop = I_Wtime();
-    time_pnga_ndim += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme; /* TODO: Calculate the size */
    ltme=- I_Wtime();
    return_value = pnga_ndim(g_a);
    ltme += I_Wtime();
    update_local_entry(PNGA_NDIM, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 Integer wnga_nnodes()
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_nnodes;
-    local_start = I_Wtime();
-    return_value = pnga_nnodes();
-    local_stop = I_Wtime();
-    time_pnga_nnodes += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme; /* TODO: Calculate the size */
    ltme=- I_Wtime();
    return_value = pnga_nnodes();
    ltme += I_Wtime();
    update_local_entry(PNGA_NNODES, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 Integer wnga_nodeid()
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_nodeid;
-    local_start = I_Wtime();
-    return_value = pnga_nodeid();
-    local_stop = I_Wtime();
-    time_pnga_nodeid += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme; /* TODO: Calculate the size */
    ltme=- I_Wtime();
    return_value = pnga_nodeid();
    ltme += I_Wtime();
    update_local_entry(PNGA_NODEID, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 void wnga_norm1(Integer g_a, double *nm)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_norm1;
-    local_start = I_Wtime();
-    pnga_norm1(g_a, nm);
-    local_stop = I_Wtime();
-    time_pnga_norm1 += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_norm1(g_a, nm);
@@ -2766,12 +1953,6 @@ void wnga_norm1(Integer g_a, double *nm)
 
 void wnga_norm_infinity(Integer g_a, double *nm)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_norm_infinity;
-    local_start = I_Wtime();
-    pnga_norm_infinity(g_a, nm);
-    local_stop = I_Wtime();
-    time_pnga_norm_infinity += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_norm_infinity(g_a, nm);
@@ -2782,12 +1963,6 @@ void wnga_norm_infinity(Integer g_a, double *nm)
 
 void wnga_pack(Integer g_a, Integer g_b, Integer g_sbit, Integer lo, Integer hi, Integer *icount)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_pack;
-    local_start = I_Wtime();
-    pnga_pack(g_a, g_b, g_sbit, lo, hi, icount);
-    local_stop = I_Wtime();
-    time_pnga_pack += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_pack(g_a, g_b, g_sbit, lo, hi, icount);
@@ -2798,12 +1973,6 @@ void wnga_pack(Integer g_a, Integer g_b, Integer g_sbit, Integer lo, Integer hi,
 
 void wnga_patch_enum(Integer g_a, Integer lo, Integer hi, void *start, void *stride)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_patch_enum;
-    local_start = I_Wtime();
-    pnga_patch_enum(g_a, lo, hi, start, stride);
-    local_stop = I_Wtime();
-    time_pnga_patch_enum += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_patch_enum(g_a, lo, hi, start, stride);
@@ -2814,30 +1983,18 @@ void wnga_patch_enum(Integer g_a, Integer lo, Integer hi, void *start, void *str
 
 logical wnga_patch_intersect(Integer *lo, Integer *hi, Integer *lop, Integer *hip, Integer ndim)
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_patch_intersect;
-    local_start = I_Wtime();
-    return_value = pnga_patch_intersect(lo, hi, lop, hip, ndim);
-    local_stop = I_Wtime();
-    time_pnga_patch_intersect += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_patch_intersect(lo, hi, lop, hip, ndim);
    ltme += I_Wtime();
    update_local_entry(PNGA_PATCH_INTERSECT, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 void wnga_periodic(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld, void *alpha, Integer op_code)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_periodic;
-    local_start = I_Wtime();
-    pnga_periodic(g_a, lo, hi, buf, ld, alpha, op_code);
-    local_stop = I_Wtime();
-    time_pnga_periodic += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_periodic(g_a, lo, hi, buf, ld, alpha, op_code);
@@ -2848,30 +2005,18 @@ void wnga_periodic(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld
 
 Integer wnga_pgroup_absolute_id(Integer grp, Integer pid)
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_pgroup_absolute_id;
-    local_start = I_Wtime();
-    return_value = pnga_pgroup_absolute_id(grp, pid);
-    local_stop = I_Wtime();
-    time_pnga_pgroup_absolute_id += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_pgroup_absolute_id(grp, pid);
    ltme += I_Wtime();
    update_local_entry(PNGA_PGROUP_ABSOLUTE_ID, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 void wnga_pgroup_brdcst(Integer grp_id, Integer type, void *buf, Integer len, Integer originator)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_pgroup_brdcst;
-    local_start = I_Wtime();
-    pnga_pgroup_brdcst(grp_id, type, buf, len, originator);
-    local_stop = I_Wtime();
-    time_pnga_pgroup_brdcst += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_pgroup_brdcst(grp_id, type, buf, len, originator);
@@ -2882,102 +2027,66 @@ void wnga_pgroup_brdcst(Integer grp_id, Integer type, void *buf, Integer len, In
 
 Integer wnga_pgroup_create(Integer *list, Integer count)
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_pgroup_create;
-    local_start = I_Wtime();
-    return_value = pnga_pgroup_create(list, count);
-    local_stop = I_Wtime();
-    time_pnga_pgroup_create += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_pgroup_create(list, count);
    ltme += I_Wtime();
    update_local_entry(PNGA_PGROUP_CREATE, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 logical wnga_pgroup_destroy(Integer grp)
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_pgroup_destroy;
-    local_start = I_Wtime();
-    return_value = pnga_pgroup_destroy(grp);
-    local_stop = I_Wtime();
-    time_pnga_pgroup_destroy += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_pgroup_destroy(grp);
    ltme += I_Wtime();
    update_local_entry(PNGA_PGROUP_DESTROY, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 Integer wnga_pgroup_get_default()
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_pgroup_get_default;
-    local_start = I_Wtime();
-    return_value = pnga_pgroup_get_default();
-    local_stop = I_Wtime();
-    time_pnga_pgroup_get_default += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_pgroup_get_default();
    ltme += I_Wtime();
    update_local_entry(PNGA_PGROUP_GET_DEFAULT, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 Integer wnga_pgroup_get_mirror()
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_pgroup_get_mirror;
-    local_start = I_Wtime();
-    return_value = pnga_pgroup_get_mirror();
-    local_stop = I_Wtime();
-    time_pnga_pgroup_get_mirror += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_pgroup_get_mirror();
    ltme += I_Wtime();
    update_local_entry(PNGA_PGROUP_GET_MIRROR, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 Integer wnga_pgroup_get_world()
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_pgroup_get_world;
-    local_start = I_Wtime();
-    return_value = pnga_pgroup_get_world();
-    local_stop = I_Wtime();
-    time_pnga_pgroup_get_world += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_pgroup_get_world();
    ltme += I_Wtime();
    update_local_entry(PNGA_PGROUP_GET_WORLD, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 void wnga_pgroup_gop(Integer p_grp, Integer type, void *x, Integer n, char *op)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_pgroup_gop;
-    local_start = I_Wtime();
-    pnga_pgroup_gop(p_grp, type, x, n, op);
-    local_stop = I_Wtime();
-    time_pnga_pgroup_gop += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_pgroup_gop(p_grp, type, x, n, op);
@@ -2988,48 +2097,30 @@ void wnga_pgroup_gop(Integer p_grp, Integer type, void *x, Integer n, char *op)
 
 Integer wnga_pgroup_nnodes(Integer grp)
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_pgroup_nnodes;
-    local_start = I_Wtime();
-    return_value = pnga_pgroup_nnodes(grp);
-    local_stop = I_Wtime();
-    time_pnga_pgroup_nnodes += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_pgroup_nnodes(grp);
    ltme += I_Wtime();
    update_local_entry(PNGA_PGROUP_NNODES, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 Integer wnga_pgroup_nodeid(Integer grp)
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_pgroup_nodeid;
-    local_start = I_Wtime();
-    return_value = pnga_pgroup_nodeid(grp);
-    local_stop = I_Wtime();
-    time_pnga_pgroup_nodeid += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_pgroup_nodeid(grp);
    ltme += I_Wtime();
    update_local_entry(PNGA_PGROUP_NODEID, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 void wnga_pgroup_set_default(Integer grp)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_pgroup_set_default;
-    local_start = I_Wtime();
-    pnga_pgroup_set_default(grp);
-    local_stop = I_Wtime();
-    time_pnga_pgroup_set_default += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_pgroup_set_default(grp);
@@ -3040,49 +2131,30 @@ void wnga_pgroup_set_default(Integer grp)
 
 Integer wnga_pgroup_split(Integer grp, Integer grp_num)
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_pgroup_split;
-    local_start = I_Wtime();
-    return_value = pnga_pgroup_split(grp, grp_num);
-    local_stop = I_Wtime();
-    time_pnga_pgroup_split += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_pgroup_split(grp, grp_num);
    ltme += I_Wtime();
    update_local_entry(PNGA_PGROUP_SPLIT, ltme, 0);
-
-    return return_value;
+   return return_value;
 }
 
 
 Integer wnga_pgroup_split_irreg(Integer grp, Integer mycolor)
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_pgroup_split_irreg;
-    local_start = I_Wtime();
-    return_value = pnga_pgroup_split_irreg(grp, mycolor);
-    local_stop = I_Wtime();
-    time_pnga_pgroup_split_irreg += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_pgroup_split_irreg(grp, mycolor);
    ltme += I_Wtime();
    update_local_entry(PNGA_PGROUP_SPLIT_IRREG, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 void wnga_pgroup_sync(Integer grp_id)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_pgroup_sync;
-    local_start = I_Wtime();
-    pnga_pgroup_sync(grp_id);
-    local_stop = I_Wtime();
-    time_pnga_pgroup_sync += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_pgroup_sync(grp_id);
@@ -3093,12 +2165,6 @@ void wnga_pgroup_sync(Integer grp_id)
 
 void wnga_print(Integer g_a)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_print;
-    local_start = I_Wtime();
-    pnga_print(g_a);
-    local_stop = I_Wtime();
-    time_pnga_print += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_print(g_a);
@@ -3109,12 +2175,6 @@ void wnga_print(Integer g_a)
 
 void wnga_print_distribution(int fstyle, Integer g_a)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_print_distribution;
-    local_start = I_Wtime();
-    pnga_print_distribution(fstyle, g_a);
-    local_stop = I_Wtime();
-    time_pnga_print_distribution += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_print_distribution(fstyle, g_a);
@@ -3125,12 +2185,6 @@ void wnga_print_distribution(int fstyle, Integer g_a)
 
 void wnga_print_file(FILE *file, Integer g_a)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_print_file;
-    local_start = I_Wtime();
-    pnga_print_file(file, g_a);
-    local_stop = I_Wtime();
-    time_pnga_print_file += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_print_file(file, g_a);
@@ -3141,12 +2195,6 @@ void wnga_print_file(FILE *file, Integer g_a)
 
 void wnga_print_patch(Integer g_a, Integer *lo, Integer *hi, Integer pretty)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_print_patch;
-    local_start = I_Wtime();
-    pnga_print_patch(g_a, lo, hi, pretty);
-    local_stop = I_Wtime();
-    time_pnga_print_patch += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_print_patch(g_a, lo, hi, pretty);
@@ -3157,12 +2205,6 @@ void wnga_print_patch(Integer g_a, Integer *lo, Integer *hi, Integer pretty)
 
 void wnga_print_patch2d(Integer g_a, Integer ilo, Integer ihi, Integer jlo, Integer jhi, Integer pretty)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_print_patch2d;
-    local_start = I_Wtime();
-    pnga_print_patch2d(g_a, ilo, ihi, jlo, jhi, pretty);
-    local_stop = I_Wtime();
-    time_pnga_print_patch2d += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_print_patch2d(g_a, ilo, ihi, jlo, jhi, pretty);
@@ -3173,12 +2215,6 @@ void wnga_print_patch2d(Integer g_a, Integer ilo, Integer ihi, Integer jlo, Inte
 
 void wnga_print_patch_file(FILE *file, Integer g_a, Integer *lo, Integer *hi, Integer pretty)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_print_patch_file;
-    local_start = I_Wtime();
-    pnga_print_patch_file(file, g_a, lo, hi, pretty);
-    local_stop = I_Wtime();
-    time_pnga_print_patch_file += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_print_patch_file(file, g_a, lo, hi, pretty);
@@ -3189,12 +2225,6 @@ void wnga_print_patch_file(FILE *file, Integer g_a, Integer *lo, Integer *hi, In
 
 void wnga_print_patch_file2d(FILE *file, Integer g_a, Integer ilo, Integer ihi, Integer jlo, Integer jhi, Integer pretty)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_print_patch_file2d;
-    local_start = I_Wtime();
-    pnga_print_patch_file2d(file, g_a, ilo, ihi, jlo, jhi, pretty);
-    local_stop = I_Wtime();
-    time_pnga_print_patch_file2d += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_print_patch_file2d(file, g_a, ilo, ihi, jlo, jhi, pretty);
@@ -3205,12 +2235,6 @@ void wnga_print_patch_file2d(FILE *file, Integer g_a, Integer ilo, Integer ihi, 
 
 void wnga_print_stats()
 {
-    /*double local_start, local_stop;
-    ++count_pnga_print_stats;
-    local_start = I_Wtime();
-    pnga_print_stats();
-    local_stop = I_Wtime();
-    time_pnga_print_stats += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_print_stats();
@@ -3221,12 +2245,6 @@ void wnga_print_stats()
 
 void wnga_proc_topology(Integer g_a, Integer proc, Integer *subscript)
 {
-/*    double local_start, local_stop;
-    ++count_pnga_proc_topology;
-    local_start = I_Wtime();
-    pnga_proc_topology(g_a, proc, subscript);
-    local_stop = I_Wtime();
-    time_pnga_proc_topology += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_proc_topology(g_a, proc, subscript);
@@ -3237,12 +2255,6 @@ void wnga_proc_topology(Integer g_a, Integer proc, Integer *subscript)
 
 void wnga_put(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld)
 {
-/*    double local_start, local_stop;
-    ++count_pnga_put;
-    local_start = I_Wtime();
-    pnga_put(g_a, lo, hi, buf, ld);
-    local_stop = I_Wtime();
-    time_pnga_put += local_stop - local_start;*/
    unsigned long long ltme, sz;
    GET_SIZE(g_a, lo, hi, sz); 
    ltme=- I_Wtime();
@@ -3254,12 +2266,6 @@ void wnga_put(Integer g_a, Integer *lo, Integer *hi, void *buf, Integer *ld)
 
 void wnga_put_field(Integer g_a, Integer *lo, Integer *hi, Integer foff, Integer fsize, void *buf, Integer *ld)
 {
-/*    double local_start, local_stop;
-    ++count_pnga_put_field;
-    local_start = I_Wtime();
-    pnga_put_field(g_a, lo, hi, foff, fsize, buf, ld);
-    local_stop = I_Wtime();
-    time_pnga_put_field += local_stop - local_start;*/
    unsigned long long ltme, sz;
    GET_SIZE(g_a, lo, hi, sz); 
    ltme=- I_Wtime();
@@ -3272,12 +2278,6 @@ void wnga_put_field(Integer g_a, Integer *lo, Integer *hi, Integer foff, Integer
 
 void wnga_randomize(Integer g_a, void *val)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_randomize;
-    local_start = I_Wtime();
-    pnga_randomize(g_a, val);
-    local_stop = I_Wtime();
-    time_pnga_randomize += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_randomize(g_a, val);
@@ -3288,30 +2288,18 @@ void wnga_randomize(Integer g_a, void *val)
 
 Integer wnga_read_inc(Integer g_a, Integer *subscript, Integer inc)
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_read_inc;
-    local_start = I_Wtime();
-    return_value = pnga_read_inc(g_a, subscript, inc);
-    local_stop = I_Wtime();
-    time_pnga_read_inc += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_read_inc(g_a, subscript, inc);
    ltme += I_Wtime();
    update_local_entry(PNGA_READ_INC, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 void wnga_recip(Integer g_a)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_recip;
-    local_start = I_Wtime();
-    pnga_recip(g_a);
-    local_stop = I_Wtime();
-    time_pnga_recip += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_recip(g_a);
@@ -3322,12 +2310,6 @@ void wnga_recip(Integer g_a)
 
 void wnga_recip_patch(Integer g_a, Integer *lo, Integer *hi)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_recip_patch;
-    local_start = I_Wtime();
-    pnga_recip_patch(g_a, lo, hi);
-    local_stop = I_Wtime();
-    time_pnga_recip_patch += local_stop - local_start;*/
    unsigned long long ltme, sz;
    GET_SIZE(g_a, lo, hi, sz); 
    ltme=- I_Wtime();
@@ -3339,30 +2321,18 @@ void wnga_recip_patch(Integer g_a, Integer *lo, Integer *hi)
 
 int wnga_register_type(size_t size)
 {
-    int return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_register_type;
-    local_start = I_Wtime();
-    return_value = pnga_register_type(size);
-    local_stop = I_Wtime();
-    time_pnga_register_type += local_stop - local_start;*/
+   int return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_register_type(size);
    ltme += I_Wtime();
    update_local_entry(PNGA_REGISTER_TYPE, ltme, 0);
-    return return_value;
+   return return_value;
 }
 
 
 void wnga_release(Integer g_a, Integer *lo, Integer *hi)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_release;
-    local_start = I_Wtime();
-    pnga_release(g_a, lo, hi);
-    local_stop = I_Wtime();
-    time_pnga_release += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_release(g_a, lo, hi);
@@ -3373,12 +2343,6 @@ void wnga_release(Integer g_a, Integer *lo, Integer *hi)
 
 void wnga_release_block(Integer g_a, Integer iblock)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_release_block;
-    local_start = I_Wtime();
-    pnga_release_block(g_a, iblock);
-    local_stop = I_Wtime();
-    time_pnga_release_block += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_release_block(g_a, iblock);
@@ -3389,12 +2353,6 @@ void wnga_release_block(Integer g_a, Integer iblock)
 
 void wnga_release_block_grid(Integer g_a, Integer *index)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_release_block_grid;
-    local_start = I_Wtime();
-    pnga_release_block_grid(g_a, index);
-    local_stop = I_Wtime();
-    time_pnga_release_block_grid += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_release_block_grid(g_a, index);
@@ -3405,12 +2363,6 @@ void wnga_release_block_grid(Integer g_a, Integer *index)
 
 void wnga_release_block_segment(Integer g_a, Integer iproc)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_release_block_segment;
-    local_start = I_Wtime();
-    pnga_release_block_segment(g_a, iproc);
-    local_stop = I_Wtime();
-    time_pnga_release_block_segment += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_release_block_segment(g_a, iproc);
@@ -3421,12 +2373,6 @@ void wnga_release_block_segment(Integer g_a, Integer iproc)
 
 void wnga_release_ghost_element(Integer g_a, Integer subscript[])
 {
-    /*double local_start, local_stop;
-    ++count_pnga_release_ghost_element;
-    local_start = I_Wtime();
-    pnga_release_ghost_element(g_a, subscript);
-    local_stop = I_Wtime();
-    time_pnga_release_ghost_element += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_release_ghost_element(g_a, subscript);
@@ -3437,12 +2383,6 @@ void wnga_release_ghost_element(Integer g_a, Integer subscript[])
 
 void wnga_release_ghosts(Integer g_a)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_release_ghosts;
-    local_start = I_Wtime();
-    pnga_release_ghosts(g_a);
-    local_stop = I_Wtime();
-    time_pnga_release_ghosts += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_release_ghosts(g_a);
@@ -3453,12 +2393,6 @@ void wnga_release_ghosts(Integer g_a)
 
 void wnga_release_update(Integer g_a, Integer *lo, Integer *hi)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_release_update;
-    local_start = I_Wtime();
-    pnga_release_update(g_a, lo, hi);
-    local_stop = I_Wtime();
-    time_pnga_release_update += local_stop - local_start;*/
    unsigned long long ltme, sz; 
    GET_SIZE(g_a, lo, hi, sz);
    ltme=- I_Wtime();
@@ -3470,12 +2404,6 @@ void wnga_release_update(Integer g_a, Integer *lo, Integer *hi)
 
 void wnga_release_update_block(Integer g_a, Integer iblock)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_release_update_block;
-    local_start = I_Wtime();
-    pnga_release_update_block(g_a, iblock);
-    local_stop = I_Wtime();
-    time_pnga_release_update_block += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_release_update_block(g_a, iblock);
@@ -3486,12 +2414,6 @@ void wnga_release_update_block(Integer g_a, Integer iblock)
 
 void wnga_release_update_block_grid(Integer g_a, Integer *index)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_release_update_block_grid;
-    local_start = I_Wtime();
-    pnga_release_update_block_grid(g_a, index);
-    local_stop = I_Wtime();
-    time_pnga_release_update_block_grid += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_release_update_block_grid(g_a, index);
@@ -3502,12 +2424,6 @@ void wnga_release_update_block_grid(Integer g_a, Integer *index)
 
 void wnga_release_update_block_segment(Integer g_a, Integer iproc)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_release_update_block_segment;
-    local_start = I_Wtime();
-    pnga_release_update_block_segment(g_a, iproc);
-    local_stop = I_Wtime();
-    time_pnga_release_update_block_segment += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_release_update_block_segment(g_a, iproc);
@@ -3518,12 +2434,6 @@ void wnga_release_update_block_segment(Integer g_a, Integer iproc)
 
 void wnga_release_update_ghost_element(Integer g_a, Integer subscript[])
 {
-    /*double local_start, local_stop;
-    ++count_pnga_release_update_ghost_element;
-    local_start = I_Wtime();
-    pnga_release_update_ghost_element(g_a, subscript);
-    local_stop = I_Wtime();
-    time_pnga_release_update_ghost_element += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_release_update_ghost_element(g_a, subscript);
@@ -3534,12 +2444,6 @@ void wnga_release_update_ghost_element(Integer g_a, Integer subscript[])
 
 void wnga_release_update_ghosts(Integer g_a)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_release_update_ghosts;
-    local_start = I_Wtime();
-    pnga_release_update_ghosts(g_a);
-    local_stop = I_Wtime();
-    time_pnga_release_update_ghosts += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_release_update_ghosts(g_a);
@@ -3550,12 +2454,6 @@ void wnga_release_update_ghosts(Integer g_a)
 
 void wnga_scale(Integer g_a, void *alpha)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_scale;
-    local_start = I_Wtime();
-    pnga_scale(g_a, alpha);
-    local_stop = I_Wtime();
-    time_pnga_scale += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_scale(g_a, alpha);
@@ -3566,12 +2464,6 @@ void wnga_scale(Integer g_a, void *alpha)
 
 void wnga_scale_cols(Integer g_a, Integer g_v)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_scale_cols;
-    local_start = I_Wtime();
-    pnga_scale_cols(g_a, g_v);
-    local_stop = I_Wtime();
-    time_pnga_scale_cols += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_scale_cols(g_a, g_v);
@@ -3582,12 +2474,6 @@ void wnga_scale_cols(Integer g_a, Integer g_v)
 
 void wnga_scale_patch(Integer g_a, Integer *lo, Integer *hi, void *alpha)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_scale_patch;
-    local_start = I_Wtime();
-    pnga_scale_patch(g_a, lo, hi, alpha);
-    local_stop = I_Wtime();
-    time_pnga_scale_patch += local_stop - local_start;*/
    unsigned long long ltme, sz; 
    GET_SIZE(g_a, lo, hi, sz);
    ltme=- I_Wtime();
@@ -3599,12 +2485,6 @@ void wnga_scale_patch(Integer g_a, Integer *lo, Integer *hi, void *alpha)
 
 void wnga_scale_rows(Integer g_a, Integer g_v)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_scale_rows;
-    local_start = I_Wtime();
-    pnga_scale_rows(g_a, g_v);
-    local_stop = I_Wtime();
-    time_pnga_scale_rows += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_scale_rows(g_a, g_v);
@@ -3615,12 +2495,6 @@ void wnga_scale_rows(Integer g_a, Integer g_v)
 
 void wnga_scan_add(Integer g_a, Integer g_b, Integer g_sbit, Integer lo, Integer hi, Integer excl)
 {
-/*    double local_start, local_stop;
-    ++count_pnga_scan_add;
-    local_start = I_Wtime();
-    pnga_scan_add(g_a, g_b, g_sbit, lo, hi, excl);
-    local_stop = I_Wtime();
-    time_pnga_scan_add += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_scan_add(g_a, g_b, g_sbit, lo, hi, excl);
@@ -3631,12 +2505,6 @@ void wnga_scan_add(Integer g_a, Integer g_b, Integer g_sbit, Integer lo, Integer
 
 void wnga_scan_copy(Integer g_a, Integer g_b, Integer g_sbit, Integer lo, Integer hi)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_scan_copy;
-    local_start = I_Wtime();
-    pnga_scan_copy(g_a, g_b, g_sbit, lo, hi);
-    local_stop = I_Wtime();
-    time_pnga_scan_copy += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_scan_copy(g_a, g_b, g_sbit, lo, hi);
@@ -3647,12 +2515,6 @@ void wnga_scan_copy(Integer g_a, Integer g_b, Integer g_sbit, Integer lo, Intege
 
 void wnga_scatter(Integer g_a, void *v, Integer *subscript, Integer c_flag, Integer nv)
 {
-/*    double local_start, local_stop;
-    ++count_pnga_scatter;
-    local_start = I_Wtime();
-    pnga_scatter(g_a, v, subscript, c_flag, nv);
-    local_stop = I_Wtime();
-    time_pnga_scatter += local_stop - local_start;*/
    unsigned long long ltme, sz;
    OBTAIN_SIZE(sz, c_flag);
    sz *= nv; 
@@ -3665,28 +2527,18 @@ void wnga_scatter(Integer g_a, void *v, Integer *subscript, Integer c_flag, Inte
 
 void wnga_scatter2d(Integer g_a, void *v, Integer *i, Integer *j, Integer nv)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_scatter2d;
-    local_start = I_Wtime();
-    pnga_scatter2d(g_a, v, i, j, nv);
-    local_stop = I_Wtime();
-    time_pnga_scatter2d += local_stop - local_start;*/
-   unsigned long long ltme; 
+   unsigned long long ltme, sz;
+   OBTAIN_ESIZE(sz, g_a); 
    ltme=- I_Wtime();
    pnga_scatter2d(g_a, v, i, j, nv);
    ltme += I_Wtime();
-   update_local_entry(PNGA_SCATTER2D, ltme, 0);    
+   sz *= nv;
+   update_local_entry(PNGA_SCATTER2D, ltme, sz);    
 }
 
 
 void wnga_scatter_acc(Integer g_a, void *v, Integer subscript[], Integer c_flag, Integer nv, void *alpha)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_scatter_acc;
-    local_start = I_Wtime();
-    pnga_scatter_acc(g_a, v, subscript, c_flag, nv, alpha);
-    local_stop = I_Wtime();
-    time_pnga_scatter_acc += local_stop - local_start;*/
    unsigned long long ltme, sz; 
    OBTAIN_SIZE(sz, c_flag);
    sz *= nv;
@@ -3699,28 +2551,18 @@ void wnga_scatter_acc(Integer g_a, void *v, Integer subscript[], Integer c_flag,
 
 void wnga_scatter_acc2d(Integer g_a, void *v, Integer *i, Integer *j, Integer nv, void *alpha)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_scatter_acc2d;
-    local_start = I_Wtime();
-    pnga_scatter_acc2d(g_a, v, i, j, nv, alpha);
-    local_stop = I_Wtime();
-    time_pnga_scatter_acc2d += local_stop - local_start;*/
-   unsigned long long ltme; 
+   unsigned long long ltme, sz;
+   OBTAIN_ESIZE(sz, g_a); 
    ltme=- I_Wtime();
    pnga_scatter_acc2d(g_a, v, i, j, nv, alpha);
    ltme += I_Wtime();
-   update_local_entry(PNGA_SCATTER_ACC2D, ltme, 0);    
+   sz *= nv;
+   update_local_entry(PNGA_SCATTER_ACC2D, ltme, sz);    
 }
 
 
 void wnga_select_elem(Integer g_a, char *op, void *val, Integer *subscript)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_select_elem;
-    local_start = I_Wtime();
-    pnga_select_elem(g_a, op, val, subscript);
-    local_stop = I_Wtime();
-    time_pnga_select_elem += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_select_elem(g_a, op, val, subscript);
@@ -3731,12 +2573,6 @@ void wnga_select_elem(Integer g_a, char *op, void *val, Integer *subscript)
 
 void wnga_set_array_name(Integer g_a, char *array_name)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_set_array_name;
-    local_start = I_Wtime();
-    pnga_set_array_name(g_a, array_name);
-    local_stop = I_Wtime();
-    time_pnga_set_array_name += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_set_array_name(g_a, array_name);
@@ -3747,12 +2583,6 @@ void wnga_set_array_name(Integer g_a, char *array_name)
 
 void wnga_set_block_cyclic(Integer g_a, Integer *dims)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_set_block_cyclic;
-    local_start = I_Wtime();
-    pnga_set_block_cyclic(g_a, dims);
-    local_stop = I_Wtime();
-    time_pnga_set_block_cyclic += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_set_block_cyclic(g_a, dims);
@@ -3763,12 +2593,6 @@ void wnga_set_block_cyclic(Integer g_a, Integer *dims)
 
 void wnga_set_block_cyclic_proc_grid(Integer g_a, Integer *dims, Integer *proc_grid)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_set_block_cyclic_proc_grid;
-    local_start = I_Wtime();
-    pnga_set_block_cyclic_proc_grid(g_a, dims, proc_grid);
-    local_stop = I_Wtime();
-    time_pnga_set_block_cyclic_proc_grid += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_set_block_cyclic_proc_grid(g_a, dims, proc_grid);
@@ -3779,12 +2603,6 @@ void wnga_set_block_cyclic_proc_grid(Integer g_a, Integer *dims, Integer *proc_g
 
 void wnga_set_chunk(Integer g_a, Integer *chunk)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_set_chunk;
-    local_start = I_Wtime();
-    pnga_set_chunk(g_a, chunk);
-    local_stop = I_Wtime();
-    time_pnga_set_chunk += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_set_chunk(g_a, chunk);
@@ -3795,12 +2613,6 @@ void wnga_set_chunk(Integer g_a, Integer *chunk)
 
 void wnga_set_data(Integer g_a, Integer ndim, Integer *dims, Integer type)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_set_data;
-    local_start = I_Wtime();
-    pnga_set_data(g_a, ndim, dims, type);
-    local_stop = I_Wtime();
-    time_pnga_set_data += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_set_data(g_a, ndim, dims, type);
@@ -3811,12 +2623,6 @@ void wnga_set_data(Integer g_a, Integer ndim, Integer *dims, Integer type)
 
 void wnga_set_debug(logical flag)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_set_debug;
-    local_start = I_Wtime();
-    pnga_set_debug(flag);
-    local_stop = I_Wtime();
-    time_pnga_set_debug += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_set_debug(flag);
@@ -3827,12 +2633,6 @@ void wnga_set_debug(logical flag)
 
 void wnga_set_diagonal(Integer g_a, Integer g_v)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_set_diagonal;
-    local_start = I_Wtime();
-    pnga_set_diagonal(g_a, g_v);
-    local_stop = I_Wtime();
-    time_pnga_set_diagonal += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_set_diagonal(g_a, g_v);
@@ -3843,12 +2643,6 @@ void wnga_set_diagonal(Integer g_a, Integer g_v)
 
 void wnga_set_ghost_corner_flag(Integer g_a, logical flag)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_set_ghost_corner_flag;
-    local_start = I_Wtime();
-    pnga_set_ghost_corner_flag(g_a, flag);
-    local_stop = I_Wtime();
-    time_pnga_set_ghost_corner_flag += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_set_ghost_corner_flag(g_a, flag);
@@ -3859,30 +2653,18 @@ void wnga_set_ghost_corner_flag(Integer g_a, logical flag)
 
 logical wnga_set_ghost_info(Integer g_a)
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_set_ghost_info;
-    local_start = I_Wtime();
-    return_value = pnga_set_ghost_info(g_a);
-    local_stop = I_Wtime();
-    time_pnga_set_ghost_info += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_set_ghost_info(g_a);
    ltme += I_Wtime();
    update_local_entry(PNGA_SET_GHOST_INFO, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 void wnga_set_ghosts(Integer g_a, Integer *width)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_set_ghosts;
-    local_start = I_Wtime();
-    pnga_set_ghosts(g_a, width);
-    local_stop = I_Wtime();
-    time_pnga_set_ghosts += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_set_ghosts(g_a, width);
@@ -3893,12 +2675,6 @@ void wnga_set_ghosts(Integer g_a, Integer *width)
 
 void wnga_set_irreg_distr(Integer g_a, Integer *map, Integer *block)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_set_irreg_distr;
-    local_start = I_Wtime();
-    pnga_set_irreg_distr(g_a, map, block);
-    local_stop = I_Wtime();
-    time_pnga_set_irreg_distr += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_set_irreg_distr(g_a, map, block);
@@ -3909,12 +2685,6 @@ void wnga_set_irreg_distr(Integer g_a, Integer *map, Integer *block)
 
 void wnga_set_irreg_flag(Integer g_a, logical flag)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_set_irreg_flag;
-    local_start = I_Wtime();
-    pnga_set_irreg_flag(g_a, flag);
-    local_stop = I_Wtime();
-    time_pnga_set_irreg_flag += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_set_irreg_flag(g_a, flag);
@@ -3925,12 +2695,6 @@ void wnga_set_irreg_flag(Integer g_a, logical flag)
 
 void wnga_set_memory_limit(Integer mem_limit)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_set_memory_limit;
-    local_start = I_Wtime();
-    pnga_set_memory_limit(mem_limit);
-    local_stop = I_Wtime();
-    time_pnga_set_memory_limit += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_set_memory_limit(mem_limit);
@@ -3941,12 +2705,6 @@ void wnga_set_memory_limit(Integer mem_limit)
 
 void wnga_set_pgroup(Integer g_a, Integer p_handle)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_set_pgroup;
-    local_start = I_Wtime();
-    pnga_set_pgroup(g_a, p_handle);
-    local_stop = I_Wtime();
-    time_pnga_set_pgroup += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_set_pgroup(g_a, p_handle);
@@ -3957,12 +2715,6 @@ void wnga_set_pgroup(Integer g_a, Integer p_handle)
 
 void wnga_set_restricted(Integer g_a, Integer *list, Integer size)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_set_restricted;
-    local_start = I_Wtime();
-    pnga_set_restricted(g_a, list, size);
-    local_stop = I_Wtime();
-    time_pnga_set_restricted += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_set_restricted(g_a, list, size);
@@ -3973,12 +2725,6 @@ void wnga_set_restricted(Integer g_a, Integer *list, Integer size)
 
 void wnga_set_restricted_range(Integer g_a, Integer lo_proc, Integer hi_proc)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_set_restricted_range;
-    local_start = I_Wtime();
-    pnga_set_restricted_range(g_a, lo_proc, hi_proc);
-    local_stop = I_Wtime();
-    time_pnga_set_restricted_range += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_set_restricted_range(g_a, lo_proc, hi_proc);
@@ -3989,48 +2735,30 @@ void wnga_set_restricted_range(Integer g_a, Integer lo_proc, Integer hi_proc)
 
 logical wnga_set_update4_info(Integer g_a)
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_set_update4_info;
-    local_start = I_Wtime();
-    return_value = pnga_set_update4_info(g_a);
-    local_stop = I_Wtime();
-    time_pnga_set_update4_info += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_set_update4_info(g_a);
    ltme += I_Wtime();
    update_local_entry(PNGA_SET_UPDATE4_INFO, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 logical wnga_set_update5_info(Integer g_a)
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_set_update5_info;
-    local_start = I_Wtime();
-    return_value = pnga_set_update5_info(g_a);
-    local_stop = I_Wtime();
-    time_pnga_set_update5_info += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_set_update5_info(g_a);
    ltme += I_Wtime();
    update_local_entry(PNGA_SET_UPDATE5_INFO, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 void wnga_shift_diagonal(Integer g_a, void *c)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_shift_diagonal;
-    local_start = I_Wtime();
-    pnga_shift_diagonal(g_a, c);
-    local_stop = I_Wtime();
-    time_pnga_shift_diagonal += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_shift_diagonal(g_a, c);
@@ -4041,48 +2769,30 @@ void wnga_shift_diagonal(Integer g_a, void *c)
 
 Integer wnga_solve(Integer g_a, Integer g_b)
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_solve;
-    local_start = I_Wtime();
-    return_value = pnga_solve(g_a, g_b);
-    local_stop = I_Wtime();
-    time_pnga_solve += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_solve(g_a, g_b);
    ltme += I_Wtime();
    update_local_entry(PNGA_SOLVE, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 Integer wnga_spd_invert(Integer g_a)
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_spd_invert;
-    local_start = I_Wtime();
-    return_value = pnga_spd_invert(g_a);
-    local_stop = I_Wtime();
-    time_pnga_spd_invert += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_spd_invert(g_a);
    ltme += I_Wtime();
    update_local_entry(PNGA_SPD_INVERT, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 void wnga_step_bound_info(Integer g_xx, Integer g_vv, Integer g_xxll, Integer g_xxuu, void *boundmin, void *wolfemin, void *boundmax)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_step_bound_info;
-    local_start = I_Wtime();
-    pnga_step_bound_info(g_xx, g_vv, g_xxll, g_xxuu, boundmin, wolfemin, boundmax);
-    local_stop = I_Wtime();
-    time_pnga_step_bound_info += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_step_bound_info(g_xx, g_vv, g_xxll, g_xxuu, boundmin, wolfemin, boundmax);
@@ -4093,12 +2803,6 @@ void wnga_step_bound_info(Integer g_xx, Integer g_vv, Integer g_xxll, Integer g_
 
 void wnga_step_bound_info_patch(Integer g_xx, Integer *xxlo, Integer *xxhi, Integer g_vv, Integer *vvlo, Integer *vvhi, Integer g_xxll, Integer *xxlllo, Integer *xxllhi, Integer g_xxuu, Integer *xxuulo, Integer *xxuuhi, void *boundmin, void *wolfemin, void *boundmax)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_step_bound_info_patch;
-    local_start = I_Wtime();
-    pnga_step_bound_info_patch(g_xx, xxlo, xxhi, g_vv, vvlo, vvhi, g_xxll, xxlllo, xxllhi, g_xxuu, xxuulo, xxuuhi, boundmin, wolfemin, boundmax);
-    local_stop = I_Wtime();
-    time_pnga_step_bound_info_patch += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_step_bound_info_patch(g_xx, xxlo, xxhi, g_vv, vvlo, vvhi, g_xxll, xxlllo, xxllhi, g_xxuu, xxuulo, xxuuhi, boundmin, wolfemin, boundmax);
@@ -4109,12 +2813,6 @@ void wnga_step_bound_info_patch(Integer g_xx, Integer *xxlo, Integer *xxhi, Inte
 
 void wnga_step_mask_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b, Integer *blo, Integer *bhi, Integer g_c, Integer *clo, Integer *chi)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_step_mask_patch;
-    local_start = I_Wtime();
-    pnga_step_mask_patch(g_a, alo, ahi, g_b, blo, bhi, g_c, clo, chi);
-    local_stop = I_Wtime();
-    time_pnga_step_mask_patch += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_step_mask_patch(g_a, alo, ahi, g_b, blo, bhi, g_c, clo, chi);
@@ -4125,12 +2823,6 @@ void wnga_step_mask_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b, 
 
 void wnga_step_max(Integer g_a, Integer g_b, void *retval)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_step_max;
-    local_start = I_Wtime();
-    pnga_step_max(g_a, g_b, retval);
-    local_stop = I_Wtime();
-    time_pnga_step_max += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_step_max(g_a, g_b, retval);
@@ -4141,12 +2833,6 @@ void wnga_step_max(Integer g_a, Integer g_b, void *retval)
 
 void wnga_step_max_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b, Integer *blo, Integer *bhi, void *result)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_step_max_patch;
-    local_start = I_Wtime();
-    pnga_step_max_patch(g_a, alo, ahi, g_b, blo, bhi, result);
-    local_stop = I_Wtime();
-    time_pnga_step_max_patch += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_step_max_patch(g_a, alo, ahi, g_b, blo, bhi, result);
@@ -4157,12 +2843,6 @@ void wnga_step_max_patch(Integer g_a, Integer *alo, Integer *ahi, Integer g_b, I
 
 void wnga_strided_acc(Integer g_a, Integer *lo, Integer *hi, Integer *skip, void *buf, Integer *ld, void *alpha)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_strided_acc;
-    local_start = I_Wtime();
-    pnga_strided_acc(g_a, lo, hi, skip, buf, ld, alpha);
-    local_stop = I_Wtime();
-    time_pnga_strided_acc += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_strided_acc(g_a, lo, hi, skip, buf, ld, alpha);
@@ -4173,12 +2853,6 @@ void wnga_strided_acc(Integer g_a, Integer *lo, Integer *hi, Integer *skip, void
 
 void wnga_strided_get(Integer g_a, Integer *lo, Integer *hi, Integer *skip, void *buf, Integer *ld)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_strided_get;
-    local_start = I_Wtime();
-    pnga_strided_get(g_a, lo, hi, skip, buf, ld);
-    local_stop = I_Wtime();
-    time_pnga_strided_get += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_strided_get(g_a, lo, hi, skip, buf, ld);
@@ -4189,12 +2863,6 @@ void wnga_strided_get(Integer g_a, Integer *lo, Integer *hi, Integer *skip, void
 
 void wnga_strided_put(Integer g_a, Integer *lo, Integer *hi, Integer *skip, void *buf, Integer *ld)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_strided_put;
-    local_start = I_Wtime();
-    pnga_strided_put(g_a, lo, hi, skip, buf, ld);
-    local_stop = I_Wtime();
-    time_pnga_strided_put += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_strided_put(g_a, lo, hi, skip, buf, ld);
@@ -4205,12 +2873,6 @@ void wnga_strided_put(Integer g_a, Integer *lo, Integer *hi, Integer *skip, void
 
 void wnga_summarize(Integer verbose)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_summarize;
-    local_start = I_Wtime();
-    pnga_summarize(verbose);
-    local_stop = I_Wtime();
-    time_pnga_summarize += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_summarize(verbose);
@@ -4221,12 +2883,6 @@ void wnga_summarize(Integer verbose)
 
 void wnga_symmetrize(Integer g_a)
 {
-/*    double local_start, local_stop;
-    ++count_pnga_symmetrize;
-    local_start = I_Wtime();
-    pnga_symmetrize(g_a);
-    local_stop = I_Wtime();
-    time_pnga_symmetrize += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_symmetrize(g_a);
@@ -4237,12 +2893,6 @@ void wnga_symmetrize(Integer g_a)
 
 void wnga_sync()
 {
-    /*double local_start, local_stop;
-    ++count_pnga_sync;
-    local_start = I_Wtime();
-    pnga_sync();
-    local_stop = I_Wtime();
-    time_pnga_sync += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_sync();
@@ -4253,48 +2903,30 @@ void wnga_sync()
 
 double wnga_timer()
 {
-    double return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_timer;
-    local_start = I_Wtime();
-    return_value = pnga_timer();
-    local_stop = I_Wtime();
-    time_pnga_timer += local_stop - local_start;*/
+   double return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_timer();
    ltme += I_Wtime();
    update_local_entry(PNGA_TIMER, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 Integer wnga_total_blocks(Integer g_a)
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_total_blocks;
-    local_start = I_Wtime();
-    return_value = pnga_total_blocks(g_a);
-    local_stop = I_Wtime();
-    time_pnga_total_blocks += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_total_blocks(g_a);
    ltme += I_Wtime();
    update_local_entry(PNGA_TOTAL_BLOCKS, ltme, 0);
-    return return_value;
+   return return_value;
 }
 
 
 void wnga_transpose(Integer g_a, Integer g_b)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_transpose;
-    local_start = I_Wtime();
-    pnga_transpose(g_a, g_b);
-    local_stop = I_Wtime();
-    time_pnga_transpose += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_transpose(g_a, g_b);
@@ -4305,48 +2937,30 @@ void wnga_transpose(Integer g_a, Integer g_b)
 
 Integer wnga_type_c2f(Integer type)
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_type_c2f;
-    local_start = I_Wtime();
-    return_value = pnga_type_c2f(type);
-    local_stop = I_Wtime();
-    time_pnga_type_c2f += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_type_c2f(type);
    ltme += I_Wtime();
    update_local_entry(PNGA_TYPE_C2F, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 Integer wnga_type_f2c(Integer type)
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_type_f2c;
-    local_start = I_Wtime();
-    return_value = pnga_type_f2c(type);
-    local_stop = I_Wtime();
-    time_pnga_type_f2c += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_type_f2c(type);
    ltme += I_Wtime();
    update_local_entry(PNGA_TYPE_F2C, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 void wnga_unlock(Integer mutex)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_unlock;
-    local_start = I_Wtime();
-    pnga_unlock(mutex);
-    local_stop = I_Wtime();
-    time_pnga_unlock += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_unlock(mutex);
@@ -4357,12 +2971,6 @@ void wnga_unlock(Integer mutex)
 
 void wnga_unpack(Integer g_a, Integer g_b, Integer g_sbit, Integer lo, Integer hi, Integer *icount)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_unpack;
-    local_start = I_Wtime();
-    pnga_unpack(g_a, g_b, g_sbit, lo, hi, icount);
-    local_stop = I_Wtime();
-    time_pnga_unpack += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_unpack(g_a, g_b, g_sbit, lo, hi, icount);
@@ -4373,12 +2981,6 @@ void wnga_unpack(Integer g_a, Integer g_b, Integer g_sbit, Integer lo, Integer h
 
 void wnga_update1_ghosts(Integer g_a)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_update1_ghosts;
-    local_start = I_Wtime();
-    pnga_update1_ghosts(g_a);
-    local_stop = I_Wtime();
-    time_pnga_update1_ghosts += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_update1_ghosts(g_a);
@@ -4389,174 +2991,114 @@ void wnga_update1_ghosts(Integer g_a)
 
 logical wnga_update2_ghosts(Integer g_a)
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_update2_ghosts;
-    local_start = I_Wtime();
-    return_value = pnga_update2_ghosts(g_a);
-    local_stop = I_Wtime();
-    time_pnga_update2_ghosts += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_update2_ghosts(g_a);
    ltme += I_Wtime();
    update_local_entry(PNGA_UPDATE2_GHOSTS, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 logical wnga_update3_ghosts(Integer g_a)
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_update3_ghosts;
-    local_start = I_Wtime();
-    return_value = pnga_update3_ghosts(g_a);
-    local_stop = I_Wtime();
-    time_pnga_update3_ghosts += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_update3_ghosts(g_a);
    ltme += I_Wtime();
    update_local_entry(PNGA_UPDATE3_GHOSTS, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 logical wnga_update44_ghosts(Integer g_a)
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_update44_ghosts;
-    local_start = I_Wtime();
-    return_value = pnga_update44_ghosts(g_a);
-    local_stop = I_Wtime();
-    time_pnga_update44_ghosts += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_update44_ghosts(g_a);
    ltme += I_Wtime();
    update_local_entry(PNGA_UPDATED44_GHOSTS, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 logical wnga_update4_ghosts(Integer g_a)
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_update4_ghosts;
-    local_start = I_Wtime();
-    return_value = pnga_update4_ghosts(g_a);
-    local_stop = I_Wtime();
-    time_pnga_update4_ghosts += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_update4_ghosts(g_a);
    ltme += I_Wtime();
    update_local_entry(PNGA_UPDATE4_GHOSTS, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 logical wnga_update55_ghosts(Integer g_a)
 {
-    logical return_value;
-/*    double local_start, local_stop;
-    ++count_pnga_update55_ghosts;
-    local_start = I_Wtime();
-    return_value = pnga_update55_ghosts(g_a);
-    local_stop = I_Wtime();
-    time_pnga_update55_ghosts += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_update55_ghosts(g_a);
    ltme += I_Wtime();
    update_local_entry(PNGA_UPDATE55_GHOSTS, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 logical wnga_update5_ghosts(Integer g_a)
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_update5_ghosts;
-    local_start = I_Wtime();
-    return_value = pnga_update5_ghosts(g_a);
-    local_stop = I_Wtime();
-    time_pnga_update5_ghosts += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_update5_ghosts(g_a);
    ltme += I_Wtime();
    update_local_entry(PNGA_UPDATE55_GHOSTS, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 logical wnga_update6_ghosts(Integer g_a)
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_update6_ghosts;
-    local_start = I_Wtime();
-    return_value = pnga_update6_ghosts(g_a);
-    local_stop = I_Wtime();
-    time_pnga_update6_ghosts += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_update6_ghosts(g_a);
    ltme += I_Wtime();
    update_local_entry(PNGA_UPDATE6_GHOSTS, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 logical wnga_update7_ghosts(Integer g_a)
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_update7_ghosts;
-    local_start = I_Wtime();
-    return_value = pnga_update7_ghosts(g_a);
-    local_stop = I_Wtime();
-    time_pnga_update7_ghosts += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_update7_ghosts(g_a);
    ltme += I_Wtime();
    update_local_entry(PNGA_UPDATE7_GHOSTS, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 logical wnga_update_ghost_dir(Integer g_a, Integer pdim, Integer pdir, logical pflag)
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_update_ghost_dir;
-    local_start = I_Wtime();
-    return_value = pnga_update_ghost_dir(g_a, pdim, pdir, pflag);
-    local_stop = I_Wtime();
-    time_pnga_update_ghost_dir += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_update_ghost_dir(g_a, pdim, pdir, pflag);
    ltme += I_Wtime();
    update_local_entry(PNGA_UPDATE_GHOST_DIR, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 void wnga_update_ghosts(Integer g_a)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_update_ghosts;
-    local_start = I_Wtime();
-    pnga_update_ghosts(g_a);
-    local_stop = I_Wtime();
-    time_pnga_update_ghosts += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_update_ghosts(g_a);
@@ -4567,102 +3109,66 @@ void wnga_update_ghosts(Integer g_a)
 
 logical wnga_uses_ma()
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_uses_ma;
-    local_start = I_Wtime();
-    return_value = pnga_uses_ma();
-    local_stop = I_Wtime();
-    time_pnga_uses_ma += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_uses_ma();
    ltme += I_Wtime();
    update_local_entry(PNGA_USES_MA, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 logical wnga_uses_proc_grid(Integer g_a)
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_uses_proc_grid;
-    local_start = I_Wtime();
-    return_value = pnga_uses_proc_grid(g_a);
-    local_stop = I_Wtime();
-    time_pnga_uses_proc_grid += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_uses_proc_grid(g_a);
    ltme += I_Wtime();
    update_local_entry(PNGA_USES_PROC_GRID, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 logical wnga_valid_handle(Integer g_a)
 {
-    logical return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_valid_handle;
-    local_start = I_Wtime();
-    return_value = pnga_valid_handle(g_a);
-    local_stop = I_Wtime();
-    time_pnga_valid_handle += local_stop - local_start;*/
+   logical return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_valid_handle(g_a);
    ltme += I_Wtime();
    update_local_entry(PNGA_VALID_HANDLE, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 Integer wnga_verify_handle(Integer g_a)
 {
-    Integer return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_verify_handle;
-    local_start = I_Wtime();
-    return_value = pnga_verify_handle(g_a);
-    local_stop = I_Wtime();
-    time_pnga_verify_handle += local_stop - local_start;*/
+   Integer return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_verify_handle(g_a);
    ltme += I_Wtime();
    update_local_entry(PNGA_VERIFY_HANDLE, ltme, 0);
-    return return_value;
+   return return_value;
 }
 
 
 DoublePrecision wnga_wtime()
 {
-    DoublePrecision return_value;
-    /*double local_start, local_stop;
-    ++count_pnga_wtime;
-    local_start = I_Wtime();
-    return_value = pnga_wtime();
-    local_stop = I_Wtime();
-    time_pnga_wtime += local_stop - local_start;*/
+   DoublePrecision return_value;
    unsigned long long ltme; 
    ltme=- I_Wtime();
    return_value = pnga_wtime();
    ltme += I_Wtime();
    update_local_entry(PNGA_WTIME, ltme, 0);    
-    return return_value;
+   return return_value;
 }
 
 
 void wnga_zero(Integer g_a)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_zero;
-    local_start = I_Wtime();
-    pnga_zero(g_a);
-    local_stop = I_Wtime();
-    time_pnga_zero += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_zero(g_a);
@@ -4673,12 +3179,6 @@ void wnga_zero(Integer g_a)
 
 void wnga_zero_diagonal(Integer g_a)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_zero_diagonal;
-    local_start = I_Wtime();
-    pnga_zero_diagonal(g_a);
-    local_stop = I_Wtime();
-    time_pnga_zero_diagonal += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_zero_diagonal(g_a);
@@ -4689,12 +3189,6 @@ void wnga_zero_diagonal(Integer g_a)
 
 void wnga_zero_patch(Integer g_a, Integer *lo, Integer *hi)
 {
-    /*double local_start, local_stop;
-    ++count_pnga_zero_patch;
-    local_start = I_Wtime();
-    pnga_zero_patch(g_a, lo, hi);
-    local_stop = I_Wtime();
-    time_pnga_zero_patch += local_stop - local_start;*/
    unsigned long long ltme; 
    ltme=- I_Wtime();
    pnga_zero_patch(g_a, lo, hi);
@@ -4704,8 +3198,6 @@ void wnga_zero_patch(Integer g_a, Integer *lo, Integer *hi)
 
 void wnga_initialize()
 {
-    //++count_pnga_initialize;
-    //
     
     pnga_initialize();
     update_local_entry(PNGA_INITIALIZE, 0, 0);
@@ -4716,7 +3208,6 @@ void wnga_initialize()
 
 void wnga_initialize_ltd(Integer limit)
 {
-    //++count_pnga_initialize_ltd;
 
     pnga_initialize_ltd(limit);
     update_local_entry(PNGA_INITIALIZE_LTD, 0, 0);

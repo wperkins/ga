@@ -274,6 +274,17 @@ enum WPROF_GA {
    elems = size * nelems; \
 }
 
+#define GET_LOCAL_MSIZE(ga, sz) {\
+   Integer handle;    \
+   handle = GA_OFFSET + ga; \
+   sz = GA[handle].size; \
+}
+
+#define OBTAIN_ESIZE(r, ga) { \
+  Integer handle = GA_OFFSET+ga;\
+  r = GA[handle].elemsize;\
+}
+
 #define OBTAIN_SIZE(r, t) { \
    switch(t){               \
       case C_INT:           \

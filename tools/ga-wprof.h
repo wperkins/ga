@@ -1,11 +1,9 @@
 #ifndef _GA_WPRF
 #define _GA_WPRF 1
-
 #include <stdint.h>
 #include <inttypes.h>
 #include <pthread.h>
 #include <mpi.h>
-
 enum WPROF_GA {
   PNGA_ABS_VALUE = 0,
   PNGA_ABS_VALUE_PATCH,
@@ -262,9 +260,16 @@ enum WPROF_GA {
 };
 
 #include "ga.h"
+#include "globalp.h"
+#include "base.h"
 
-#define GET_TYPE(ga, type, ndims, dims) { \
-   NGA_Inquire(ga, &type, &ndims, dims); \
+#define GET_SIZE(ga, lo, hi, elems) { \
+   Integer handle, size, nelems, ndim; \
+   handle = GA_OFFSET + ga; \
+   size = GA[handle].elemsize; \
+   ndim = GA[handle].ndim; \
+   gam_CountElems(ndim, lo, hi, &nelems);\
+   elems = size * nelems; \
 }
 
 #define OBTAIN_SIZE(r, t) { \
@@ -318,5 +323,7 @@ int print_ga_prof_stats(enum FMT f, FILE *fp, MPI_Comm comm);
 
 int update_local_entry(enum WPROF_GA e, uint64_t tme, uint64_t bytes);
 int update_global_entry(enum WPROF_GA e, MPI_Comm comm);
+
+uint64_t I_Wtime();
 
 #endif

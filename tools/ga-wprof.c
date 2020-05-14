@@ -26,7 +26,7 @@ char ga_weak_symbols[WPROF_TOTAL][80] = {
   "PNGA_ADD_PATCH",
   "PNGA_ALLOCATE",
   "PNGA_BIN_INDEX",
-  "PNGA_BIN_SORTER"
+  "PNGA_BIN_SORTER",
   "PNGA_BRDCST",
   "PNGA_CHECK_HANDLE",
   "PNGA_CLUSTER_NNODES",
@@ -260,6 +260,18 @@ char ga_weak_symbols[WPROF_TOTAL][80] = {
 
 #include <string.h>
 
+#include <time.h>
+#include <sys/time.h>
+#define NANOSECS 1000000000ULL
+
+uint64_t I_Wtime(void)
+{
+    struct timespec res;
+    clock_gettime(CLOCK_REALTIME, &res);
+    uint64_t timeRes = res.tv_sec*NANOSECS+res.tv_nsec;
+    return timeRes;
+}
+
 int init_ga_prof_struct(){
    int i;
    for(i = 0; i < WPROF_TOTAL; ++i){
@@ -282,9 +294,14 @@ int update_local_entry(enum WPROF_GA e, uint64_t tme, uint64_t bytes){
    if(e >= WPROF_TOTAL){
       return -1;
    }
-   __sync_fetch_and_add(&(gaw_local_stats[e].count), 1);
+/*   __sync_fetch_and_add(&(gaw_local_stats[e].count), 1);
    __sync_fetch_and_add(&(gaw_local_stats[e].time), tme);
-   __sync_fetch_and_add(&(gaw_local_stats[e].total_bytes), bytes);
+   __sync_fetch_and_add(&(gaw_local_stats[e].total_bytes), bytes);*/
+   pthread_mutex_lock(&gprof_lock);
+   gaw_local_stats[e].count++;
+   gaw_local_stats[e].time += tme;
+   gaw_local_stats[e].total_bytes += bytes;
+   pthread_mutex_unlock(&gprof_lock);
    return 0;
 }
 
@@ -292,11 +309,9 @@ int update_global_entry(enum WPROF_GA e, MPI_Comm comm){
    if(e >= WPROF_TOTAL){
       return -1;
    }
-   pthread_mutex_lock(&gprof_lock);
-   MPI_Reduce(&gaw_global_stats[e].count, &gaw_local_stats[e].count, 1, MPI_LONG_LONG, MPI_SUM, 0, comm);
-   MPI_Reduce(&gaw_global_stats[e].time, &gaw_local_stats[e].time, 1, MPI_LONG_LONG, MPI_SUM, 0, comm);
-   MPI_Reduce(&gaw_global_stats[e].total_bytes, &gaw_local_stats[e].total_bytes, 1, MPI_LONG_LONG, MPI_SUM, 0, comm);
-   pthread_mutex_unlock(&gprof_lock);
+   MPI_Reduce(&gaw_local_stats[e].count, &gaw_global_stats[e].count, 1, MPI_LONG_LONG, MPI_SUM, 0, comm);
+   MPI_Reduce(&gaw_local_stats[e].time, &gaw_global_stats[e].time, 1, MPI_LONG_LONG, MPI_SUM, 0, comm);
+   MPI_Reduce(&gaw_local_stats[e].total_bytes, &gaw_global_stats[e].total_bytes, 1, MPI_LONG_LONG, MPI_SUM, 0, comm);
    return 0;
 }
 
@@ -324,7 +339,7 @@ int print_ga_prof_stats(enum FMT f, FILE *fp, MPI_Comm comm){
                       gaw_local_stats[i].total_bytes);
                break;
             case HUMAN_FMT:
-               fprintf(fp, "[%d] Function Name: %s\n", me, gaw_local_stats[i].name);
+               fprintf(fp, "[%d] Function Name: %s(%d)\n", me, gaw_local_stats[i].name, i);
                fprintf(fp, "[%d]\tCount: %"PRIu64"\n", me, gaw_local_stats[i].count);
                fprintf(fp, "[%d]\tCumm Time: %"PRIu64"\n", me, gaw_local_stats[i].time);
                fprintf(fp, "[%d]\tTotal Bytes: %"PRIu64"\n", me, gaw_local_stats[i].total_bytes);
@@ -335,7 +350,6 @@ int print_ga_prof_stats(enum FMT f, FILE *fp, MPI_Comm comm){
    MPI_Barrier(comm);
    if(me == 0){
       fprintf(fp, "Global Stats\n");     
-   }    
    switch(f)
    {
       case CSV_FMT:
@@ -361,4 +375,5 @@ int print_ga_prof_stats(enum FMT f, FILE *fp, MPI_Comm comm){
          }
       }
    }   
+   }
 }

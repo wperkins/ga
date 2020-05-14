@@ -132,8 +132,6 @@ int NGA_Initialized()
 
 void GA_Terminate() 
 {
-    printf("C API: terminate called\n");
-    fflush(stdout);
     wnga_terminate();
     
     _ga_argc = NULL;

@@ -115,6 +115,7 @@ Integer GA_Debug_flag = 0;
 /* Profiling */
 int _ga_profile_instnc = 0;
 double _ga_profile_distr = 0.0;
+double _ga_profile_partition = 0.0;
 double _ga_profile_alloc = 0.0;
 double _ga_profile_misc = 0.0;
 double _ga_profile_getmem = 0.0;
@@ -2551,28 +2552,41 @@ logical pnga_allocate(Integer g_a)
     pnga_pgroup_sync(p_handle);
 
     /* ddb(ndim, dims, GAnproc, blk, pe);*/
-    if(p_handle == 0) /* for mirrored arrays */
+    if(p_handle == 0)  {/* for mirrored arrays */
+       _ga_profile_distr += pnga_wtime()-tbeg;
+       tbeg = pnga_wtime();
 #if OLD_DISTRIBUTION
        ddb_h2(ndim, dims, PGRP_LIST[p_handle].map_nproc,0.0,(Integer)0, blk, pe);
 #else
        ddb(ndim, dims, PGRP_LIST[p_handle].map_nproc, blk, pe);
 #endif
-    else
+       _ga_profile_partition += pnga_wtime()-tbeg;
+       tbeg = pnga_wtime();
+    } else {
        if (GA[ga_handle].num_rstrctd == 0) {
          /* Data is normally distributed on processors */
+         _ga_profile_distr += pnga_wtime()-tbeg;
+         tbeg = pnga_wtime();
 #if OLD_DISTRIBUTION
          ddb_h2(ndim, dims, grp_nproc,0.0,(Integer)0, blk, pe);
 #else
          ddb(ndim, dims, grp_nproc, blk, pe);
 #endif
+         _ga_profile_partition += pnga_wtime()-tbeg;
+         tbeg = pnga_wtime();
        } else {
+         _ga_profile_distr += pnga_wtime()-tbeg;
+         tbeg = pnga_wtime();
          /* Data is only distributed on subset of processors */
 #if OLD_DISTRIBUTION
          ddb_h2(ndim, dims, GA[ga_handle].num_rstrctd, 0.0, (Integer)0, blk, pe);
 #else
          ddb(ndim, dims, GA[ga_handle].num_rstrctd, blk, pe);
 #endif
+         _ga_profile_partition += pnga_wtime()-tbeg;
+         tbeg = pnga_wtime();
        }
+    }
 
     for(d=0, map=mapALL; d< ndim; d++){
       Integer nblock;
@@ -3760,6 +3774,7 @@ Integer i, handle;
     }
     /* Print out GA profiling information */
     pnga_gop(C_DBL,&_ga_profile_distr,1,"+");
+    pnga_gop(C_DBL,&_ga_profile_partition,1,"+");
     pnga_gop(C_DBL,&_ga_profile_alloc,1,"+");
     pnga_gop(C_DBL,&_ga_profile_misc,1,"+");
     pnga_gop(C_DBL,&_ga_profile_getmem,1,"+");
@@ -3768,6 +3783,7 @@ Integer i, handle;
     pnga_gop(C_DBL,&_ga_profile_armci_malloc_grp,1,"+");
     pnga_gop(C_DBL,&_ga_profile_armci_malloc_align,1,"+");
     _ga_profile_distr /= ((double)GAnproc);
+    _ga_profile_partition /= ((double)GAnproc);
     _ga_profile_alloc /= ((double)GAnproc);
     _ga_profile_misc /= ((double)GAnproc);
     _ga_profile_getmem /= ((double)GAnproc);
@@ -3777,6 +3793,7 @@ Integer i, handle;
     _ga_profile_armci_malloc_align /= ((double)GAnproc);
     if (_ga_profile_instnc > 0) {
       _ga_profile_distr /= ((double)_ga_profile_instnc);
+      _ga_profile_partition /= ((double)_ga_profile_instnc);
       _ga_profile_alloc /= ((double)_ga_profile_instnc);
       _ga_profile_misc /= ((double)_ga_profile_instnc);
       _ga_profile_getmem /= ((double)_ga_profile_instnc);
@@ -3789,6 +3806,8 @@ Integer i, handle;
       printf("\nProfiling from GA\n");
       printf("Time spent in setting up data distribution: %16.6f\n",
           _ga_profile_distr);
+      printf("Time spent in creating partition          : %16.6f\n",
+          _ga_profile_partition);
       printf("Time spent in allocating memory           : %16.6f\n",
           _ga_profile_alloc);
       printf("Time spent in miscellaneous operations    : %16.6f\n",

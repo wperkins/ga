@@ -309,7 +309,8 @@ EXTRA_DIST += global/README
 #
 if ENABLE_PROFILING
 if HAVE_SYS_WEAK_ALIAS_PRAGMA
-lib_LTLIBRARIES += libwapi.la
+#lib_LTLIBRARIES += libwapi.la
+noinst_LTLIBRARIES = libwapi.la
 libwapi_la_SOURCES =
 libwapi_la_SOURCES += tools/ga-wapi.c
 libwapi_la_SOURCES += tools/ga-wprof.c
@@ -321,9 +322,12 @@ nodist_libga_la_SOURCES += tools/ga-wapi.c
 nodist_libga_la_SOURCES += tools/ga-wprof.c
 if ENABLE_GPARRAYS
 #nodist_libga_la_SOURCES += tools/gp-wapi.c
-#nodist_libga_la_SOURCES += tools/gp-wprof.c
 endif
 endif
+endif
+
+if ENABLE_PROFILING
+libga_la_LIBADD += libwapi.la
 endif
 
 if ENABLE_GPARRAYS

@@ -3106,11 +3106,12 @@ double tbeg0, tbeg1;
        status = ARMCI_Malloc_group((void**)ptr_arr, (armci_size_t)bytes,
 				   &PGRP_LIST[grp_id].group);
        _ga_profile_armci_malloc_grp += pnga_wtime()-tbeg1;
-    } else
+    } else {
 #endif
          tbeg1 = pnga_wtime();
       status = ARMCI_Malloc((void**)ptr_arr, (armci_size_t)bytes);
        _ga_profile_armci_malloc += pnga_wtime()-tbeg1;
+    }
 
     if(bytes!=0 && ptr_arr[grp_me]==NULL) 
        pnga_error("gai_get_shmem: ARMCI Malloc failed", GAme);

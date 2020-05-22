@@ -1,9 +1,11 @@
 #include "./ga-wprof.h"
 
 ga_weak_profile_t gaw_global_stats[WPROF_TOTAL];
+ga_weak_profile_t gaw_global_min_stats[WPROF_TOTAL];
+ga_weak_profile_t gaw_global_max_stats[WPROF_TOTAL];
 ga_weak_profile_t gaw_local_stats[WPROF_TOTAL];
 
-char ga_weak_symbols[WPROF_TOTAL][80] = {
+char ga_weak_symbols[WPROF_TOTAL+1][80] = {
   "PNGA_ABS_VALUE",
   "PNGA_ABS_VALUE_PATCH",
   "PNGA_ACC",
@@ -262,6 +264,7 @@ char ga_weak_symbols[WPROF_TOTAL][80] = {
 
 #include <time.h>
 #include <sys/time.h>
+#include <alloca.h>
 #define NANOSECS 1000000000ULL
 
 uint64_t I_Wtime(void)
@@ -276,6 +279,7 @@ enum FMT logs = HUMAN_FMT;
 FILE *filePre = NULL;
 FILE *globalFilePre = NULL;
 int gaw_depth = 1;
+int enable_local = 0;
 
 int init_ga_prof_struct(int me, int nproc){
    int i;
@@ -294,14 +298,16 @@ int init_ga_prof_struct(int me, int nproc){
    char *filePrefix = getenv("GAW_FILE_PREFIX");
    char *strLogs = getenv("GAW_FMT");
    char *Gdepth = getenv("GAW_DEPTH");
+   char *Glocal = getenv("GAW_ENABLE_LOCAL");
+   if(Glocal){
+      enable_local = 1;
+   }
    if(!filePrefix){
-      filePre = stdout;
-      if(me == 0)
-         globalFilePre = stdout;
-      
-   }  
-   else{
-      char *fname[1024];
+      filePrefix = alloca(1024);
+      strncpy(filePrefix, "logs_pre", 1024);      
+   }    
+   char fname[1024];
+   if(enable_local){
       sprintf(fname, "%s-%d-%d.txt", filePrefix, me, nproc);
       filePre = fopen(fname, "wb+");
       if(!filePre){
@@ -311,17 +317,17 @@ int init_ga_prof_struct(int me, int nproc){
       else{
          printf("Log File openned: %s\n", fname);
       }
-      if(me == 0){
-         sprintf(fname, "%s-GLOBAL.txt", filePrefix);
-         globalFilePre = fopen(fname, "wb+");
-         if(!globalFilePre){
-            printf("Error in openning logs files: %s\n", fname);
-            exit(11);
-         }
-         else{
-            printf("Log File openned: %s\n", fname);
-         }      
+   }
+   if(me == 0){
+      sprintf(fname, "%s-GLOBAL.txt", filePrefix);
+      globalFilePre = fopen(fname, "wb+");
+      if(!globalFilePre){
+         printf("Error in openning logs files: %s\n", fname);
+         exit(11);
       }
+      else{
+         printf("Log File openned: %s\n", fname);
+      }      
    }
    if(!strLogs){
        /* Assume that the default is HUMAN readable */
@@ -340,6 +346,7 @@ int init_ga_prof_struct(int me, int nproc){
             break;
       }   
    }
+
 }
 
 pthread_mutex_t gprof_lock =  PTHREAD_MUTEX_INITIALIZER;
@@ -363,6 +370,15 @@ int update_global_entry(enum WPROF_GA e, MPI_Comm comm){
    MPI_Reduce(&gaw_local_stats[e].count, &gaw_global_stats[e].count, 1, MPI_LONG_LONG, MPI_SUM, 0, comm);
    MPI_Reduce(&gaw_local_stats[e].time, &gaw_global_stats[e].time, 1, MPI_LONG_LONG, MPI_SUM, 0, comm);
    MPI_Reduce(&gaw_local_stats[e].total_bytes, &gaw_global_stats[e].total_bytes, 1, MPI_LONG_LONG, MPI_SUM, 0, comm);
+
+   MPI_Reduce(&gaw_local_stats[e].count, &gaw_global_min_stats[e].count, 1, MPI_LONG_LONG, MPI_MIN, 0, comm);
+   MPI_Reduce(&gaw_local_stats[e].time, &gaw_global_min_stats[e].time, 1, MPI_LONG_LONG, MPI_MIN, 0, comm);
+   MPI_Reduce(&gaw_local_stats[e].total_bytes, &gaw_global_min_stats[e].total_bytes, 1, MPI_LONG_LONG, MPI_MIN, 0, comm);
+
+   MPI_Reduce(&gaw_local_stats[e].count, &gaw_global_max_stats[e].count, 1, MPI_LONG_LONG, MPI_MAX, 0, comm);
+   MPI_Reduce(&gaw_local_stats[e].time, &gaw_global_max_stats[e].time, 1, MPI_LONG_LONG, MPI_MAX, 0, comm);
+   MPI_Reduce(&gaw_local_stats[e].total_bytes, &gaw_global_max_stats[e].total_bytes, 1, MPI_LONG_LONG, MPI_MAX, 0, comm);   
+
    return 0;
 }
 
@@ -373,42 +389,45 @@ int print_ga_prof_stats(enum FMT f, FILE *fp, MPI_Comm comm){
    MPI_Comm_size(MPI_COMM_WORLD, &nproc);
    /* TODO: change the arguments, they are not longer needed */
    f = logs;
-   fp = filePre;
-
-   fprintf(fp, "Local stats\n");
-   switch(f)
-   {
-      case CSV_FMT:
-         fprintf(fp, "Func Name, Node, Count, Time, Bytes\n");
-         break;
-      case HUMAN_FMT:
-         break;
-   }
-   for (i = 0; i < WPROF_TOTAL; ++i){
-      if(gaw_local_stats[i].count){
-         switch(f){
-            case CSV_FMT:  
-               fprintf(fp, "%s, %d, %"PRIu64", %"PRIu64", %"PRIu64"\n",
-                      gaw_local_stats[i].name, me, gaw_local_stats[i].count, gaw_local_stats[i].time, 
-                      gaw_local_stats[i].total_bytes);
-               break;
-            case HUMAN_FMT:
-               fprintf(fp, "[%d] Function Name: %s(%d)\n", me, gaw_local_stats[i].name, i);
-               fprintf(fp, "[%d]\tCount: %"PRIu64"\n", me, gaw_local_stats[i].count);
-               fprintf(fp, "[%d]\tCumm Time: %"PRIu64"\n", me, gaw_local_stats[i].time);
-               fprintf(fp, "[%d]\tTotal Bytes: %"PRIu64"\n", me, gaw_local_stats[i].total_bytes);
-               break;
+   
+   if(enable_local){
+      fp = filePre;
+      fprintf(fp, "Local stats\n");
+      switch(f)
+      {
+         case CSV_FMT:
+            fprintf(fp, "Func Name, Node, Count, Time, Bytes\n");
+            break;
+         case HUMAN_FMT:
+            break;
+      }
+      for (i = 0; i < WPROF_TOTAL; ++i){
+         if(gaw_local_stats[i].count){
+            switch(f){
+               case CSV_FMT:  
+                  fprintf(fp, "%s, %d, %"PRIu64", %"PRIu64", %"PRIu64"\n",
+                      gaw_local_stats[i].name, me, 
+                      gaw_local_stats[i].count, gaw_local_stats[i].time, gaw_local_stats[i].total_bytes);
+                  break;
+               case HUMAN_FMT:
+                  fprintf(fp, "[%d] Function Name: %s(%d)\n", me, gaw_local_stats[i].name, i);
+                  fprintf(fp, "[%d]\tCount: %"PRIu64"\n", me, gaw_local_stats[i].count);
+                  fprintf(fp, "[%d]\tCumm Time: %"PRIu64"\n", me, gaw_local_stats[i].time);
+                  fprintf(fp, "[%d]\tTotal Bytes: %"PRIu64"\n", me, gaw_local_stats[i].total_bytes);
+                  break;
+            }
          }
       }
    }
    MPI_Barrier(comm);
    fp = globalFilePre;
+   
    if(me == 0){
       fprintf(fp, "Global Stats\n");     
    switch(f)
    {
       case CSV_FMT:
-         fprintf(fp, "Func Name, Node, Count, Time, Bytes\n");
+         fprintf(fp, "Func Name, Node, Count, Avg Time, Bytes, min Count, min Time, min Bytes, max Count, max Time, max Bytes\n");
          break;
       case HUMAN_FMT:
          break;
@@ -417,20 +436,28 @@ int print_ga_prof_stats(enum FMT f, FILE *fp, MPI_Comm comm){
       if(gaw_local_stats[i].count){
          switch(f){
             case CSV_FMT:  
-               fprintf(fp, "%s, %"PRIu64", %"PRIu64", %"PRIu64"\n",
-                      gaw_global_stats[i].name, gaw_global_stats[i].count, gaw_global_stats[i].time, 
-                      gaw_global_stats[i].total_bytes);
+               fprintf(fp, "%s, %"PRIu64", %.3lf, %"PRIu64", %"PRIu64", %"PRIu64", %"PRIu64", %"PRIu64", %"PRIu64", %"PRIu64"\n",
+                      gaw_global_stats[i].name, 
+                      gaw_global_stats[i].count, (double)(gaw_global_stats[i].time/(double)(nproc)), gaw_global_stats[i].total_bytes,
+                      gaw_global_min_stats[i].count, gaw_global_min_stats[i].time, gaw_global_min_stats[i].total_bytes,
+                      gaw_global_max_stats[i].count, gaw_global_max_stats[i].time, gaw_global_max_stats[i].total_bytes);
                break;
             case HUMAN_FMT:
                fprintf(fp, "Function Name: %s\n", gaw_global_stats[i].name);
                fprintf(fp, "\tCount: %"PRIu64"\n", gaw_global_stats[i].count);
-               fprintf(fp, "\tCumm Time: %"PRIu64"\n", gaw_global_stats[i].time);
+               fprintf(fp, "\tAverage Time: %.3lf\n", (double)(gaw_global_stats[i].time/(double)(nproc)));
                fprintf(fp, "\tTotal Bytes: %"PRIu64"\n", gaw_global_stats[i].total_bytes);
+               fprintf(fp, "\tMin Count: %"PRIu64"\n", gaw_global_min_stats[i].count);
+               fprintf(fp, "\tMin Time: %"PRIu64"\n", gaw_global_min_stats[i].time);
+               fprintf(fp, "\tMin Bytes: %"PRIu64"\n", gaw_global_min_stats[i].total_bytes);
+               fprintf(fp, "\tMax Count: %"PRIu64"\n", gaw_global_max_stats[i].count);
+               fprintf(fp, "\tMax Time: %"PRIu64"\n", gaw_global_max_stats[i].time);
+               fprintf(fp, "\tMax Bytes: %"PRIu64"\n", gaw_global_max_stats[i].total_bytes);                              
                break;
          }
       }
    }   
    }
-   fclose(filePre);
+   if(enable_local) fclose(filePre);
    if(me == 0) fclose(globalFilePre);   
 }

@@ -328,6 +328,8 @@ typedef struct __ga_weak_profile{
 
 
 extern ga_weak_profile_t gaw_global_stats[];
+extern ga_weak_profile_t gaw_global_min_stats[];
+extern ga_weak_profile_t gaw_global_max_stats[];
 extern ga_weak_profile_t gaw_local_stats[];
 extern char ga_weak_symbols[][80];
 

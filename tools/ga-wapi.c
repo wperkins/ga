@@ -1453,6 +1453,17 @@ void wnga_norm_infinity(Integer g_a, double *nm)
    update_local_entry(PNGA_NORM_INFINITY, ltme, 0);    
 }
 
+logical wnga_overlay(Integer g_a, Integer g_parent)
+{
+   logical result;
+   unsigned long long ltme;
+   ltme=- I_Wtime();
+   result = pnga_overlay(g_a, g_parent);
+   ltme += I_Wtime();
+   update_local_entry(PNGA_OVERLAY, ltme, 0);
+   return result;
+
+}
 
 void wnga_pack(Integer g_a, Integer g_b, Integer g_sbit, Integer lo, Integer hi, Integer *icount)
 {

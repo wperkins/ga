@@ -99,7 +99,6 @@ void NGA_Initialize_ltd(size_t limit)
 
 void GA_Initialize_args(int *argc, char ***argv)
 {
-
   _ga_argc = argc;
   _ga_argv = argv;
   _ga_initialize_c = 1;
@@ -1272,6 +1271,22 @@ int NGA_Allocate(int g_a)
   Integer aa;
   aa = (Integer)g_a;
   return (int)wnga_allocate(aa);
+}
+
+int GA_Overlay(int g_a, int g_p)
+{
+  Integer aa, bb;
+  aa = (Integer)g_a;
+  bb = (Integer)g_p;
+  return (int)wnga_overlay(aa, bb);
+}
+
+int NGA_Overlay(int g_a, int g_p)
+{
+  Integer aa, bb;
+  aa = (Integer)g_a;
+  bb = (Integer)g_p;
+  return (int)wnga_overlay(aa, bb);
 }
 
 int GA_Pgroup_nodeid(int grp_id)

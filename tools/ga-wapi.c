@@ -1456,11 +1456,12 @@ void wnga_norm_infinity(Integer g_a, double *nm)
 logical wnga_overlay(Integer g_a, Integer g_parent)
 {
    logical result;
-   unsigned long long ltme;
+   unsigned long long ltme, sz;
    ltme=- I_Wtime();
    result = pnga_overlay(g_a, g_parent);
    ltme += I_Wtime();
-   update_local_entry(PNGA_OVERLAY, ltme, 0);
+   GET_LOCAL_MSIZE(g_a, sz);
+   update_local_entry(PNGA_OVERLAY, ltme, sz);
    return result;
 
 }

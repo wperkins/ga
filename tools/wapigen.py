@@ -70,7 +70,7 @@ class Function(object): #OBJECT A SINGLE SIGNATURE
             for arg in signature.split(','):
                 self.args.append(FunctionArgument(arg.strip())) #TAKE EACH COMMA SEPERATED VALUE AS A FUNCTIONARGUMENT AND STORE
 
-    def get_call(self, name=None): #NO NAME SENT
+    def get_call(self, name=None): 
         sig = ''
         if not name:
             sig += self.name
@@ -137,18 +137,13 @@ if __name__ == '__main__':
     # parse signatures into the Function class
     #SIGNATURES BEING GOT FROM ga-papi.h
     for sig in get_signatures(sys.argv[1]):
-        #PLACE SINGLE SIGNATURE INTO FUNCTION
         function = Function(sig)
-        #PLACE FUNCTION WITH SIGNATURE INTO FUNCTION DICTIONARY
         functions[function.name] = function
   
 
-    # now process the functions
     for name in sorted(functions):
         
-        func = functions[name] #FEC5
-        
-        #DOES IT NEED RETURN COMMAND
+        func = functions[name]
         maybe_return = ''
         maybe_rvalue = ''
         if 'void' not in func.return_type:
@@ -156,13 +151,12 @@ if __name__ == '__main__':
             maybe_rvalue = func.return_type
             maybe_rvalue += ' rvalue = '
         
-        #ADD IDENTIFIER AT BEGINNING OF NAME
         func = functions[name]
         wnga_name = name.replace('pnga_','wnga_')
         hash_key = func.get_hash_key()
         
-        start_nperf = "add_entry(GA_Nodeid(), GA_Nodeid(), \"%s\")" %(hash_key)
-        end_nperf = "end_entry(GA_Nodeid(), GA_Nodeid(), \"%s\")" %(hash_key)           
+        start_nperf = "add_entry(GA_Nodeid(), omp_get_thread_num(), \"%s\")" %(hash_key)
+        end_nperf = "end_entry(GA_Nodeid(), omp_get_thread_num(), \"%s\")" %(hash_key)           
         
         print '''
 %s
@@ -174,22 +168,6 @@ if __name__ == '__main__':
 }
 ''' % (func.get_signature(wnga_name), start_nperf, maybe_rvalue, func.get_call(), end_nperf, maybe_return)
 
-#THIS PRINTS OUT THE FUNCTION FOR THE C FILE
-
-#logical wnga_allocate(Integer g_a) 
-#{
-#   return allocate(Integer g_a);
-#}
-
-#void wnga_add_diagonal (Integer g_a, Integer g_v)
-#{
-#  void add_diagonal(Integer g_a, Integer g_v)
-#}
-#
-#
-#
-#
-#
 
 # FUNCTION
 # RETURN TYPE: logical

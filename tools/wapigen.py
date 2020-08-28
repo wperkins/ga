@@ -100,6 +100,14 @@ class Function(object): #OBJECT A SINGLE SIGNATURE
             sig = sig[:-2] # remove last ', '
         sig += ')'
         return sig
+        
+    def get_hash_key(self, name=None):
+       sig = ''
+       if not name:
+            sig += self.name
+       else:
+            sig += name  
+       return sig     
 
     def __str__(self):
         return self.get_signature()
@@ -151,9 +159,10 @@ if __name__ == '__main__':
         #ADD IDENTIFIER AT BEGINNING OF NAME
         func = functions[name]
         wnga_name = name.replace('pnga_','wnga_')
+        hash_key = func.get_hash_key()
         
-        start_nperf = "add_entry(nid, tid, hash_key)"
-        end_nperf = "end_entry(nid, tid, hash_key)"           
+        start_nperf = "add_entry(GA_Nodeid(), GA_Nodeid(), \"%s\")" %(hash_key)
+        end_nperf = "end_entry(GA_Nodeid(), GA_Nodeid(), \"%s\")" %(hash_key)           
         
         print '''
 %s

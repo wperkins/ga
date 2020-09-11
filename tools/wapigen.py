@@ -155,8 +155,8 @@ if __name__ == '__main__':
         wnga_name = name.replace('pnga_','wnga_')
         hash_key = func.get_hash_key()
         
-        start_nperf = "add_entry(GA_Nodeid(), omp_get_thread_num(), \"%s\")" %(hash_key)
-        end_nperf = "end_entry(GA_Nodeid(), omp_get_thread_num(), \"%s\")" %(hash_key)           
+        start_nperf = "add_entry(GA_Nodeid(), omp_get_thread_num(), \"%s\", 0, 0)" %(hash_key)
+        end_nperf = "end_entry(GA_Nodeid(), omp_get_thread_num(), \"%s\", 0, 1)" %(hash_key)           
         
         print '''
 %s

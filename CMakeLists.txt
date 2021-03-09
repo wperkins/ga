@@ -396,6 +396,9 @@ if(ENABLE_PROFILING)
 endif()
 
 if(ENABLE_TESTS)
+  if (NOT GA_TEST_NPROCS)
+    set(GA_TEST_NPROCS ${MPIEXEC_MAX_NUMPROCS})
+  endif()
   # turn testing on
   enable_testing()
   add_subdirectory(global/testing)

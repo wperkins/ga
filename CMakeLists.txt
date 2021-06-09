@@ -30,7 +30,10 @@
 # file: CMakeLists.txt
 # -------------------------------------------------------------
 
-cmake_minimum_required (VERSION 3.17.0 FATAL_ERROR)
+cmake_minimum_required (VERSION 3.6.0 FATAL_ERROR)
+if (NOT CMAKE_INSTALL_LIBDIR)
+  set(CMAKE_INSTALL_LIBDIR lib)
+endif(NOT CMAKE_INSTALL_LIBDIR)
 project (GlobalArrays VERSION 5.8.0 LANGUAGES C CXX)
 
 # Append local CMake directory
@@ -105,10 +108,14 @@ option (F2C_HIDDEN_STRING_LENGTH_AFTER_ARGS "Fortran/C interface property" ON)
 
 message(STATUS "Checking MPI ...")
 find_package (MPI REQUIRED)
-set(GA_EXTRA_LIBS ${GA_EXTRA_LIBS} MPI::MPI_C MPI::MPI_CXX)
+set(GA_EXTRA_LIBS ${GA_EXTRA_LIBS} ${MPI_CXX_LIBRARIES} ${MPI_C_LIBRARIES})
 if(ENABLE_FORTRAN)
-  list(APPEND GA_EXTRA_LIBS MPI::MPI_Fortran)
+  list(APPEND GA_EXTRA_LIBS ${MPI_Fortran_LIBRARIES})
 endif()
+
+if(NOT MPIEXEC_EXECUTABLE)
+  set(MPIEXEC_EXECUTABLE "${MPIEXEC}")
+endif(NOT MPIEXEC_EXECUTABLE)
 
 include(${PROJECT_SOURCE_DIR}/cmake/ga-checks.cmake)
 
@@ -282,8 +289,12 @@ if(NOT "${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Darwin")
   endif()
 endif()
 
+include(CheckCCompilerFlag)
 if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
-  add_compile_options(-fno-aggressive-loop-optimizations)
+  check_c_compiler_flag("-fno-aggressive-loop-optimizations", FLAGOK)
+  if(FLAGOK)
+    add_compile_options(-fno-aggressive-loop-optimizations)
+  endif(FLAGOK)
 endif()
 
 if(ENABLE_BLAS)
@@ -362,11 +373,11 @@ include(GNUInstallDirs)
 set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/GlobalArrays)
 
 #dra eaf elio sf
-install(TARGETS ma ga_src linalg
-    EXPORT globalarrays-targets
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-)
+# install(TARGETS ma ga_src linalg
+#     EXPORT globalarrays-targets
+#     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+# )
 
 install(TARGETS ga
     EXPORT globalarrays-targets

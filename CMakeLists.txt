@@ -291,7 +291,7 @@ endif()
 
 include(CheckCCompilerFlag)
 if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
-  check_c_compiler_flag("-fno-aggressive-loop-optimizations", FLAGOK)
+  check_c_compiler_flag("-fno-aggressive-loop-optimizations" FLAGOK)
   if(FLAGOK)
     add_compile_options(-fno-aggressive-loop-optimizations)
   endif(FLAGOK)

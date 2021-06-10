@@ -30,7 +30,7 @@
 # file: CMakeLists.txt
 # -------------------------------------------------------------
 
-cmake_minimum_required (VERSION 3.6.0 FATAL_ERROR)
+cmake_minimum_required (VERSION 3.5.0 FATAL_ERROR)
 if (NOT CMAKE_INSTALL_LIBDIR)
   set(CMAKE_INSTALL_LIBDIR lib)
 endif(NOT CMAKE_INSTALL_LIBDIR)
